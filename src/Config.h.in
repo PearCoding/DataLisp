@@ -1,0 +1,188 @@
+/*
+ Copyright (c) 2014, Ömercan Yazici <pearcoding AT gmail.com>
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without modification,
+ are permitted provided that the following conditions are met:
+
+    1. Redistributions of source code must retain the above copyright notice,
+       this list of conditions and the following disclaimer.
+
+    2. Redistributions in binary form must reproduce the above copyright
+       notice, this list of conditions and the following disclaimer in the
+       documentation and/or other materials provided with the distribution.
+
+    3. Neither the name of the copyright owner may be used
+       to endorse or promote products derived from this software without
+       specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER BE LIABLE FOR
+ ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
+*/
+#pragma once
+
+#define DL_STRINGIFY(str) #str
+#define DL_DOUBLEQUOTE(str) DL_STRINGIFY(str)
+
+#define DL_NAME_STRING		DL_DOUBLEQUOTE(${CMAKE_PROJECT_NAME})
+#define DL_VENDOR_STRING	DL_DOUBLEQUOTE(${VENDOR})
+
+#define DL_VERSION_MAJOR	${VERSION_MAJOR}
+#define DL_VERSION_MINOR	${VERSION_MINOR}
+#define DL_VERSION_STRING 	DL_DOUBLEQUOTE(${VERSION_MAJOR}) "." DL_DOUBLEQUOTE(${VERSION_MINOR})
+#define DL_VERSION 		${VERSION_HEX}
+#define DL_VERSION_CHECK(major, minor) (((major) << 8) | (minor))
+
+//OS
+#if defined(__linux) || defined(linux)
+# define DL_OS_LINUX
+# define DL_OS_NAME "Linux"
+#elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__WINDOWS__) || defined(__TOS_WIN__)
+# define DL_OS_WINDOWS
+# if !defined(Win64) && !defined(_WIN64)
+#  define DL_OS_WINDOWS_32
+#  define DL_OS_NAME "Microsoft Windows 32 Bit"
+# else
+#  define DL_OS_WINDOWS_64
+#  define DL_OS_NAME "Microsoft Windows 64 Bit"
+# endif
+#else
+# define DL_OS_UNKNOWN
+# define DL_OS_NAME "Unknown"
+/*# error Your operating system is currently not supported*/
+#endif
+
+//Compilier
+#if defined(__CYGWIN__)
+# define DL_CC_CYGWIN
+# define DL_CC_NAME "Cygwin"
+#endif
+
+#if defined(__GNUC__)
+# define DL_CC_GNU
+# define DL_CC_NAME "GNU C/C++"
+#endif
+
+#if defined(__MINGW32__)
+# define DL_CC_MINGW32
+# if !defined(TGJ_CC_GNU)
+#  define DL_CC_NAME "MinGW 32"
+# else
+#  undef DL_CC_NAME
+#  define DL_CC_NAME "GNU C/C++(MinGW 32)"
+# endif
+#endif
+
+#if defined(__INTEL_COMPILER)
+# define DL_CC_INTEL
+# define DL_CC_NAME "Intel C/C++"
+#endif
+
+#if defined(_MSC_VER)
+# define DL_CC_MSC
+# define DL_CC_NAME "Microsoft Visual C++"
+#endif
+
+#if !defined(DL_CC_NAME)
+# define DL_CC_NAME "Unknown compiler"
+#endif
+
+#if defined(DL_DEBUG)
+# define DL_BUILDVARIANT_NAME "Debug"
+# define DL_BUILD_STRING DL_NAME_STRING " " DL_VERSION_STRING " build variant " DL_BUILDVARIANT_NAME " on " __DATE__  " at " __TIME__ " with " DL_CC_NAME " { OS: " DL_OS_NAME "; Last change: " __TIMESTAMP__ "}\n"
+#else
+# ifndef DL_RELEASE
+#  define DL_RELEASE
+# endif
+# define DL_BUILDVARIANT_NAME "Release"
+# define DL_BUILD_STRING DL_NAME_STRING " " DL_VERSION_STRING " build variant " DL_BUILDVARIANT_NAME " { OS: " DL_OS_NAME " }\n"
+#endif
+
+#ifdef DL_CC_MSC
+# define DL_DEBUG_BREAK() __debugbreak()
+# define DL_ALIGN(x) __declspec(align(x))
+#else//FIXME: Really use cpu dependet assembler?
+# define DL_DEBUG_BREAK() __asm__ __volatile__ ("int $0x03")
+# define DL_ALIGN(x) __attribute__((aligned(x)))
+#endif
+
+#if !defined(DL_STATIC)
+# if defined(DL_OS_WINDOWS)
+#  define DL_EXPORT __declspec(dllexport)
+#  define DL_IMPORT __declspec(dllimport)
+# elif defined(DL_OS_LINUX)
+#  define DL_EXPORT __attribute__((visibility ("default")))
+#  define DL_IMPORT
+# else
+#  error Unsupported operating system
+# endif
+#else
+# define DL_EXPORT
+# define DL_IMPORT
+#endif
+
+#ifdef DL_LIB_BUILD
+# define DL_LIB DL_EXPORT
+#else
+# define DL_LIB DL_IMPORT
+#endif
+
+#ifndef DL_NO_ASSERTS
+# define DL_ASSERT(cond) \
+	do \
+	{ \
+		if(!(cond)) \
+		{ \
+			DL_DEBUG_BREAK(); \
+		} \
+	} while(0)
+#else
+# define DL_ASSERT(cond)
+#endif
+
+#if defined(DL_DEBUG)
+# define DL_DEBUG_ASSERT(cond) DL_ASSERT(cond)
+#else
+# define DL_DEBUG_ASSERT(cond) DL::dl_Noop()
+#endif
+
+#ifndef DL_STRING_TYPE
+# include <string>
+# define DL_STRING_TYPE std::string
+#endif
+
+namespace DL
+{
+	inline void dl_Noop()
+	{
+	}
+	
+	typedef signed char int8;
+	typedef unsigned char uint8;
+
+	typedef signed short int16;
+	typedef unsigned short uint16;
+
+	typedef signed int int32;
+	typedef unsigned int uint32;
+
+#if defined __GLIBC_HAVE_LONG_LONG
+	__extension__ typedef signed long long int int64;
+	__extension__ typedef unsigned long long int uint64;
+#else
+	typedef signed long int int64;
+	typedef unsigned long int uint64;
+#endif
+
+	typedef uint32 DataRefID;
+
+	typedef DL_STRING_TYPE string_t;
+}
