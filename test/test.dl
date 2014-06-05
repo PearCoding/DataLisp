@@ -33,8 +33,8 @@
 	:steps				0.041666667
 	
 	;; New v2.0 style:
-	;; :steps			$(if $(env DEV) 0.041666667 0.833333333)
-	;; $(print "Steps: %1 sec" $(slot "steps"))
+	:steps			$(if $(env DEV) 0.041666667 0.833333333)
+	$(print "Steps: %1 sec" $(slot "steps"))
 	
 	:hourCycleTime		60;; minutes
 	:dayCycleTime		24;; hours
