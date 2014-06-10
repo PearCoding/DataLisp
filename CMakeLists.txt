@@ -5,8 +5,8 @@ PROJECT(DataLisp)
 #SETS
 SET(VENDOR "DataLisp project 2013")
 SET(VERSION_MAJOR 1)
-SET(VERSION_MINOR 0)
-SET(VERSION_HEX 0x0100)
+SET(VERSION_MINOR 9)
+SET(VERSION_HEX 0x0109)
 SET(DL_Version ${VERSION_MAJOR}.${VERSION_MINOR})
 SET(DL_TARGET "DataLisp")
 
@@ -64,6 +64,7 @@ SET(DL_Src
   ${DL_Root}/DataContainer.cpp
   ${DL_Root}/DataGroup.cpp
   ${DL_Root}/DataLisp.cpp
+  ${DL_Root}/Expressions.cpp
   ${DL_Root}/Lexer.cpp
   ${DL_Root}/Parser.cpp
   ${DL_Root}/SourceLogger.cpp)
@@ -75,6 +76,7 @@ SET(DL_Hdr
   ${DL_Root}/DataContainer.h
   ${DL_Root}/DataGroup.h
   ${DL_Root}/DataLisp.h
+  ${DL_Root}/Expressions.h
   ${DL_Root}/Lexer.h
   ${DL_Root}/Parser.h
   ${DL_Root}/SourceLogger.h
@@ -84,6 +86,9 @@ SET(DL_Hdr
 SET(DL_DUMP_Src
   ${DL_Root}/dump/main.cpp)
 
+SET(DL_TEST_EXPR_Src
+  ${DL_Root}/tests/expr_test.cpp)
+
 #DEPENDIES, LIBARIES AND EXECUTABLES
 add_library(${DL_TARGET} SHARED ${DL_Src} ${DL_Hdr})
 set_target_properties(${DL_TARGET} PROPERTIES VERSION ${DL_Version})
@@ -91,3 +96,6 @@ set_target_properties(${DL_TARGET} PROPERTIES COMPILE_DEFINITIONS "${DEFS};DL_LI
 
 add_executable(dl_dump ${DL_DUMP_Src})
 target_link_libraries(dl_dump ${DL_TARGET})
+
+add_executable(test_expr ${DL_TEST_EXPR_Src})
+target_link_libraries(test_expr ${DL_TARGET})

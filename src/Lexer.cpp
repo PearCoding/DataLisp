@@ -5,16 +5,16 @@
  Redistribution and use in source and binary forms, with or without modification,
  are permitted provided that the following conditions are met:
 
-    1. Redistributions of source code must retain the above copyright notice,
-       this list of conditions and the following disclaimer.
+ 1. Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
 
-    2. Redistributions in binary form must reproduce the above copyright
-       notice, this list of conditions and the following disclaimer in the
-       documentation and/or other materials provided with the distribution.
+ 2. Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in the
+ documentation and/or other materials provided with the distribution.
 
-    3. Neither the name of the copyright owner may be used
-       to endorse or promote products derived from this software without
-       specific prior written permission.
+ 3. Neither the name of the copyright owner may be used
+ to endorse or promote products derived from this software without
+ specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -26,14 +26,14 @@
  ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
-*/
+ */
 #include "Lexer.h"
 #include <sstream>
 
 namespace DL
 {
-	Lexer::Lexer(const std::string& source, SourceLogger* logger) :
-			mLineNumber(1), mColumnNumber(1), mSource(source), mIterator(), mLogger(logger)
+	Lexer::Lexer(const string_t& source, SourceLogger* logger) :
+		mLineNumber(1), mColumnNumber(1), mSource(source), mIterator(), mLogger(logger)
 	{
 		mIterator = mSource.begin();
 	}
@@ -44,13 +44,47 @@ namespace DL
 
 	Token Lexer::next()
 	{
-		if(mIterator == mSource.end())
+		if (mIterator == mSource.end())
 		{
 			Token token;
 			token.Type = T_EOF;
 			return token;
 		}
-		else if(*mIterator == '(')
+		else if (*mIterator == '$')
+		{
+			++mIterator;
+			++mColumnNumber;
+
+			if (mIterator != mSource.end() && *mIterator == '(')
+			{
+				++mIterator;
+				++mColumnNumber;
+
+				Token token;
+				token.Type = T_ExpressionParanthese;
+				return token;
+			}
+			else if (mIterator == mSource.end())
+			{
+				std::stringstream stream;
+				stream << "No '(' after '$'";
+				mLogger->log(mLineNumber, mColumnNumber, L_Error, stream.str());
+
+				Token token;
+				token.Type = T_EOF;
+				return token;
+			}
+			else
+			{
+				std::stringstream stream;
+				stream << "Invalid character '" << *mIterator << "' after '$'";
+				mLogger->log(mLineNumber, mColumnNumber, L_Error, stream.str());
+				++mIterator;
+				++mColumnNumber;
+				return next();
+			}
+		}
+		else if (*mIterator == '(')
 		{
 			++mIterator;
 			++mColumnNumber;
@@ -59,7 +93,7 @@ namespace DL
 			token.Type = T_OpenParanthese;
 			return token;
 		}
-		else if(*mIterator == ')')
+		else if (*mIterator == ')')
 		{
 			++mIterator;
 			++mColumnNumber;
@@ -86,7 +120,7 @@ namespace DL
 			token.Type = T_CloseSquareBracket;
 			return token;
 		}
-		else if(*mIterator == ',')
+		else if (*mIterator == ',')
 		{
 			++mIterator;
 			++mColumnNumber;
@@ -104,9 +138,9 @@ namespace DL
 			token.Type = T_Colon;
 			return token;
 		}
-		else if(*mIterator == ';')//Comment
+		else if (*mIterator == ';')//Comment
 		{
-			while(mIterator != mSource.end() && *mIterator != '\n')
+			while (mIterator != mSource.end() && *mIterator != '\n')
 			{
 				++mIterator;
 				++mColumnNumber;
@@ -114,35 +148,35 @@ namespace DL
 
 			return next();
 		}
-		else if(*mIterator == '"')//String
+		else if (*mIterator == '"')//String
 		{
-			std::string str;
-			while(true)
+			string_t str;
+			while (true)
 			{
 				++mIterator;
 				++mColumnNumber;
 
-				if(mIterator == mSource.end() ||
-						*mIterator == '\n')
+				if (mIterator == mSource.end() ||
+					*mIterator == '\n')
 				{
-					std::stringstream stream; 
+					std::stringstream stream;
 					stream << "The string \"" << str << "\" is not closed";
 					mLogger->log(mLineNumber, mColumnNumber, L_Error, stream.str());
 					break;
 				}
-				else if(*mIterator == '\\')
+				else if (*mIterator == '\\')
 				{
 					++mIterator;
 					++mColumnNumber;
 
-					if(mIterator == mSource.end() ||
+					if (mIterator == mSource.end() ||
 						*mIterator == '\n')
 					{
 						mLogger->log(mLineNumber, mColumnNumber, L_Error, "Invalid use of the '\\' operator");
 					}
 					str += *mIterator;
 				}
-				else if(*mIterator == '"')
+				else if (*mIterator == '"')
 				{
 					++mIterator;
 					++mColumnNumber;
@@ -159,16 +193,16 @@ namespace DL
 			token.Value = str;
 			return token;
 		}
-		else if(isdigit(*mIterator) || *mIterator=='-')
+		else if (isdigit(*mIterator) || *mIterator == '-')
 		{
-			std::string identifier;
+			string_t identifier;
 			identifier += *mIterator;
 
 			++mIterator;
 			++mColumnNumber;
-			while(mIterator != mSource.end())
+			while (mIterator != mSource.end())
 			{
-				if(isdigit(*mIterator) || *mIterator == '.')
+				if (isdigit(*mIterator) || *mIterator == '.')
 				{
 					identifier += *mIterator;
 					++mIterator;
@@ -179,30 +213,30 @@ namespace DL
 					break;
 				}
 			}
-			
+
 			Token token;
 			if (isInteger(identifier))
 			{
 				token.Type = T_Integer;
 				token.Value = identifier;
 			}
-			else if(isFloat(identifier))
+			else if (isFloat(identifier))
 			{
 				token.Type = T_Float;
 				token.Value = identifier;
 			}
 			return token;
 		}
-		else if(isAlpha(*mIterator))//Identifier
+		else if (isAlpha(*mIterator))//Identifier
 		{
-			std::string identifier;
+			string_t identifier;
 			identifier += *mIterator;
 
 			++mIterator;
 			++mColumnNumber;
-			while(mIterator != mSource.end())
+			while (mIterator != mSource.end())
 			{
-				if(isAscii(*mIterator))
+				if (isAscii(*mIterator))
 				{
 					identifier += *mIterator;
 					++mIterator;
@@ -215,11 +249,11 @@ namespace DL
 			}
 
 			Token token;
-			if(identifier == "true")
+			if (identifier == "true")
 			{
 				token.Type = T_True;
 			}
-			else if(identifier == "false")
+			else if (identifier == "false")
 			{
 				token.Type = T_False;
 			}
@@ -230,9 +264,9 @@ namespace DL
 			}
 			return token;
 		}
-		else if(isWhitespace(*mIterator))
+		else if (isWhitespace(*mIterator))
 		{
-			if(*mIterator == '\n')
+			if (*mIterator == '\n')
 			{
 				++mLineNumber;
 				mColumnNumber = 0;
@@ -244,7 +278,7 @@ namespace DL
 		}
 		else
 		{
-			std::stringstream stream; 
+			std::stringstream stream;
 			stream << "Invalid character '" << *mIterator << "'";
 			mLogger->log(mLineNumber, mColumnNumber, L_Error, stream.str());
 			++mIterator;
@@ -255,7 +289,7 @@ namespace DL
 
 	Token Lexer::look()
 	{
-		std::string::const_iterator tmp = mIterator;
+		string_t::const_iterator tmp = mIterator;
 		line_t l = mLineNumber;
 		column_t c = mColumnNumber;
 
@@ -279,7 +313,7 @@ namespace DL
 
 	bool Lexer::isWhitespace(char c)
 	{
-		if(c == ' ' || c == '\t' || c == '\r' ||
+		if (c == ' ' || c == '\t' || c == '\r' ||
 			c == '\n' || c == '\v' || c == '\f')
 		{
 			return true;
@@ -292,9 +326,9 @@ namespace DL
 
 	bool Lexer::isAscii(char c)
 	{
-		if(c == '1' || c == '2' || c == '3' ||
-			c == '4' ||	c == '5' ||	c == '6' ||
-			c == '7' ||	c == '8' ||	c == '9' ||
+		if (c == '1' || c == '2' || c == '3' ||
+			c == '4' || c == '5' || c == '6' ||
+			c == '7' || c == '8' || c == '9' ||
 			c == '0' || isAlpha(c))
 		{
 			return true;
@@ -334,14 +368,14 @@ namespace DL
 			return false;
 		}
 	}
-	
+
 	bool Lexer::isInteger(const std::string& str)
 	{
-		for(std::string::const_iterator it = str.begin();
+		for (string_t::const_iterator it = str.begin();
 			it != str.end();
 			++it)
 		{
-			if(!isdigit(*it) &&
+			if (!isdigit(*it) &&
 				*it != '-')
 			{
 				return false;
@@ -357,11 +391,11 @@ namespace DL
 	bool Lexer::isFloat(const std::string& str)
 	{
 		bool point = false;
-		for(std::string::const_iterator it = str.begin();
+		for (string_t::const_iterator it = str.begin();
 			it != str.end();
 			++it)
 		{
-			if(*it != '.' &&
+			if (*it != '.' &&
 				!isdigit(*it) &&
 				*it != '-')
 			{

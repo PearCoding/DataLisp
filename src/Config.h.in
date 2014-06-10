@@ -115,7 +115,7 @@
 #endif
 
 #if !defined(DL_STATIC)
-# if defined(DL_OS_WINDOWS)
+# if defined(DL_OS_WINDOWS)//Really OS dependet, more toolchain dependet!
 #  define DL_EXPORT __declspec(dllexport)
 #  define DL_IMPORT __declspec(dllimport)
 # elif defined(DL_OS_LINUX)
@@ -131,6 +131,9 @@
 
 #ifdef DL_LIB_BUILD
 # define DL_LIB DL_EXPORT
+# ifdef DL_CC_MSC
+#  pragma warning(disable : 4251)//Just to annoying 
+# endif
 #else
 # define DL_LIB DL_IMPORT
 #endif
@@ -159,6 +162,21 @@
 # define DL_STRING_TYPE std::string
 #endif
 
+#ifndef DL_LIST_TYPE
+# include <list>
+# define DL_LIST_TYPE std::list
+#endif
+
+#ifndef DL_VECTOR_TYPE
+# include <vector>
+# define DL_VECTOR_TYPE std::vector
+#endif
+
+#ifndef DL_MAP_TYPE
+# include <map>
+# define DL_MAP_TYPE std::map
+#endif
+
 namespace DL
 {
 	inline void dl_Noop()
@@ -185,4 +203,26 @@ namespace DL
 	typedef uint32 DataRefID;
 
 	typedef DL_STRING_TYPE string_t;
+	
+	template <typename T>
+	struct list_t
+	{
+		typedef DL_LIST_TYPE<T> type;
+	};
+
+	template <typename T>
+	struct vector_t
+	{
+		typedef DL_VECTOR_TYPE<T> type;
+	};
+
+	template <typename K, typename V>
+	struct map_t
+	{
+		typedef DL_MAP_TYPE<K, V> type;
+	};
+
+	class Data;
+	class SourceLogger;
+	typedef Data* (*expr_t)(const list_t<Data*>::type& args, SourceLogger* log);
 }

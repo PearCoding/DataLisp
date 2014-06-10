@@ -30,35 +30,24 @@
 #pragma once
 
 #include "Config.h"
-#include "Token.h"
-#include "SourceLogger.h"
 
 namespace DL
 {
-	class DL_LIB Lexer
+	class DL_LIB Expressions
 	{
 	public:
-		Lexer(const string_t& source, SourceLogger* logger);
-		virtual ~Lexer();
+		Expressions(SourceLogger* log);
+		~Expressions();
 
-		Token next();
-		Token look();
+		void addExpression(const string_t& name, expr_t handler);
+		expr_t expression(const string_t& name);
+		Data* exec(const string_t& name, const list_t<Data*>::type& args);
 
-		line_t currentLine() const;
-		column_t currentColumn() const;
 	private:
-		static bool isWhitespace(char c);/* UNICODE? */
-		static bool isAscii(char c);
-		static bool isAlpha(char c);
-
-		static bool isInteger(const string_t& str);
-		static bool isFloat(const string_t& str);
-
-		line_t mLineNumber;
-		column_t mColumnNumber;
-
-		string_t mSource;
-		string_t::const_iterator mIterator;
+		map_t<string_t, expr_t>::type mHandler;
 		SourceLogger* mLogger;
+
+		static Data* print_func(const list_t<Data*>::type& args, SourceLogger* log);
+		static Data* if_func(const list_t<Data*>::type& args, SourceLogger* log);
 	};
 }

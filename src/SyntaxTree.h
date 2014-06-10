@@ -5,16 +5,16 @@
  Redistribution and use in source and binary forms, with or without modification,
  are permitted provided that the following conditions are met:
 
-    1. Redistributions of source code must retain the above copyright notice,
-       this list of conditions and the following disclaimer.
+ 1. Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
 
-    2. Redistributions in binary form must reproduce the above copyright
-       notice, this list of conditions and the following disclaimer in the
-       documentation and/or other materials provided with the distribution.
+ 2. Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in the
+ documentation and/or other materials provided with the distribution.
 
-    3. Neither the name of the copyright owner may be used
-       to endorse or promote products derived from this software without
-       specific prior written permission.
+ 3. Neither the name of the copyright owner may be used
+ to endorse or promote products derived from this software without
+ specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -26,18 +26,17 @@
  ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
-*/
+ */
 #pragma once
 
 #include "Config.h"
-
-#include <list>
 
 namespace DL
 {
 	struct DataNode;
 	struct ValueNode;
 	struct StatementNode;
+	struct ExpressionNode;
 	struct ArrayNode;
 
 	struct DataNode
@@ -48,12 +47,12 @@ namespace DL
 
 	struct ArrayNode
 	{
-		std::list<ValueNode*> Nodes;
+		list_t<ValueNode*>::type Nodes;
 	};
 
 	struct ValueNode
 	{
-		int Type;//0 == Statement, 1 == INTEGER, 2 == FLOAT, 3 == STRING, 4 == BOOLEAN, 5 == Array
+		int Type;//0 == Statement, 1 == INTEGER, 2 == FLOAT, 3 == STRING, 4 == BOOLEAN, 5 == Array, 6 == Expression
 		union
 		{
 			StatementNode*  Statement;
@@ -61,6 +60,7 @@ namespace DL
 			int32			Integer;
 			float			Float;
 			bool			Boolean;
+			ExpressionNode* Expression;
 		};
 		string_t			String;//Can not be in the union......
 	};
@@ -68,11 +68,17 @@ namespace DL
 	struct StatementNode
 	{
 		string_t Name;
-		std::list<DataNode*> Nodes;
+		list_t<DataNode*>::type Nodes;
+	};
+
+	struct ExpressionNode
+	{
+		string_t Name;
+		list_t<DataNode*>::type Nodes;
 	};
 
 	struct SyntaxTree
 	{
-		std::list<StatementNode*> Nodes;
+		list_t<StatementNode*>::type Nodes;
 	};
 }

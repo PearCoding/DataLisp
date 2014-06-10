@@ -5,16 +5,16 @@
  Redistribution and use in source and binary forms, with or without modification,
  are permitted provided that the following conditions are met:
 
-    1. Redistributions of source code must retain the above copyright notice,
-       this list of conditions and the following disclaimer.
+ 1. Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
 
-    2. Redistributions in binary form must reproduce the above copyright
-       notice, this list of conditions and the following disclaimer in the
-       documentation and/or other materials provided with the distribution.
+ 2. Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in the
+ documentation and/or other materials provided with the distribution.
 
-    3. Neither the name of the copyright owner may be used
-       to endorse or promote products derived from this software without
-       specific prior written permission.
+ 3. Neither the name of the copyright owner may be used
+ to endorse or promote products derived from this software without
+ specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -26,19 +26,21 @@
  ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
-*/
+ */
 #pragma once
 
 #include "Config.h"
-#include <list>
 
 namespace DL
 {
+	class Expressions;
+
 	class Data;
 	class DataGroup;
 	class DataArray;
 
 	struct SyntaxTree;
+	struct ExpressionNode;
 	struct StatementNode;
 	struct DataNode;
 	struct ArrayNode;
@@ -50,22 +52,23 @@ namespace DL
 		DataContainer();
 		~DataContainer();
 
-		void build(SyntaxTree* tree);
-	
-		std::list<DataGroup*> getTopGroups() const;
-		std::list<DataGroup*> getAllGroupsID(const string_t& id) const;
-		std::list<Data*> getAllDataFromKey(const string_t& key) const;
-	
+		void build(SyntaxTree* tree, Expressions* expr);
+
+		list_t<DataGroup*>::type getTopGroups() const;
+		list_t<DataGroup*>::type getAllGroupsID(const string_t& id) const;
+		list_t<Data*>::type getAllDataFromKey(const string_t& key) const;
+
 		void addTopGroup(DataGroup* group);
 	private:
-		DataGroup* buildGroup(StatementNode* n);
-		Data* buildData(DataNode* n);
-		DataArray* buildArray(ArrayNode* n);
-		Data* buildArrayValue(ValueNode* n);
+		DataGroup* buildGroup(StatementNode* n, Expressions* expr);
+		Data* buildData(DataNode* n, Expressions* expr);
+		DataArray* buildArray(ArrayNode* n, Expressions* expr);
+		Data* buildArrayValue(ValueNode* n, Expressions* expr);
+		Data* buildExpression(ExpressionNode* n, Expressions* expr);
 
-		std::list<DataGroup*> mTopGroups;
+		list_t<DataGroup*>::type mTopGroups;
 
-		std::list<DataGroup*> mGroups;
-		std::list<Data*> mData;
+		list_t<DataGroup*>::type mGroups;
+		list_t<Data*>::type mData;
 	};
 }

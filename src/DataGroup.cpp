@@ -5,16 +5,16 @@
  Redistribution and use in source and binary forms, with or without modification,
  are permitted provided that the following conditions are met:
 
-    1. Redistributions of source code must retain the above copyright notice,
-       this list of conditions and the following disclaimer.
+ 1. Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
 
-    2. Redistributions in binary form must reproduce the above copyright
-       notice, this list of conditions and the following disclaimer in the
-       documentation and/or other materials provided with the distribution.
+ 2. Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in the
+ documentation and/or other materials provided with the distribution.
 
-    3. Neither the name of the copyright owner may be used
-       to endorse or promote products derived from this software without
-       specific prior written permission.
+ 3. Neither the name of the copyright owner may be used
+ to endorse or promote products derived from this software without
+ specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -26,14 +26,14 @@
  ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
-*/
+ */
 #include "DataGroup.h"
 #include "Data.h"
 
 namespace DL
 {
 	DataGroup::DataGroup(const string_t& id) :
-			mID(id)
+		mID(id)
 	{
 	}
 
@@ -45,7 +45,7 @@ namespace DL
 	{
 		DL_ASSERT(data);
 
-		if(data->key().empty())
+		if (data->key().empty())
 		{
 			mData.push_back(data);
 		}
@@ -71,11 +71,11 @@ namespace DL
 	{
 		DL_ASSERT(!str.empty());
 
-		for(std::list<Data*>::const_iterator it = mNamedData.begin();
+		for (list_t<Data*>::type::const_iterator it = mNamedData.begin();
 			it != mNamedData.end();
 			++it)
 		{
-			if((*it)->key() == str)
+			if ((*it)->key() == str)
 			{
 				return *it;
 			}
@@ -84,16 +84,16 @@ namespace DL
 		return 0;
 	}
 
-	std::list<Data*> DataGroup::getAllFromKey(const string_t& key) const
+	list_t<Data*>::type DataGroup::getAllFromKey(const string_t& key) const
 	{
 		DL_ASSERT(!key.empty());
 
-		std::list<Data*> list;
-		for(std::list<Data*>::const_iterator it = mNamedData.begin();
+		list_t<Data*>::type list;
+		for (list_t<Data*>::type::const_iterator it = mNamedData.begin();
 			it != mNamedData.end();
 			++it)
 		{
-			if((*it)->key() == key)
+			if ((*it)->key() == key)
 			{
 				list.push_back(*it);
 			}
@@ -106,11 +106,11 @@ namespace DL
 	{
 		DL_ASSERT(!key.empty());
 
-		for(std::list<Data*>::const_iterator it = mNamedData.begin();
+		for (list_t<Data*>::type::const_iterator it = mNamedData.begin();
 			it != mNamedData.end();
 			++it)
 		{
-			if((*it)->key() == key)
+			if ((*it)->key() == key)
 			{
 				return true;
 			}
@@ -119,7 +119,7 @@ namespace DL
 		return false;
 	}
 
-	const std::list<Data*>& DataGroup::getNamedEntries() const
+	const list_t<Data*>::type& DataGroup::getNamedEntries() const
 	{
 		return mNamedData;
 	}

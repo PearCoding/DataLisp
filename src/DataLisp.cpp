@@ -5,16 +5,16 @@
  Redistribution and use in source and binary forms, with or without modification,
  are permitted provided that the following conditions are met:
 
-    1. Redistributions of source code must retain the above copyright notice,
-       this list of conditions and the following disclaimer.
+ 1. Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
 
-    2. Redistributions in binary form must reproduce the above copyright
-       notice, this list of conditions and the following disclaimer in the
-       documentation and/or other materials provided with the distribution.
+ 2. Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in the
+ documentation and/or other materials provided with the distribution.
 
-    3. Neither the name of the copyright owner may be used
-       to endorse or promote products derived from this software without
-       specific prior written permission.
+ 3. Neither the name of the copyright owner may be used
+ to endorse or promote products derived from this software without
+ specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -26,7 +26,7 @@
  ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
-*/
+ */
 #include "DataLisp.h"
 #include "Parser.h"
 #include "DataContainer.h"
@@ -42,20 +42,20 @@
 namespace DL
 {
 	DataLisp::DataLisp(SourceLogger* log) :
-		mTree(nullptr), mLogger(log)
+		mTree(nullptr), mLogger(log), mExpressions(log)
 	{
 		DL_ASSERT(log);
 	}
 
 	DataLisp::~DataLisp()
 	{
-		if(mTree)
+		if (mTree)
 		{
-			for(std::list<StatementNode*>::iterator it = mTree->Nodes.begin();
+			for (list_t<StatementNode*>::type::iterator it = mTree->Nodes.begin();
 				it != mTree->Nodes.end();
 				++it)
 			{
-				deleteStatementNode(*it);
+				deleteNode(*it);
 			}
 
 			delete mTree;
@@ -68,21 +68,21 @@ namespace DL
 		Parser parser(source, mLogger);
 		mTree = parser.parse();
 	}
-	
+
 	void DataLisp::build(DataContainer* container)
 	{
 		DL_ASSERT(container);
-		container->build(mTree);
+		container->build(mTree, &mExpressions);
 	}
 
 	string_t DataLisp::generate(DataContainer* container)
 	{
 		DL_ASSERT(container);
 
-		std::string output;
+		string_t output;
 
-		std::list<DataGroup*> top = container->getTopGroups();
-		for (std::list<DataGroup*>::const_iterator it = top.begin();
+		list_t<DataGroup*>::type top = container->getTopGroups();
+		for (list_t<DataGroup*>::type::const_iterator it = top.begin();
 			it != top.end();
 			++it)
 		{
@@ -94,27 +94,27 @@ namespace DL
 
 	string_t DataLisp::dump()
 	{
-		if(!mTree)
+		if (!mTree)
 		{
 			return "";
 		}
 		else
 		{
 			string_t str;
-			for(std::list<StatementNode*>::const_iterator it = mTree->Nodes.begin();
-					it != mTree->Nodes.end();
-					++it)
+			for (list_t<StatementNode*>::type::const_iterator it = mTree->Nodes.begin();
+				it != mTree->Nodes.end();
+				++it)
 			{
-				str += dumpStatementNode((*it), 1);
+				str += dumpNode((*it), 1);
 			}
 			return str;
 		}
 	}
 
-	string_t DataLisp::dumpStatementNode(StatementNode* n, int depth)
+	string_t DataLisp::dumpNode(StatementNode* n, int depth)
 	{
 		string_t white;
-		for(int i = 0; i < depth; ++i)
+		for (int i = 0; i < depth; ++i)
 		{
 			white += " ";
 		}
@@ -122,36 +122,59 @@ namespace DL
 		string_t str;
 		str = white + "Statement {" + n->Name + "\n";
 
-		for(std::list<DataNode*>::const_iterator it = n->Nodes.begin();
-					it != n->Nodes.end();
-					++it)
+		for (list_t<DataNode*>::type::const_iterator it = n->Nodes.begin();
+			it != n->Nodes.end();
+			++it)
 		{
-			str += dumpDataNode((*it), depth+1);
+			str += dumpNode((*it), depth + 1);
 		}
 
-		str += white+"}\n";
+		str += white + "}\n";
 
 		return str;
 	}
 
-	string_t DataLisp::dumpDataNode(DataNode* n, int depth)
+	string_t DataLisp::dumpNode(ExpressionNode* n, int depth)
 	{
 		string_t white;
-		for(int i = 0; i < depth; ++i)
+		for (int i = 0; i < depth; ++i)
 		{
 			white += " ";
 		}
-		
+
 		string_t str;
-		str += white+"Data (" + n->Key + ":\n";
+		str = white + "Expression {" + n->Name + "\n";
 
-		str += dumpValueNode(n->Value, depth);
+		for (list_t<DataNode*>::type::const_iterator it = n->Nodes.begin();
+			it != n->Nodes.end();
+			++it)
+		{
+			str += dumpNode((*it), depth + 1);
+		}
 
-		str += white+")\n";
+		str += white + "}\n";
+
 		return str;
 	}
 
-	string_t DataLisp::dumpValueNode(ValueNode* n, int depth)
+	string_t DataLisp::dumpNode(DataNode* n, int depth)
+	{
+		string_t white;
+		for (int i = 0; i < depth; ++i)
+		{
+			white += " ";
+		}
+
+		string_t str;
+		str += white + "Data (" + n->Key + ":\n";
+
+		str += dumpNode(n->Value, depth);
+
+		str += white + ")\n";
+		return str;
+	}
+
+	string_t DataLisp::dumpNode(ValueNode* n, int depth)
 	{
 		string_t white;
 		for (int i = 0; i < depth; ++i)
@@ -164,14 +187,14 @@ namespace DL
 		switch (n->Type)
 		{
 		case 0:
-			str += dumpStatementNode(n->Statement, depth + 1);
+			str += dumpNode(n->Statement, depth + 1);
 			break;
 		case 1:/* TODO: string_t */
 		{
-				  std::stringstream stream;
-				  stream << n->Integer;
+				   std::stringstream stream;
+				   stream << n->Integer;
 
-				  str += stream.str();
+				   str += stream.str();
 		}
 			break;
 		case 2:
@@ -196,23 +219,26 @@ namespace DL
 			}
 			break;
 		case 5:
-			for (std::list<ValueNode*>::const_iterator it = n->Array->Nodes.begin();
+			for (list_t<ValueNode*>::type::const_iterator it = n->Array->Nodes.begin();
 				it != n->Array->Nodes.end();
 				++it)
 			{
-				str += dumpValueNode((*it), depth + 1);
+				str += dumpNode((*it), depth + 1);
 			}
+			break;
+		case 6:
+			str += dumpNode(n->Expression, depth + 1);
 			break;
 		default:
 			str += "UNKNOWN";
 		}
-		return white+str+"\n";
+		return white + str + "\n";
 	}
 
 	string_t DataLisp::generateDataGroup(DataGroup* d, int depth)
 	{
 		DL_ASSERT(d);
-		
+
 		string_t white;
 		for (int i = 0; i < depth; ++i)
 		{
@@ -228,8 +254,8 @@ namespace DL
 			str += generateData(d->at(i), depth + 1) + "\n";
 		}
 
-		std::list<Data*> list = d->getNamedEntries();
-		for (std::list<Data*>::const_iterator it = list.begin();
+		list_t<Data*>::type list = d->getNamedEntries();
+		for (list_t<Data*>::type::const_iterator it = list.begin();
 			it != list.end();
 			++it)
 		{
@@ -260,7 +286,7 @@ namespace DL
 		{
 			str = ":" + d->key() + "  " + generateValue(d, depth + 1);
 		}
-		return white+str;
+		return white + str;
 	}
 
 	string_t DataLisp::generateArray(DataArray* d, int depth)
@@ -285,7 +311,7 @@ namespace DL
 
 			for (size_t i = 1; i < d->size(); ++i)
 			{
-				str += white + generateValue(d->at(i), depth+1) + ",\n";
+				str += white + generateValue(d->at(i), depth + 1) + ",\n";
 			}
 
 			str += white + "]";
@@ -318,18 +344,18 @@ namespace DL
 			}
 			break;
 		case Data::T_Float:
-			{
-				std::stringstream stream;
-				stream << d->getFloat();
-				str = stream.str();
-			}
+		{
+							  std::stringstream stream;
+							  stream << d->getFloat();
+							  str = stream.str();
+		}
 			break;
 		case Data::T_Integer:
-			{
-				std::stringstream stream;
-				stream << d->getInt();
-				str = stream.str();
-			}
+		{
+								std::stringstream stream;
+								stream << d->getInt();
+								str = stream.str();
+		}
 			break;
 		case Data::T_String:
 			str = "\"" + d->getString() + "\"";
@@ -339,36 +365,53 @@ namespace DL
 		return str;
 	}
 
-	void DataLisp::deleteStatementNode(StatementNode* n)
+	void DataLisp::deleteNode(StatementNode* n)
 	{
-		if(!n)
+		if (!n)
 		{
 			return;
 		}
 
-		for(std::list<DataNode*>::const_iterator it = n->Nodes.begin();
-					it != n->Nodes.end();
-					++it)
+		for (list_t<DataNode*>::type::const_iterator it = n->Nodes.begin();
+			it != n->Nodes.end();
+			++it)
 		{
-			deleteDataNode(*it);
+			deleteNode(*it);
 		}
 
 		delete n;
 	}
 
-	void DataLisp::deleteDataNode(DataNode* n)
+	void DataLisp::deleteNode(ExpressionNode* n)
 	{
-		if(!n)
+		if (!n)
 		{
 			return;
 		}
 
-		deleteValueNode(n->Value);
+		for (list_t<DataNode*>::type::const_iterator it = n->Nodes.begin();
+			it != n->Nodes.end();
+			++it)
+		{
+			deleteNode(*it);
+		}
 
 		delete n;
 	}
 
-	void DataLisp::deleteValueNode(ValueNode* n)
+	void DataLisp::deleteNode(DataNode* n)
+	{
+		if (!n)
+		{
+			return;
+		}
+
+		deleteNode(n->Value);
+
+		delete n;
+	}
+
+	void DataLisp::deleteNode(ValueNode* n)
 	{
 		if (!n)
 		{
@@ -377,18 +420,32 @@ namespace DL
 
 		if (n->Type == 0)
 		{
-			deleteStatementNode(n->Statement);
+			deleteNode(n->Statement);
 		}
 		else if (n->Type == 5)
 		{
-			for (std::list<ValueNode*>::const_iterator it = n->Array->Nodes.begin();
+			for (list_t<ValueNode*>::type::const_iterator it = n->Array->Nodes.begin();
 				it != n->Array->Nodes.end();
 				++it)
 			{
-				deleteValueNode(*it);
+				deleteNode(*it);
 			}
+		}
+		else if (n->Type == 6)
+		{
+			deleteNode(n->Expression);
 		}
 
 		delete n;
+	}
+
+	void DataLisp::addExpression(const string_t& name, expr_t handler)
+	{
+		mExpressions.addExpression(name, handler);
+	}
+
+	expr_t DataLisp::expression(const string_t& name)
+	{
+		return mExpressions.expression(name);
 	}
 }
