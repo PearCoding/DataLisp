@@ -29,7 +29,7 @@
  */
 #pragma once
 
-#include "Config.h"
+#include "dl_Config.h"
 #include "Expressions.h"
 
 namespace DL

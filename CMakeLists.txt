@@ -3,7 +3,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(DataLisp)
 
 #SETS
-SET(VENDOR "DataLisp project 2013")
+SET(VENDOR "DataLisp project 2013-2014")
 SET(VERSION_MAJOR 1)
 SET(VERSION_MINOR 9)
 SET(VERSION_HEX 0x0109)
@@ -55,7 +55,7 @@ SET(DEFS "${DEFS};")
 SET(DEFS_DEBUG "${DEFS_DEBUG};DL_DEBUG")
 
 #CONFIGURE
-configure_file(${DL_Root}/Config.h.in ${CMAKE_CURRENT_BINARY_DIR}/Config.h)
+configure_file(${DL_Root}/dl_Config.h.in ${CMAKE_CURRENT_BINARY_DIR}/dl_Config.h)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 SET(DL_Src
@@ -70,7 +70,7 @@ SET(DL_Src
   ${DL_Root}/SourceLogger.cpp)
 
 SET(DL_Hdr
-  ${DL_Root}/Config.h.in
+  ${DL_Root}/dl_Config.h.in
   ${DL_Root}/Data.h
   ${DL_Root}/DataArray.h
   ${DL_Root}/DataContainer.h

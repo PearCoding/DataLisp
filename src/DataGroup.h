@@ -29,9 +29,7 @@
  */
 #pragma once
 
-#include "Config.h"
-#include <vector>
-#include <list>
+#include "dl_Config.h"
 
 namespace DL
 {
