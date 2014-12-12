@@ -35,12 +35,10 @@ namespace DL
 	Parser::Parser(const string_t& str, SourceLogger* logger) :
 		mLexer(str, logger), mLogger(logger)
 	{
-
 	}
 
 	Parser::~Parser()
 	{
-
 	}
 
 	SyntaxTree* Parser::parse()

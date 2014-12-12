@@ -152,12 +152,12 @@ namespace DL
 		{
 		case 0:
 		{
-				  data = new Data(n->Key);
-				  DataGroup* group = buildGroup(n->Value->Statement, expr);
-				  mGroups.push_back(group);
-				  data->setGroup(group);
+			data = new Data(n->Key);
+			DataGroup* group = buildGroup(n->Value->Statement, expr);
+			mGroups.push_back(group);
+			data->setGroup(group);
 		}
-			break;
+		break;
 		case 1:
 			data = new Data(n->Key);
 			data->setInt(n->Value->Integer);
@@ -176,21 +176,21 @@ namespace DL
 			break;
 		case 5:
 		{
-				  data = new Data(n->Key);
-				  DataArray* a = buildArray(n->Value->Array, expr);
-				  data->setArray(a);
+			data = new Data(n->Key);
+			DataArray* a = buildArray(n->Value->Array, expr);
+			data->setArray(a);
 		}
-			break;
+		break;
 		case 6:
 		{
-				  data = buildExpression(n->Value->Expression, expr);
+			data = buildExpression(n->Value->Expression, expr);
 
-				  if (data)
-				  {
-					  data->setKey(n->Key);
-				  }
+			if (data)
+			{
+				data->setKey(n->Key);
+			}
 		}
-			break;
+		break;
 		default:
 			break;
 		};
@@ -230,12 +230,12 @@ namespace DL
 		{
 		case 0:
 		{
-				  data = new Data;
-				  DataGroup* group = buildGroup(n->Statement, expr);
-				  mGroups.push_back(group);
-				  data->setGroup(group);
+			data = new Data;
+			DataGroup* group = buildGroup(n->Statement, expr);
+			mGroups.push_back(group);
+			data->setGroup(group);
 		}
-			break;
+		break;
 		case 1:
 			data = new Data;
 			data->setInt(n->Integer);
@@ -254,16 +254,16 @@ namespace DL
 			break;
 		case 5:
 		{
-				  data = new Data;
-				  DataArray* a = buildArray(n->Array, expr);
-				  data->setArray(a);
+			data = new Data;
+			DataArray* a = buildArray(n->Array, expr);
+			data->setArray(a);
 		}
-			break;
+		break;
 		case 6:
 		{
-				  data = buildExpression(n->Expression, expr);
+			data = buildExpression(n->Expression, expr);
 		}
-			break;
+		break;
 		default:
 			break;
 		};

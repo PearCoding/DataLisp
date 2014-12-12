@@ -38,12 +38,10 @@ namespace DL
 	SourceLogger::SourceLogger() :
 		mWarningCount(0), mErrorCount(0)
 	{
-
 	}
 
 	SourceLogger::~SourceLogger()
 	{
-
 	}
 
 	void SourceLogger::log(line_t line, column_t column, Level level, const string_t& str)

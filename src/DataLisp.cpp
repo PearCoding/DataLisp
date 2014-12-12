@@ -191,20 +191,20 @@ namespace DL
 			break;
 		case 1:/* TODO: string_t */
 		{
-				   std::stringstream stream;
-				   stream << n->Integer;
+			std::stringstream stream;
+			stream << n->Integer;
 
-				   str += stream.str();
+			str += stream.str();
 		}
-			break;
+		break;
 		case 2:
 		{
-				  std::stringstream stream;
-				  stream << n->Float;
+			std::stringstream stream;
+			stream << n->Float;
 
-				  str += stream.str();
+			str += stream.str();
 		}
-			break;
+		break;
 		case 3:
 			str += "\"" + n->String + "\"";
 			break;
@@ -345,18 +345,18 @@ namespace DL
 			break;
 		case Data::T_Float:
 		{
-							  std::stringstream stream;
-							  stream << d->getFloat();
-							  str = stream.str();
+			std::stringstream stream;
+			stream << d->getFloat();
+			str = stream.str();
 		}
-			break;
+		break;
 		case Data::T_Integer:
 		{
-								std::stringstream stream;
-								stream << d->getInt();
-								str = stream.str();
+			std::stringstream stream;
+			stream << d->getInt();
+			str = stream.str();
 		}
-			break;
+		break;
 		case Data::T_String:
 			str = "\"" + d->getString() + "\"";
 			break;

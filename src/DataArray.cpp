@@ -33,12 +33,10 @@ namespace DL
 {
 	DataArray::DataArray()
 	{
-
 	}
 
 	DataArray::~DataArray()
 	{
-
 	}
 
 	size_t DataArray::size() const

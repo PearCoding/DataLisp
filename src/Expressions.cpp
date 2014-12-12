@@ -46,7 +46,6 @@ namespace DL
 
 	Expressions::~Expressions()
 	{
-
 	}
 
 	void Expressions::addExpression(const string_t& name, expr_t handler)
