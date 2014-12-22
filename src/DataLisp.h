@@ -56,27 +56,27 @@ namespace DL
 		void parse(const string_t& source);
 
 		void build(DataContainer* container);
-		string_t generate(DataContainer* container);
+		static string_t generate(DataContainer* container);
 
 		void addExpression(const string_t& name, expr_t handler);
 		expr_t expression(const string_t& name);
 
 		string_t dump();
 	private:
-		string_t dumpNode(StatementNode* node, int depth);
-		string_t dumpNode(DataNode* node, int depth);
-		string_t dumpNode(ValueNode* node, int depth);
-		string_t dumpNode(ExpressionNode* node, int depth);
+		static string_t dumpNode(StatementNode* node, int depth);
+		static string_t dumpNode(DataNode* node, int depth);
+		static string_t dumpNode(ValueNode* node, int depth);
+		static string_t dumpNode(ExpressionNode* node, int depth);
 
-		string_t generateDataGroup(DataGroup* d, int depth);
-		string_t generateData(Data* d, int depth);
-		string_t generateArray(DataArray* d, int depth);
-		string_t generateValue(Data* d, int depth);
+		static string_t generateDataGroup(DataGroup* d, int depth);
+		static string_t generateData(Data* d, int depth);
+		static string_t generateArray(DataArray* d, int depth);
+		static string_t generateValue(Data* d, int depth);
 
-		void deleteNode(StatementNode* n);
-		void deleteNode(DataNode* n);
-		void deleteNode(ValueNode* n);
-		void deleteNode(ExpressionNode* n);
+		static void deleteNode(StatementNode* n);
+		static void deleteNode(DataNode* n);
+		static void deleteNode(ValueNode* n);
+		static void deleteNode(ExpressionNode* n);
 
 		SyntaxTree* mTree;
 		SourceLogger* mLogger;
