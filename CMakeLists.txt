@@ -3,7 +3,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(DataLisp)
 
 #SETS
-SET(VENDOR "DataLisp project 2013-2014")
+SET(VENDOR "DataLisp project 2013-2015")
 SET(VERSION_MAJOR 1)
 SET(VERSION_MINOR 9)
 SET(VERSION_HEX 0x0109)
@@ -99,5 +99,5 @@ set_target_properties(${DL_TARGET} PROPERTIES COMPILE_DEFINITIONS "${DEFS};DL_LI
 add_executable(dl_dump ${DL_DUMP_Src})
 target_link_libraries(dl_dump ${DL_TARGET})
 
-add_executable(test_expr ${DL_TEST_EXPR_Src})
-target_link_libraries(test_expr ${DL_TARGET})
+add_executable(dl_test_expr ${DL_TEST_EXPR_Src})
+target_link_libraries(dl_test_expr ${DL_TARGET})
