@@ -60,7 +60,7 @@
 /*# error Your operating system is currently not supported*/
 #endif
 
-//Compilier
+//Compiler
 #if defined(__CYGWIN__)
 # define DL_CC_CYGWIN
 # define DL_CC_NAME "Cygwin"
@@ -109,13 +109,13 @@
 #ifdef DL_CC_MSC
 # define DL_DEBUG_BREAK() __debugbreak()
 # define DL_ALIGN(x) __declspec(align(x))
-#else//FIXME: Really use cpu dependet assembler?
+#else//FIXME: Really use CPU dependent assembler?
 # define DL_DEBUG_BREAK() __asm__ __volatile__ ("int $0x03")
 # define DL_ALIGN(x) __attribute__((aligned(x)))
 #endif
 
 #if !defined(DL_STATIC)
-# if defined(DL_OS_WINDOWS)//Really OS dependet, more toolchain dependet!
+# if defined(DL_OS_WINDOWS)//Really OS dependent, more tool chain dependent!
 #  define DL_EXPORT __declspec(dllexport)
 #  define DL_IMPORT __declspec(dllimport)
 # elif defined(DL_OS_LINUX)
