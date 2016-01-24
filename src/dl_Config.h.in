@@ -195,7 +195,10 @@ namespace DL
 #if defined __GLIBC_HAVE_LONG_LONG
 	__extension__ typedef signed long long int int64;
 	__extension__ typedef unsigned long long int uint64;
-#else
+#elif defined DL_OS_WINDOWS
+	typedef __int64 int64;
+	typedef unsigned __int64 uint64;
+#else// FIXME: This is bad!
 	typedef signed long int int64;
 	typedef unsigned long int uint64;
 #endif
