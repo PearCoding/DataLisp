@@ -8,8 +8,9 @@ addons:
    packages:
    - gcc-4.8
    - g++-4.8
-before_script:
+after_install:
   - export CXX="g++-4.8" CC="gcc-4.8"
+before_script:
   - mkdir build
   - cd build
   - cmake ..
