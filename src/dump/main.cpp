@@ -54,7 +54,6 @@ int main(int argc, char** argv)
 	if (argc != 2)
 	{
 		std::cout << "Use 'dl_dump [INPUT]'" << std::endl;
-		DL_PAUSE;
 		return -1;
 	}
 
@@ -66,7 +65,6 @@ int main(int argc, char** argv)
 	catch (...)
 	{
 		std::cout << "Couldn't read file '" << argv[1] << "'" << std::endl;
-		DL_PAUSE;
 		return -2;
 	}
 
