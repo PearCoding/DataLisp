@@ -166,7 +166,16 @@ namespace DL
 		if (lookahead(T_Colon))
 		{
 			match(T_Colon);
-			Token str = match(T_Identifier);
+
+			Token str;
+			if (lookahead(T_Integer))
+			{
+				str = match(T_Integer);
+			}
+			else
+			{
+				str = match(T_Identifier);
+			}
 
 			node->Key = str.Value;
 		}

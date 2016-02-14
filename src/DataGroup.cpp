@@ -81,7 +81,7 @@ namespace DL
 			}
 		}
 
-		return 0;
+		return nullptr;
 	}
 
 	list_t<Data*>::type DataGroup::getAllFromKey(const string_t& key) const
