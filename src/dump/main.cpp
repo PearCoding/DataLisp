@@ -33,12 +33,6 @@
 #include "DataLisp.h"
 #include "SourceLogger.h"
 
-#ifdef DL_OS_WINDOWS
-# define DL_PAUSE system("PAUSE")
-#else
-# define DL_PAUSE
-#endif
-
 std::string get_file_contents(const char *filename)
 {
 	std::ifstream in(filename, std::ios::in | std::ios::binary);
@@ -81,8 +75,6 @@ int main(int argc, char** argv)
 
 	lisp.parse(content);
 	std::cout << lisp.dump() << std::endl;
-
-	DL_PAUSE;
 
 	return 0;
 }

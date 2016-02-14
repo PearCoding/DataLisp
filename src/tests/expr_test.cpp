@@ -33,12 +33,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 #include "DataContainer.h"
 #include "SourceLogger.h"
 
-#ifdef DL_OS_WINDOWS
-# define DL_PAUSE system("PAUSE")
-#else
-# define DL_PAUSE
-#endif
-
 const char* TEST_FILE =
 "(test "
 ":steps	$(if false 0.041666667 0.833333333)"
@@ -54,8 +48,6 @@ int main(int argc, char** argv)
 
 	lisp.parse(TEST_FILE);
 	lisp.build(&container);
-
-	DL_PAUSE;
 
 	return 0;
 }
