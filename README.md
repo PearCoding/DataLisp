@@ -1,6 +1,18 @@
+[![Build Status](https://travis-ci.org/PearCoding/DataLisp.svg?branch=master)](https://travis-ci.org/PearCoding/DataLisp)
+
+## DataLisp
 DataLisp is an modular and modable configuration scripting language
 
-Copyright (c) 2014, Ömercan Yazici <pearcoding AT gmail.com>
+More information about DataLisp here:
+http://pearcoding.eu/projects/datalisp
+
+At the moment you can build the library for Windows and Linux with cmake.
+Currently there is no tested support for MacOS X, but it should be still useable there.
+
+If you want to help us, please write an e-mail to Ömercan Yazici < pearcoding AT gmail.com >
+
+### License
+Copyright (c) 2014, Ömercan Yazici < pearcoding AT gmail.com >
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -27,12 +39,4 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
 ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
-
-More information about DataLisp here:
-http://pearcoding.eu/projects/datalisp
-
-At the moment you can build the library for Windows and Linux with cmake.
-Currently there is no tested support for MacOS X, but it should be still useable there.
-
-If you want to help us, please write an e-mail to Ömercan Yazici <pearcoding AT gmail.com>
  
