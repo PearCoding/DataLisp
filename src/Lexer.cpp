@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014, Ömercan Yazici <pearcoding AT gmail.com>
+ Copyright (c) 2014-2016, Ömercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -148,8 +148,10 @@ namespace DL
 
 			return next();
 		}
-		else if (*mIterator == '"')//String
+		else if (*mIterator == '"' || *mIterator == '\'')//String
 		{
+			char start = *mIterator;
+
 			string_t str;
 			while (true)
 			{
@@ -169,14 +171,114 @@ namespace DL
 					++mIterator;
 					++mColumnNumber;
 
-					if (mIterator == mSource.end() ||
-						*mIterator == '\n')
+					if (mIterator == mSource.end())
 					{
 						mLogger->log(mLineNumber, mColumnNumber, L_Error, "Invalid use of the '\\' operator");
 					}
-					str += *mIterator;
+					else if (*mIterator == '\n')
+					{
+						++mLineNumber;
+						mColumnNumber = 0;
+					}
+					else
+					{
+						switch (*mIterator)
+						{
+						case 'n':// New line
+							str += '\n';
+							break;
+						case 't':// Tab
+							str += '\t';
+							break;
+						case 'r':// Carriage return 
+							str += '\r';
+							break;
+						case 'a':// Audible bell 
+							str += '\a';
+							break;
+						case 'b':// Backspace
+							str += '\b';
+							break;
+						case 'f':// Form feed
+							str += '\f';
+							break;
+						case 'v':// Vertical tab
+							str += '\v';
+							break;
+						case 'x'://Binary [2]
+						case 'u'://Unicode [4]
+						case 'U'://Unicode [8]
+						{
+							size_t length = *mIterator == 'x' ? 2 : (*mIterator == 'u' ? 4 : 8);
+							string_t uni_val;
+							for (int i = 0; i < length; ++i)
+							{
+								++mIterator;
+								++mColumnNumber;
+								if (mIterator == mSource.end() || *mIterator == '\n')
+								{
+									mLogger->log(mLineNumber, mColumnNumber, L_Error, "Invalid use of Unicode escape sequence.");
+									break;
+								}
+
+								uni_val += *mIterator;
+							}
+
+							if (uni_val.length() == length)
+							{
+								size_t r = 0;
+								unsigned long uni = std::stoul(uni_val, &r, 16);
+
+								if (r != length)
+								{
+									mLogger->log(mLineNumber, mColumnNumber, L_Error, "Given Unicode sequence is invalid.");
+								}
+								else if(length != 2)
+								{
+									if (uni <= 0x7F)
+									{
+										str += (char)uni;
+									}
+									else if (uni <= 0x7FF)
+									{
+										unsigned long d = uni & 0x7FF;
+										str += char(0xC0 | ((d & 0x7C0) >> 6));
+										str += char(0x80 | (d & 0x3F));
+									}
+									else if (uni <= 0xFFFF)
+									{
+										unsigned long d = uni & 0xFFFF;
+										str += char(0xE0 | ((d & 0xF000) >> 12));
+										str += char(0x80 | ((d & 0xFC0) >> 6));
+										str += char(0x80 | (d & 0x3F));
+									}
+									else if (uni <= 0x10FFFF)
+									{
+										unsigned long d = uni & 0x10FFFF;
+										str += char(0xF0 | ((d & 0x1C0000) >> 18));
+										str += char(0x80 | ((d & 0x3F000) >> 12));
+										str += char(0x80 | ((d & 0xFC0) >> 6));
+										str += char(0x80 | (d & 0x3F));
+									}
+									else
+									{
+										mLogger->log(mLineNumber, mColumnNumber, L_Error, "Invalid Unicode range.");
+									}
+								}
+								else//Binary
+								{
+									str += (char)uni;
+								}
+							}
+						}
+							break;
+						default:
+							str += *mIterator;
+							break;
+						}
+					}
 				}
-				else if (*mIterator == '"')
+				else if (*mIterator == start)
 				{
 					++mIterator;
 					++mColumnNumber;

@@ -28,15 +28,17 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 */
 #include <iostream>
+#include <fstream>
 
 #include "DataLisp.h"
 #include "DataContainer.h"
+#include "DataGroup.h"
+#include "Data.h"
 #include "SourceLogger.h"
 
 const char* TEST_FILE =
 "(test "
-":steps	$(if false 0.041666667 0.833333333)"
-"$(print \"Test: \" $(if true 111))"
+":test \"Binary: \\xE2\\x80\\xA2 \xe2\x80\xa2\\nU(4): \\u2022 \u2022\\nU(8): \\U00002022 \U00002022\""
 ")"
 ;
 
@@ -48,6 +50,12 @@ int main(int argc, char** argv)
 
 	lisp.parse(TEST_FILE);
 	lisp.build(&container);
+	std::string str = container.getTopGroups().front()->getFromKey("test")->getString();
+
+	std::cout << str << std::endl;
+
+	std::ofstream stream("test.out");
+	stream << str;
 
 	return 0;
 }

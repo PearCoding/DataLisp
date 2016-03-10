@@ -102,6 +102,9 @@ SET(DL_DUMP_Src
 SET(DL_TEST_EXPR_Src
   ${DL_Root}/tests/expr_test.cpp)
 
+SET(DL_TEST_UNICODE_Src
+  ${DL_Root}/tests/unicode_test.cpp)
+
 #DEPENDIES, LIBARIES AND EXECUTABLES
 add_library(${DL_TARGET} SHARED ${DL_Src} ${DL_Hdr})
 set_target_properties(${DL_TARGET} PROPERTIES VERSION ${DL_Version})
@@ -112,3 +115,6 @@ target_link_libraries(dl_dump ${DL_TARGET})
 
 add_executable(dl_test_expr ${DL_TEST_EXPR_Src})
 target_link_libraries(dl_test_expr ${DL_TARGET})
+
+add_executable(dl_test_unicode ${DL_TEST_UNICODE_Src})
+target_link_libraries(dl_test_unicode ${DL_TARGET})
