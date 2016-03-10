@@ -178,7 +178,8 @@ namespace DL
 					else if (*mIterator == '\n')
 					{
 						++mLineNumber;
-						mColumnNumber = 0;
+						++mIterator;
+						mColumnNumber = 1;
 					}
 					else
 					{
