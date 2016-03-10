@@ -7,14 +7,15 @@ More information about DataLisp here:
 http://pearcoding.eu/projects/datalisp
 
 At the moment you can build the library for Windows and Linux with cmake.
-Currently there is no tested support for MacOS X, but it should be still useable there.
+Currently there is no tested support for MacOS X, but due to the non-use of external libraries,
+there should be no problems.
 
 There is also an official C# port: https://github.com/PearCoding/DataLisp-CSharp
 
-If you want to help us, please write an e-mail to Ömercan Yazici < pearcoding AT gmail.com >
+If you want to help us, please write an e-mail to Ömercan Yazici < omercan AT pearcoding.eu >
 
 ### License
-Copyright (c) 2014, Ömercan Yazici < pearcoding AT gmail.com >
+Copyright (c) 2014-2016, Ömercan Yazici < omercan AT pearcoding.eu >
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
