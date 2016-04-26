@@ -34,6 +34,7 @@ IF(CYGWIN)
 ENDIF()
 
 #PACKAGES
+option(DL_ONLY_LIBRARY "Compile only library" OFF)
 
 #DEFINITIONS AND FLAGS
 include_directories(${DL_Root})
@@ -110,11 +111,13 @@ add_library(${DL_TARGET} SHARED ${DL_Src} ${DL_Hdr})
 set_target_properties(${DL_TARGET} PROPERTIES VERSION ${DL_Version})
 set_target_properties(${DL_TARGET} PROPERTIES COMPILE_DEFINITIONS "${DEFS};DL_LIB_BUILD" COMPILE_DEFINITIONS_DEBUG "${DEFS_DEBUG}")
 
-add_executable(dl_dump ${DL_DUMP_Src})
-target_link_libraries(dl_dump ${DL_TARGET})
+IF(NOT DL_ONLY_LIBRARY)
+	add_executable(dl_dump ${DL_DUMP_Src})
+	target_link_libraries(dl_dump ${DL_TARGET})
 
-add_executable(dl_test_expr ${DL_TEST_EXPR_Src})
-target_link_libraries(dl_test_expr ${DL_TARGET})
+	add_executable(dl_test_expr ${DL_TEST_EXPR_Src})
+	target_link_libraries(dl_test_expr ${DL_TARGET})
 
-add_executable(dl_test_unicode ${DL_TEST_UNICODE_Src})
-target_link_libraries(dl_test_unicode ${DL_TARGET})
+	add_executable(dl_test_unicode ${DL_TEST_UNICODE_Src})
+	target_link_libraries(dl_test_unicode ${DL_TARGET})
+ENDIF(NOT DL_ONLY_LIBRARY)
