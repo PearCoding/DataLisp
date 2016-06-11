@@ -62,4 +62,36 @@ namespace DL
 
 		mList[i] = d;
 	}
+
+	bool DataArray::isAllType(Data::Type type) const
+	{
+		if (mList.empty())
+			return false;
+
+		for (std::vector<Data*>::const_iterator it = mList.begin();
+			it != mList.end();
+			it++)
+		{
+			if ((*it)->isType() != type)
+				return false;
+		}
+
+		return true;
+	}
+
+	bool DataArray::isAllNumber() const
+	{
+		if (mList.empty())
+			return false;
+
+		for (std::vector<Data*>::const_iterator it = mList.begin();
+			it != mList.end();
+			it++)
+		{
+			if (!(*it)->isNumber())
+				return false;
+		}
+
+		return true;
+	}
 }

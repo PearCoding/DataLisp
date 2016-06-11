@@ -29,12 +29,11 @@
  */
 #pragma once
 
-#include "dl_Config.h"
+#include "Data.h"
 
 namespace DL
 {
 	class DataContainer;
-	class Data;
 	class DL_LIB DataArray
 	{
 	public:
@@ -48,6 +47,8 @@ namespace DL
 		void add(Data* d);
 		void set(size_t i, Data* d);
 
+		bool isAllType(Data::Type type) const;
+		bool isAllNumber() const;
 	private:
 		vector_t<Data*>::type mList;
 	};
