@@ -109,7 +109,7 @@ SET(DL_TEST_UNICODE_Src
 #DEPENDIES, LIBARIES AND EXECUTABLES
 add_library(${DL_TARGET} SHARED ${DL_Src} ${DL_Hdr})
 set_target_properties(${DL_TARGET} PROPERTIES VERSION ${DL_Version})
-set_target_properties(${DL_TARGET} PROPERTIES COMPILE_DEFINITIONS "${DEFS};DL_LIB_BUILD" COMPILE_DEFINITIONS_DEBUG "${DEFS_DEBUG}")
+target_compile_definitions(${DL_TARGET} PRIVATE "${DEFS};DL_LIB_BUILD" "$<$<CONFIG:Debug>:${DEFS_DEBUG}>")
 
 IF(NOT DL_ONLY_LIBRARY)
 	add_executable(dl_dump ${DL_DUMP_Src})
