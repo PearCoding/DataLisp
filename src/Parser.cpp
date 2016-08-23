@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, Ömercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2016, ï¿½mercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -224,14 +224,14 @@ namespace DL
 			Token str = match(T_Integer);
 
 			node->Type = 1;
-			node->Integer = atoi(str.Value.c_str());
+			std::istringstream(str.Value) >> node->Integer;
 		}
 		else if (lookahead(T_Float))
 		{
 			Token str = match(T_Float);
 
 			node->Type = 2;
-			node->Float = static_cast<float>(atof(str.Value.c_str()));
+			std::istringstream(str.Value) >> node->Float;
 		}
 		else if (lookahead(T_String))
 		{
