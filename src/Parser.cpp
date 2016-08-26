@@ -127,6 +127,10 @@ namespace DL
 		StatementNode* node = new StatementNode;
 
 		node->Name = match(T_Identifier).Value;
+
+		if(lookahead(T_Comma))
+			match(T_Comma);
+
 		node->Nodes = gr_data_list();
 		return node;
 	}
@@ -154,6 +158,9 @@ namespace DL
 			lookahead(T_False))
 		{
 			list.push_back(gr_data());
+
+			if(lookahead(T_Comma))
+				match(T_Comma);
 		}
 
 		return list;
