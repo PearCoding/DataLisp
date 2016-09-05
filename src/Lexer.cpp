@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, Ömercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2016, ï¿½mercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -212,7 +212,7 @@ namespace DL
 						{
 							size_t length = *mIterator == 'x' ? 2 : (*mIterator == 'u' ? 4 : 8);
 							string_t uni_val;
-							for (int i = 0; i < length; ++i)
+							for (size_t i = 0; i < length; ++i)
 							{
 								++mIterator;
 								++mColumnNumber;

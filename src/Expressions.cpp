@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, Ömercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2016, ï¿½mercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -87,7 +87,7 @@ namespace DL
 		switch (d->isType())
 		{
 		case Data::T_Bool:
-			stream << d->getBool() ? "true " : "false ";
+			stream << (d->getBool() ? "true " : "false ");
 			break;
 		case Data::T_Integer:
 			stream << d->getInt() << " ";
