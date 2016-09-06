@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, Ömercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2016, ï¿½mercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -69,6 +69,7 @@ namespace DL
 		list_t<DataGroup*>::type mTopGroups;
 
 		list_t<DataGroup*>::type mGroups;
+		list_t<DataArray*>::type mArrays;
 		list_t<Data*>::type mData;
 	};
 }

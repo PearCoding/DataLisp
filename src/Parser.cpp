@@ -203,7 +203,7 @@ namespace DL
 		{
 			match(T_OpenParanthese);
 
-			node->Type = 0;
+			node->Type = VNT_Statement;
 			node->Statement = gr_statement();
 
 			match(T_CloseParanthese);
@@ -212,7 +212,7 @@ namespace DL
 		{
 			match(T_OpenSquareBracket);
 
-			node->Type = 5;
+			node->Type = VNT_Array;
 			node->Array = gr_array();
 
 			match(T_CloseSquareBracket);
@@ -221,7 +221,7 @@ namespace DL
 		{
 			match(T_ExpressionParanthese);
 
-			node->Type = 6;
+			node->Type = VNT_Expression;
 			node->Expression = gr_expression();
 
 			match(T_CloseParanthese);
@@ -230,40 +230,44 @@ namespace DL
 		{
 			Token str = match(T_Integer);
 
-			node->Type = 1;
+			node->Type = VNT_Integer;
 			std::istringstream(str.Value) >> node->Integer;
 		}
 		else if (lookahead(T_Float))
 		{
 			Token str = match(T_Float);
 
-			node->Type = 2;
+			node->Type = VNT_Float;
 			std::istringstream(str.Value) >> node->Float;
 		}
 		else if (lookahead(T_String))
 		{
 			Token str = match(T_String);
 
-			node->Type = 3;
+			node->Type = VNT_String;
 			node->String = str.Value;
 		}
 		else if (lookahead(T_True))
 		{
 			match(T_True);
 
-			node->Type = 4;
+			node->Type = VNT_Boolean;
 			node->Boolean = true;
 		}
 		else if (lookahead(T_False))
 		{
 			match(T_False);
 
-			node->Type = 4;
+			node->Type = VNT_Boolean;
 			node->Boolean = false;
 		}
 		else
 		{
-			node->Type = -1;
+			node->Type = VNT_Unknown;
+
+			std::stringstream stream;
+			stream << "INTERNAL: Unknown lookahead '" << tokenToString(mLexer.look().Type) << "' for values.";
+			mLogger->log(mLexer.currentLine(), mLexer.currentColumn(), L_Fatal, stream.str());
 		}
 
 		return node;

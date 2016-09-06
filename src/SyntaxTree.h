@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, Ömercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2016, ï¿½mercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -50,9 +50,20 @@ namespace DL
 		list_t<ValueNode*>::type Nodes;
 	};
 
+	enum ValueNodeType
+	{
+		VNT_Statement,
+		VNT_Integer,
+		VNT_Float,
+		VNT_String,
+		VNT_Boolean,
+		VNT_Array,
+		VNT_Expression,
+		VNT_Unknown
+	};
 	struct ValueNode
 	{
-		int Type;//0 == Statement, 1 == INTEGER, 2 == FLOAT, 3 == STRING, 4 == BOOLEAN, 5 == Array, 6 == Expression
+		ValueNodeType 		Type;
 		union
 		{
 			StatementNode*  Statement;

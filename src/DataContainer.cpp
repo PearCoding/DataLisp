@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, Ömercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2016, ï¿½mercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -46,6 +46,13 @@ namespace DL
 	{
 		for (list_t<DataGroup*>::type::iterator it = mGroups.begin();
 			it != mGroups.end();
+			++it)
+		{
+			delete *it;
+		}
+
+		for (list_t<DataArray*>::type::iterator it = mArrays.begin();
+			it != mArrays.end();
 			++it)
 		{
 			delete *it;
@@ -150,7 +157,7 @@ namespace DL
 
 		switch (n->Value->Type)
 		{
-		case 0:
+		case VNT_Statement:
 		{
 			data = new Data(n->Key);
 			DataGroup* group = buildGroup(n->Value->Statement, expr);
@@ -158,30 +165,31 @@ namespace DL
 			data->setGroup(group);
 		}
 		break;
-		case 1:
+		case VNT_Integer:
 			data = new Data(n->Key);
 			data->setInt(n->Value->Integer);
 			break;
-		case 2:
+		case VNT_Float:
 			data = new Data(n->Key);
 			data->setFloat(n->Value->Float);
 			break;
-		case 3:
+		case VNT_String:
 			data = new Data(n->Key);
 			data->setString(n->Value->String);
 			break;
-		case 4:
+		case VNT_Boolean:
 			data = new Data(n->Key);
 			data->setBool(n->Value->Boolean);
 			break;
-		case 5:
+		case VNT_Array:
 		{
 			data = new Data(n->Key);
 			DataArray* a = buildArray(n->Value->Array, expr);
+			mArrays.push_back(a);
 			data->setArray(a);
 		}
 		break;
-		case 6:
+		case VNT_Expression:
 		{
 			data = buildExpression(n->Value->Expression, expr);
 
@@ -228,7 +236,7 @@ namespace DL
 
 		switch (n->Type)
 		{
-		case 0:
+		case VNT_Statement:
 		{
 			data = new Data;
 			DataGroup* group = buildGroup(n->Statement, expr);
@@ -236,30 +244,31 @@ namespace DL
 			data->setGroup(group);
 		}
 		break;
-		case 1:
+		case VNT_Integer:
 			data = new Data;
 			data->setInt(n->Integer);
 			break;
-		case 2:
+		case VNT_Float:
 			data = new Data;
 			data->setFloat(n->Float);
 			break;
-		case 3:
+		case VNT_String:
 			data = new Data;
 			data->setString(n->String);
 			break;
-		case 4:
+		case VNT_Boolean:
 			data = new Data;
 			data->setBool(n->Boolean);
 			break;
-		case 5:
+		case VNT_Array:
 		{
 			data = new Data;
 			DataArray* a = buildArray(n->Array, expr);
+			mArrays.push_back(a);
 			data->setArray(a);
 		}
 		break;
-		case 6:
+		case VNT_Expression:
 		{
 			data = buildExpression(n->Expression, expr);
 		}

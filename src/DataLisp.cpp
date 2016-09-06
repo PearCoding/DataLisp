@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, Ömercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2016, ï¿½mercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -186,10 +186,10 @@ namespace DL
 
 		switch (n->Type)
 		{
-		case 0:
+		case VNT_Statement:
 			str += dumpNode(n->Statement, depth + 1);
 			break;
-		case 1:/* TODO: string_t */
+		case VNT_Integer:/* TODO: string_t */
 		{
 			std::stringstream stream;
 			stream << n->Integer;
@@ -197,7 +197,7 @@ namespace DL
 			str += stream.str();
 		}
 		break;
-		case 2:
+		case VNT_Float:
 		{
 			std::stringstream stream;
 			stream << n->Float;
@@ -205,10 +205,10 @@ namespace DL
 			str += stream.str();
 		}
 		break;
-		case 3:
+		case VNT_String:
 			str += "\"" + n->String + "\"";
 			break;
-		case 4:
+		case VNT_Boolean:
 			if (n->Boolean)
 			{
 				str += "true";
@@ -218,7 +218,7 @@ namespace DL
 				str += "false";
 			}
 			break;
-		case 5:
+		case VNT_Array:
 			for (list_t<ValueNode*>::type::const_iterator it = n->Array->Nodes.begin();
 				it != n->Array->Nodes.end();
 				++it)
@@ -226,7 +226,7 @@ namespace DL
 				str += dumpNode((*it), depth + 1);
 			}
 			break;
-		case 6:
+		case VNT_Expression:
 			str += dumpNode(n->Expression, depth + 1);
 			break;
 		default:
@@ -418,11 +418,11 @@ namespace DL
 			return;
 		}
 
-		if (n->Type == 0)
+		if (n->Type == VNT_Statement)
 		{
 			deleteNode(n->Statement);
 		}
-		else if (n->Type == 5)
+		else if (n->Type == VNT_Array)
 		{
 			for (list_t<ValueNode*>::type::const_iterator it = n->Array->Nodes.begin();
 				it != n->Array->Nodes.end();
@@ -430,8 +430,10 @@ namespace DL
 			{
 				deleteNode(*it);
 			}
+
+			delete n->Array;
 		}
-		else if (n->Type == 6)
+		else if (n->Type == VNT_Expression)
 		{
 			deleteNode(n->Expression);
 		}
