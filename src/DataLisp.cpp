@@ -353,6 +353,8 @@ namespace DL
 		case Data::T_String:
 			str = "\"" + d.getString() + "\"";
 			break;
+		case Data::T_None:
+			break;
 		}
 
 		return str;

@@ -33,26 +33,6 @@ public:
     void setArray_PY(DataArray_PY*);
 
     std::string str_PY() const;
-
-    // bpy::object getObject_PY() const
-    // {
-    //     switch(type())
-    //     {
-    //     default:
-    //     case Data::T_None:
-    //         return bpy::object();
-    //     case Data::T_Array:
-    //         return getArray();
-    //     case Data::T_Group:
-    //         return getGroup();
-    //     case Data::T_Integer:
-    //         return getInt();
-    //     case Data::T_Float:
-    //         return getFloat();
-    //     case Data::T_Bool:
-    //         return getBool();
-    //     }
-    // }
 };
 
 //--------
@@ -158,6 +138,9 @@ std::string Data_PY::str_PY() const
         break;
     case Data::T_Group:
         stream << "Group{" << getGroup()->id() << "}";
+        break;
+    case Data::T_String:
+        stream << getString();
         break;
     case Data::T_Integer:
         stream << getInt();
