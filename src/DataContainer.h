@@ -56,20 +56,21 @@ namespace DL
 
 		list_t<DataGroup*>::type getTopGroups() const;
 		list_t<DataGroup*>::type getAllGroupsID(const string_t& id) const;
-		list_t<Data*>::type getAllDataFromKey(const string_t& key) const;
 
 		void addTopGroup(DataGroup* group);
+
+		DataGroup* createGroup();
+		DataArray* createArray();
 	private:
 		DataGroup* buildGroup(StatementNode* n, Expressions* expr);
-		Data* buildData(DataNode* n, Expressions* expr);
+		Data buildData(DataNode* n, Expressions* expr);
 		DataArray* buildArray(ArrayNode* n, Expressions* expr);
-		Data* buildArrayValue(ValueNode* n, Expressions* expr);
-		Data* buildExpression(ExpressionNode* n, Expressions* expr);
+		Data buildArrayValue(ValueNode* n, Expressions* expr);
+		Data buildExpression(ExpressionNode* n, Expressions* expr);
 
 		list_t<DataGroup*>::type mTopGroups;
 
 		list_t<DataGroup*>::type mGroups;
 		list_t<DataArray*>::type mArrays;
-		list_t<Data*>::type mData;
 	};
 }

@@ -55,8 +55,8 @@ namespace DL
 
 		void parse(const string_t& source);
 
-		void build(DataContainer* container);
-		static string_t generate(DataContainer* container);
+		void build(DataContainer& container);
+		static string_t generate(const DataContainer& container);
 
 		void addExpression(const string_t& name, expr_t handler);
 		expr_t expression(const string_t& name);
@@ -69,9 +69,9 @@ namespace DL
 		static string_t dumpNode(ExpressionNode* node, int depth);
 
 		static string_t generateDataGroup(DataGroup* d, int depth);
-		static string_t generateData(Data* d, int depth);
+		static string_t generateData(const Data& d, int depth);
 		static string_t generateArray(DataArray* d, int depth);
-		static string_t generateValue(Data* d, int depth);
+		static string_t generateValue(const Data& d, int depth);
 
 		static void deleteNode(StatementNode* n);
 		static void deleteNode(DataNode* n);

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, Ömercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2016, ï¿½mercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -38,7 +38,7 @@ namespace DL
 	class DL_LIB DataGroup
 	{
 	public:
-		DataGroup(const string_t& id);
+		DataGroup();
 		~DataGroup();
 
 		inline string_t id() const
@@ -46,21 +46,26 @@ namespace DL
 			return mID;
 		}
 
-		void addData(Data* data);
+		inline void setID(const string_t& str)
+		{
+			mID = str;
+		}
 
-		Data* at(size_t i) const;
-		size_t unnamedCount() const;
+		void addData(const Data& data);
 
-		Data* getFromKey(const string_t& str) const;
-		list_t<Data*>::type getAllFromKey(const string_t& key) const;
+		Data at(size_t i) const;
+		size_t anonymousCount() const;
+
+		Data getFromKey(const string_t& str) const;
+		list_t<Data>::type getAllFromKey(const string_t& key) const;
 
 		bool hasKey(const string_t& key) const;
 
-		const list_t<Data*>::type& getNamedEntries() const;
+		const list_t<Data>::type& getNamedEntries() const;
 
 	private:
 		string_t mID;
-		vector_t<Data*>::type mData;
-		list_t<Data*>::type mNamedData;
+		vector_t<Data>::type mData;
+		list_t<Data>::type mNamedData;
 	};
 }

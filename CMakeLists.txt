@@ -35,6 +35,19 @@ ENDIF()
 
 #PACKAGES
 option(DL_ONLY_LIBRARY "Compile only library" OFF)
+option(DL_WITH_PYTHON "Compile additional python interface module" ON)
+option(DL_BUILD_TESTS "Build tests." ON)
+
+IF(DL_WITH_PYTHON)
+	find_package(Boost 1.45 COMPONENTS python)
+	IF(Boost_FOUND)
+		find_package(PythonLibs)
+		IF(PythonLibs_FOUND)
+  			include_directories(${PYTHON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+			SET(DL_HAS_PYTHON True)
+		ENDIF()
+	ENDIF()
+ENDIF()
 
 #DEFINITIONS AND FLAGS
 include_directories(${DL_Root})
@@ -69,55 +82,80 @@ SET(DEFS "${DEFS};")
 SET(DEFS_DEBUG "${DEFS_DEBUG};DL_DEBUG")
 
 #CONFIGURE
-configure_file(${DL_Root}/dl_Config.h.in ${CMAKE_CURRENT_BINARY_DIR}/dl_Config.h)
+configure_file(src/dl_Config.h.in ${CMAKE_CURRENT_BINARY_DIR}/dl_Config.h)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 SET(DL_Src
-  ${DL_Root}/Data.cpp
-  ${DL_Root}/DataArray.cpp
-  ${DL_Root}/DataContainer.cpp
-  ${DL_Root}/DataGroup.cpp
-  ${DL_Root}/DataLisp.cpp
-  ${DL_Root}/Expressions.cpp
-  ${DL_Root}/Lexer.cpp
-  ${DL_Root}/Parser.cpp
-  ${DL_Root}/SourceLogger.cpp)
+  src/Data.cpp
+  src/DataArray.cpp
+  src/DataContainer.cpp
+  src/DataGroup.cpp
+  src/DataLisp.cpp
+  src/Expressions.cpp
+  src/Lexer.cpp
+  src/Parser.cpp
+  src/SourceLogger.cpp)
 
 SET(DL_Hdr
-  ${DL_Root}/dl_Config.h.in
-  ${DL_Root}/Data.h
-  ${DL_Root}/DataArray.h
-  ${DL_Root}/DataContainer.h
-  ${DL_Root}/DataGroup.h
-  ${DL_Root}/DataLisp.h
-  ${DL_Root}/Expressions.h
-  ${DL_Root}/Lexer.h
-  ${DL_Root}/Parser.h
-  ${DL_Root}/SourceLogger.h
-  ${DL_Root}/SyntaxTree.h
-  ${DL_Root}/Token.h)
+  src/dl_Config.h.in
+  src/Data.h
+  src/DataArray.h
+  src/DataContainer.h
+  src/DataGroup.h
+  src/DataLisp.h
+  src/Expressions.h
+  src/Lexer.h
+  src/Parser.h
+  src/SourceLogger.h
+  src/SyntaxTree.h
+  src/Token.h)
+
+SET(DL_PY_Src
+  src/python/module.cpp)
+
+SET(DL_PY_Hdr
+  src/dl_Config.h)
 
 SET(DL_DUMP_Src
-  ${DL_Root}/dump/main.cpp)
+  src/dump/main.cpp)
 
 SET(DL_TEST_EXPR_Src
-  ${DL_Root}/tests/expr_test.cpp)
+  src/tests/expr_test.cpp)
 
 SET(DL_TEST_UNICODE_Src
-  ${DL_Root}/tests/unicode_test.cpp)
+  src/tests/unicode_test.cpp)
 
 #DEPENDIES, LIBARIES AND EXECUTABLES
 add_library(${DL_TARGET} SHARED ${DL_Src} ${DL_Hdr})
 set_target_properties(${DL_TARGET} PROPERTIES VERSION ${DL_Version})
 target_compile_definitions(${DL_TARGET} PRIVATE "${DEFS};DL_LIB_BUILD" "$<$<CONFIG:Debug>:${DEFS_DEBUG}>")
 
+IF(DL_HAS_PYTHON)
+	add_library(pydatalisp SHARED ${DL_PY_Src} ${DL_PY_Hdr})
+	target_link_libraries(pydatalisp ${DL_TARGET} ${Boost_LIBRARIES})
+	set_target_properties(pydatalisp PROPERTIES VERSION ${DL_Version})
+	set_target_properties(pydatalisp PROPERTIES PREFIX "" )
+	target_compile_definitions(pydatalisp PRIVATE "${DEFS}" "$<$<CONFIG:Debug>:${DEFS_DEBUG}>")
+ENDIF()
+
 IF(NOT DL_ONLY_LIBRARY)
 	add_executable(dl_dump ${DL_DUMP_Src})
 	target_link_libraries(dl_dump ${DL_TARGET})
+	set_target_properties(dl_dump PROPERTIES VERSION ${DL_Version})
+	target_compile_definitions(dl_dump PRIVATE "${DEFS}" "$<$<CONFIG:Debug>:${DEFS_DEBUG}>")
 
-	add_executable(dl_test_expr ${DL_TEST_EXPR_Src})
-	target_link_libraries(dl_test_expr ${DL_TARGET})
+	IF(DL_BUILD_TESTS)
+		enable_testing()
 
-	add_executable(dl_test_unicode ${DL_TEST_UNICODE_Src})
-	target_link_libraries(dl_test_unicode ${DL_TARGET})
+		FUNCTION(PUSH_TEST name files)
+			add_executable(dl_test_${name} ${files})
+			target_link_libraries(dl_test_${name} ${DL_TARGET})
+			set_target_properties(dl_test_${name} PROPERTIES VERSION ${DL_Version})
+			target_compile_definitions(dl_test_${name} PRIVATE "${DEFS}" "$<$<CONFIG:Debug>:${DEFS_DEBUG}>")
+			add_test(NAME ${name} COMMAND dl_test_${name})
+		ENDFUNCTION(PUSH_TEST)
+
+		PUSH_TEST(expr ${DL_TEST_EXPR_Src})
+		PUSH_TEST(unicode ${DL_TEST_UNICODE_Src})
+	ENDIF()
 ENDIF(NOT DL_ONLY_LIBRARY)

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, Ömercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2016, ï¿½mercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -46,7 +46,8 @@ namespace DL
 			T_Float,
 			T_Bool,
 			T_String,
-			T_Array
+			T_Array,
+			T_None
 		};
 
 		Data(const string_t& key = "");
@@ -59,9 +60,14 @@ namespace DL
 
 		void setKey(const string_t& key);
 
-		inline Type isType() const
+		inline Type type() const
 		{
 			return mType;
+		}
+
+		inline bool isValid() const
+		{
+			return mType != T_None;
 		}
 
 		DataGroup* getGroup() const;

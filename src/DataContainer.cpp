@@ -57,13 +57,22 @@ namespace DL
 		{
 			delete *it;
 		}
+	}
 
-		for (list_t<Data*>::type::iterator it = mData.begin();
-			it != mData.end();
-			++it)
-		{
-			delete *it;
-		}
+	DataGroup* DataContainer::createGroup()
+	{
+		DataGroup* grp = new DataGroup();
+		mGroups.push_back(grp);
+
+		return grp;
+	}
+
+	DataArray* DataContainer::createArray()
+	{
+		DataArray* arr = new DataArray();
+		mArrays.push_back(arr);
+
+		return arr;
 	}
 
 	list_t<DataGroup*>::type DataContainer::getTopGroups() const
@@ -80,23 +89,6 @@ namespace DL
 			++it)
 		{
 			if ((*it)->id() == id)
-			{
-				list.push_back(*it);
-			}
-		}
-
-		return list;
-	}
-
-	list_t<Data*>::type DataContainer::getAllDataFromKey(const string_t& key) const
-	{
-		list_t<Data*>::type list;
-
-		for (list_t<Data*>::type::const_iterator it = mData.begin();
-			it != mData.end();
-			++it)
-		{
-			if ((*it)->key() == key)
 			{
 				list.push_back(*it);
 			}
@@ -131,72 +123,64 @@ namespace DL
 	{
 		DL_ASSERT(n);
 
-		DataGroup* group = new DataGroup(n->Name);
+		DataGroup* group = new DataGroup();
+		group->setID(n->Name);
 
 		for (list_t<DataNode*>::type::iterator it = n->Nodes.begin();
 			it != n->Nodes.end();
 			++it)
 		{
-			Data* data = buildData(*it, expr);
-
-			if (data)
-			{
-				mData.push_back(data);
+			Data data = buildData(*it, expr);
+			if (data.isValid())
 				group->addData(data);
-			}
 		}
 
 		return group;
 	}
 
-	Data* DataContainer::buildData(DataNode* n, Expressions* expr)
+	Data DataContainer::buildData(DataNode* n, Expressions* expr)
 	{
 		DL_ASSERT(n);
 
-		Data* data = nullptr;
-
+		Data data;
 		switch (n->Value->Type)
 		{
 		case VNT_Statement:
 		{
-			data = new Data(n->Key);
+			data = Data(n->Key);
 			DataGroup* group = buildGroup(n->Value->Statement, expr);
 			mGroups.push_back(group);
-			data->setGroup(group);
+			data.setGroup(group);
 		}
 		break;
 		case VNT_Integer:
-			data = new Data(n->Key);
-			data->setInt(n->Value->Integer);
+			data = Data(n->Key);
+			data.setInt(n->Value->Integer);
 			break;
 		case VNT_Float:
-			data = new Data(n->Key);
-			data->setFloat(n->Value->Float);
+			data = Data(n->Key);
+			data.setFloat(n->Value->Float);
 			break;
 		case VNT_String:
-			data = new Data(n->Key);
-			data->setString(n->Value->String);
+			data = Data(n->Key);
+			data.setString(n->Value->String);
 			break;
 		case VNT_Boolean:
-			data = new Data(n->Key);
-			data->setBool(n->Value->Boolean);
+			data = Data(n->Key);
+			data.setBool(n->Value->Boolean);
 			break;
 		case VNT_Array:
 		{
-			data = new Data(n->Key);
+			data = Data(n->Key);
 			DataArray* a = buildArray(n->Value->Array, expr);
 			mArrays.push_back(a);
-			data->setArray(a);
+			data.setArray(a);
 		}
 		break;
 		case VNT_Expression:
 		{
 			data = buildExpression(n->Value->Expression, expr);
-
-			if (data)
-			{
-				data->setKey(n->Key);
-			}
+			data.setKey(n->Key);
 		}
 		break;
 		default:
@@ -216,56 +200,47 @@ namespace DL
 			it != n->Nodes.end();
 			++it)
 		{
-			Data* dat = buildArrayValue(*it, expr);
+			Data dat = buildArrayValue(*it, expr);
 
-			if (dat)
-			{
+			if (dat.isValid())
 				a->add(dat);
-				mData.push_back(dat);
-			}
 		}
 
 		return a;
 	}
 
-	Data* DataContainer::buildArrayValue(ValueNode* n, Expressions* expr)
+	Data DataContainer::buildArrayValue(ValueNode* n, Expressions* expr)
 	{
 		DL_ASSERT(n);
 
-		Data* data = nullptr;
+		Data data;
 
 		switch (n->Type)
 		{
 		case VNT_Statement:
 		{
-			data = new Data;
 			DataGroup* group = buildGroup(n->Statement, expr);
 			mGroups.push_back(group);
-			data->setGroup(group);
+			data.setGroup(group);
 		}
 		break;
 		case VNT_Integer:
-			data = new Data;
-			data->setInt(n->Integer);
+			data.setInt(n->Integer);
 			break;
 		case VNT_Float:
-			data = new Data;
-			data->setFloat(n->Float);
+			data.setFloat(n->Float);
 			break;
 		case VNT_String:
-			data = new Data;
-			data->setString(n->String);
+			data.setString(n->String);
 			break;
 		case VNT_Boolean:
-			data = new Data;
-			data->setBool(n->Boolean);
+			data.setBool(n->Boolean);
 			break;
 		case VNT_Array:
 		{
-			data = new Data;
 			DataArray* a = buildArray(n->Array, expr);
 			mArrays.push_back(a);
-			data->setArray(a);
+			data.setArray(a);
 		}
 		break;
 		case VNT_Expression:
@@ -280,34 +255,19 @@ namespace DL
 		return data;
 	}
 
-	Data* DataContainer::buildExpression(ExpressionNode* n, Expressions* expr)
+	Data DataContainer::buildExpression(ExpressionNode* n, Expressions* expr)
 	{
-		list_t<Data*>::type args;
+		list_t<Data>::type args;
 		for (list_t<DataNode*>::type::iterator it = n->Nodes.begin();
 			it != n->Nodes.end();
 			++it)
 		{
-			Data* data = buildData(*it, expr);
+			Data data = buildData(*it, expr);
 
-			if (data)
-			{
-				//mData.push_back(data);
+			if (data.isValid())
 				args.push_back(data);
-			}
 		}
 
-		Data* ret = expr->exec(n->Name, args);
-
-		for (list_t<Data*>::type::iterator it = args.begin();
-			it != args.end();
-			++it)
-		{
-			if (ret != *it)
-			{
-				delete (*it);
-			}
-		}
-
-		return ret;
+		return expr->exec(n->Name, args);
 	}
 }

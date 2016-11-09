@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2014-2016, Ömercan Yazici <omercan AT pearcoding.eu>
+Copyright (c) 2014-2016, ï¿½mercan Yazici <omercan AT pearcoding.eu>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -47,7 +47,7 @@ int main(int argc, char** argv)
 	DL::DataContainer container;
 
 	lisp.parse(TEST_FILE);
-	lisp.build(&container);
+	lisp.build(container);
 
 	return 0;
 }

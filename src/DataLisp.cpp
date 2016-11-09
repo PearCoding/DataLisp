@@ -69,19 +69,15 @@ namespace DL
 		mTree = parser.parse();
 	}
 
-	void DataLisp::build(DataContainer* container)
+	void DataLisp::build(DataContainer& container)
 	{
-		DL_ASSERT(container);
-		container->build(mTree, &mExpressions);
+		container.build(mTree, &mExpressions);
 	}
 
-	string_t DataLisp::generate(DataContainer* container)
-	{
-		DL_ASSERT(container);
+	string_t DataLisp::generate(const DataContainer& container)
+	{		string_t output;
 
-		string_t output;
-
-		list_t<DataGroup*>::type top = container->getTopGroups();
+		list_t<DataGroup*>::type top = container.getTopGroups();
 		for (list_t<DataGroup*>::type::const_iterator it = top.begin();
 			it != top.end();
 			++it)
@@ -249,13 +245,13 @@ namespace DL
 
 		str = white + "(" + d->id() + "\n";
 
-		for (size_t i = 0; i < d->unnamedCount(); ++i)
+		for (size_t i = 0; i < d->anonymousCount(); ++i)
 		{
 			str += generateData(d->at(i), depth + 1) + "\n";
 		}
 
-		list_t<Data*>::type list = d->getNamedEntries();
-		for (list_t<Data*>::type::const_iterator it = list.begin();
+		list_t<Data>::type list = d->getNamedEntries();
+		for (list_t<Data>::type::const_iterator it = list.begin();
 			it != list.end();
 			++it)
 		{
@@ -266,10 +262,8 @@ namespace DL
 		return str;
 	}
 
-	string_t DataLisp::generateData(Data* d, int depth)
+	string_t DataLisp::generateData(const Data& d, int depth)
 	{
-		DL_ASSERT(d);
-
 		string_t white;
 		for (int i = 0; i < depth; ++i)
 		{
@@ -278,13 +272,13 @@ namespace DL
 
 		string_t str;
 
-		if (d->key().empty())
+		if (d.key().empty())
 		{
 			str = generateValue(d, depth + 1);
 		}
 		else
 		{
-			str = ":" + d->key() + "  " + generateValue(d, depth + 1);
+			str = ":" + d.key() + "  " + generateValue(d, depth + 1);
 		}
 		return white + str;
 	}
@@ -320,21 +314,20 @@ namespace DL
 		return str;
 	}
 
-	string_t DataLisp::generateValue(Data* d, int depth)
+	string_t DataLisp::generateValue(const Data& d, int depth)
 	{
-		DL_ASSERT(d);
 		string_t str;
 
-		switch (d->isType())
+		switch (d.type())
 		{
 		case Data::T_Group:
-			str = generateDataGroup(d->getGroup(), depth);
+			str = generateDataGroup(d.getGroup(), depth);
 			break;
 		case Data::T_Array:
-			str = generateArray(d->getArray(), depth);
+			str = generateArray(d.getArray(), depth);
 			break;
 		case Data::T_Bool:
-			if (d->getBool())
+			if (d.getBool())
 			{
 				str = "true";
 			}
@@ -346,19 +339,19 @@ namespace DL
 		case Data::T_Float:
 		{
 			std::stringstream stream;
-			stream << d->getFloat();
+			stream << d.getFloat();
 			str = stream.str();
 		}
 		break;
 		case Data::T_Integer:
 		{
 			std::stringstream stream;
-			stream << d->getInt();
+			stream << d.getInt();
 			str = stream.str();
 		}
 		break;
 		case Data::T_String:
-			str = "\"" + d->getString() + "\"";
+			str = "\"" + d.getString() + "\"";
 			break;
 		}
 

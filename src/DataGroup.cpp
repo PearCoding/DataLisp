@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, Ömercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2016, ï¿½mercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -32,8 +32,8 @@
 
 namespace DL
 {
-	DataGroup::DataGroup(const string_t& id) :
-		mID(id)
+	DataGroup::DataGroup() :
+		mID()
 	{
 	}
 
@@ -41,62 +41,52 @@ namespace DL
 	{
 	}
 
-	void DataGroup::addData(Data* data)
+	void DataGroup::addData(const Data& data)
 	{
-		DL_ASSERT(data);
-
-		if (data->key().empty())
-		{
+		if(!data.isValid())
+			return;
+			
+		if (data.key().empty())
 			mData.push_back(data);
-		}
 		else
-		{
 			mNamedData.push_back(data);
-		}
 	}
 
-	Data* DataGroup::at(size_t i) const
+	Data DataGroup::at(size_t i) const
 	{
-		DL_ASSERT(i < mData.size());
-
-		return mData.at(i);
+		if(i < mData.size())
+			return mData.at(i);
+		else
+			return Data();
 	}
 
-	size_t DataGroup::unnamedCount() const
+	size_t DataGroup::anonymousCount() const
 	{
 		return mData.size();
 	}
 
-	Data* DataGroup::getFromKey(const string_t& str) const
+	Data DataGroup::getFromKey(const string_t& str) const
 	{
-		DL_ASSERT(!str.empty());
-
-		for (list_t<Data*>::type::const_iterator it = mNamedData.begin();
+		for (list_t<Data>::type::const_iterator it = mNamedData.begin();
 			it != mNamedData.end();
 			++it)
 		{
-			if ((*it)->key() == str)
-			{
+			if (it->key() == str)
 				return *it;
-			}
 		}
 
-		return nullptr;
+		return Data();
 	}
 
-	list_t<Data*>::type DataGroup::getAllFromKey(const string_t& key) const
+	list_t<Data>::type DataGroup::getAllFromKey(const string_t& key) const
 	{
-		DL_ASSERT(!key.empty());
-
-		list_t<Data*>::type list;
-		for (list_t<Data*>::type::const_iterator it = mNamedData.begin();
+		list_t<Data>::type list;
+		for (list_t<Data>::type::const_iterator it = mNamedData.begin();
 			it != mNamedData.end();
 			++it)
 		{
-			if ((*it)->key() == key)
-			{
+			if (it->key() == key)
 				list.push_back(*it);
-			}
 		}
 
 		return list;
@@ -104,22 +94,18 @@ namespace DL
 
 	bool DataGroup::hasKey(const string_t& key) const
 	{
-		DL_ASSERT(!key.empty());
-
-		for (list_t<Data*>::type::const_iterator it = mNamedData.begin();
+		for (list_t<Data>::type::const_iterator it = mNamedData.begin();
 			it != mNamedData.end();
 			++it)
 		{
-			if ((*it)->key() == key)
-			{
+			if (it->key() == key)
 				return true;
-			}
 		}
 
 		return false;
 	}
 
-	const list_t<Data*>::type& DataGroup::getNamedEntries() const
+	const list_t<Data>::type& DataGroup::getNamedEntries() const
 	{
 		return mNamedData;
 	}

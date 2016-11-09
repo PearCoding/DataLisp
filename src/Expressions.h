@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, Ömercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2016, ï¿½mercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -41,13 +41,13 @@ namespace DL
 
 		void addExpression(const string_t& name, expr_t handler);
 		expr_t expression(const string_t& name);
-		Data* exec(const string_t& name, const list_t<Data*>::type& args);
+		Data exec(const string_t& name, const list_t<Data>::type& args);
 
 	private:
 		map_t<string_t, expr_t>::type mHandler;
 		SourceLogger* mLogger;
 
-		static Data* print_func(const list_t<Data*>::type& args, SourceLogger* log);
-		static Data* if_func(const list_t<Data*>::type& args, SourceLogger* log);
+		static Data print_func(const list_t<Data>::type& args, SourceLogger* log);
+		static Data if_func(const list_t<Data>::type& args, SourceLogger* log);
 	};
 }

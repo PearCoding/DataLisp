@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, Ömercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2016, ï¿½mercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -44,23 +44,21 @@ namespace DL
 		return mList.size();
 	}
 
-	Data* DataArray::at(size_t i) const
+	Data DataArray::at(size_t i) const
 	{
 		return mList.at(i);
 	}
 
-	void DataArray::add(Data* d)
+	void DataArray::add(const Data& d)
 	{
-		DL_ASSERT(d);
-
-		mList.push_back(d);
+		if(d.isValid())
+			mList.push_back(d);
 	}
 
-	void DataArray::set(size_t i, Data* d)
+	void DataArray::set(size_t i, const Data& d)
 	{
-		DL_ASSERT(d);
-
-		mList[i] = d;
+		if(d.isValid())
+			mList[i] = d;
 	}
 
 	bool DataArray::isAllType(Data::Type type) const
@@ -68,11 +66,11 @@ namespace DL
 		if (mList.empty())
 			return false;
 
-		for (std::vector<Data*>::const_iterator it = mList.begin();
+		for (std::vector<Data>::const_iterator it = mList.begin();
 			it != mList.end();
 			it++)
 		{
-			if ((*it)->isType() != type)
+			if (it->type() != type)
 				return false;
 		}
 
@@ -84,11 +82,11 @@ namespace DL
 		if (mList.empty())
 			return false;
 
-		for (std::vector<Data*>::const_iterator it = mList.begin();
+		for (std::vector<Data>::const_iterator it = mList.begin();
 			it != mList.end();
 			it++)
 		{
-			if (!(*it)->isNumber())
+			if (!it->isNumber())
 				return false;
 		}
 
