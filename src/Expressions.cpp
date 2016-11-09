@@ -163,7 +163,7 @@ namespace DL
 		}
 		else if (cond.isNumber())
 		{
-			c = (cond.getFloatConverted() == 0);
+			c = (cond.getNumber() == 0);
 		}
 		else
 		{

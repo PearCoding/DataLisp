@@ -88,7 +88,7 @@ namespace DL
 		return mFloat;
 	}
 
-	float Data::getFloatConverted() const
+	float Data::getNumber() const
 	{
 		DL_ASSERT(mType == T_Float || mType == T_Integer);
 
@@ -96,13 +96,9 @@ namespace DL
 		{
 			return mFloat;
 		}
-		else if (mType == T_Integer)
-		{
-			return static_cast<float>(mInt);
-		}
 		else
 		{
-			return -1;
+			return static_cast<float>(mInt);
 		}
 	}
 

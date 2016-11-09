@@ -80,8 +80,9 @@ namespace DL
 		void setInt(int32);
 
 		float getFloat() const;
-		float getFloatConverted() const;
 		void setFloat(float);
+
+		float getNumber() const;
 
 		bool getBool() const;
 		void setBool(bool);
