@@ -11,6 +11,8 @@ class Exporter:
             return self._fromGroup(data.group)
         elif data.type == dl.Type.Array:
             return self._fromArray(data.array)
+        elif data.type == dl.Type.String:
+            return data.string
         elif data.type == dl.Type.Integer:
             return data.int
         elif data.type == dl.Type.Float:
