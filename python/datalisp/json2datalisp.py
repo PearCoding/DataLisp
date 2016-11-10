@@ -5,6 +5,11 @@ import python2datalisp
 import sys
 import json
 
+def run(input):
+    container = python2datalisp.run(data)
+    return dl.DataLisp.generate(container)
+
+
 if __name__ == "__main__":
     if len(sys.argv) != 3 and len(sys.argv) != 2:
         print('Use json2datalisp FILE [OUTPUT]')
@@ -27,8 +32,7 @@ if __name__ == "__main__":
         print("Error while parsing '%s'." % input)
         exit(-2)
 
-    container = python2datalisp.run(data)
-    str = dl.DataLisp.generate(container)
+    str = run(data)
 
     try:
         with open(output, 'w') as f:

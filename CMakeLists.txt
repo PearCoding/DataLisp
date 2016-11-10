@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 PROJECT(DataLisp)
 
@@ -42,7 +42,8 @@ IF(DL_WITH_PYTHON)
 	find_package(Boost 1.45 COMPONENTS python)
 	IF(Boost_FOUND)
 		find_package(PythonLibs)
-		IF(PythonLibs_FOUND)
+		find_package(PythonInterp)
+		IF(PythonLibs_FOUND AND PythonInterp_FOUND)
   			include_directories(${PYTHON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 			SET(DL_HAS_PYTHON True)
 		ENDIF()
@@ -113,9 +114,6 @@ SET(DL_Hdr
 SET(DL_PY_Src
   src/python/module.cpp)
 
-SET(DL_PY_Hdr
-  src/dl_Config.h)
-
 SET(DL_DUMP_Src
   src/dump/main.cpp)
 
@@ -125,22 +123,45 @@ SET(DL_TEST_EXPR_Src
 SET(DL_TEST_UNICODE_Src
   src/tests/unicode_test.cpp)
 
+SET(DL_Python
+  python/datalisp/__init__.py
+  python/datalisp/datalisp2json.py
+  python/datalisp/datalisp2python.py
+  python/datalisp/json2datalisp.py
+  python/datalisp/python2datalisp.py)
+
 #DEPENDIES, LIBARIES AND EXECUTABLES
-add_library(${DL_TARGET} SHARED ${DL_Src} ${DL_Hdr})
-set_target_properties(${DL_TARGET} PROPERTIES VERSION ${DL_Version})
-target_compile_definitions(${DL_TARGET} PRIVATE "${DEFS};DL_LIB_BUILD" "$<$<CONFIG:Debug>:${DEFS_DEBUG}>")
+add_library(datalisp SHARED ${DL_Src} ${DL_Hdr})
+set_target_properties(datalisp PROPERTIES VERSION ${DL_Version})
+target_compile_definitions(datalisp PRIVATE "${DEFS};DL_LIB_BUILD" "$<$<CONFIG:Debug>:${DEFS_DEBUG}>")
 
 IF(DL_HAS_PYTHON)
-	add_library(pydatalisp SHARED ${DL_PY_Src} ${DL_PY_Hdr})
-	target_link_libraries(pydatalisp ${DL_TARGET} ${Boost_LIBRARIES})
+	add_library(pydatalisp SHARED ${DL_PY_Src})
+	target_link_libraries(pydatalisp datalisp ${Boost_LIBRARIES})
 	set_target_properties(pydatalisp PROPERTIES VERSION ${DL_Version})
 	set_target_properties(pydatalisp PROPERTIES PREFIX "" )
+  set_target_properties(pydatalisp PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/datalisp)
 	target_compile_definitions(pydatalisp PRIVATE "${DEFS}" "$<$<CONFIG:Debug>:${DEFS_DEBUG}>")
+
+  file(COPY python/datalisp DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+	set(SETUP_PY ${CMAKE_CURRENT_BINARY_DIR}/setup.py)
+  set(TIMESTAMP ${CMAKE_CURRENT_BINARY_DIR}/build/timestamp)
+  configure_file(python/setup.py.in ${SETUP_PY})
+
+  add_custom_command(OUTPUT ${TIMESTAMP}
+                       COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} build
+                       COMMAND ${CMAKE_COMMAND} -E touch ${TIMESTAMP}
+                       DEPENDS ${DL_Python} pydatalisp)
+
+  add_custom_target(pydatalisp_module ALL DEPENDS ${TIMESTAMP})
+
+  install(CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install --prefix ${CMAKE_INSTALL_PREFIX})")
 ENDIF()
 
 IF(NOT DL_ONLY_LIBRARY)
 	add_executable(dl_dump ${DL_DUMP_Src})
-	target_link_libraries(dl_dump ${DL_TARGET})
+	target_link_libraries(dl_dump datalisp)
 	set_target_properties(dl_dump PROPERTIES VERSION ${DL_Version})
 	target_compile_definitions(dl_dump PRIVATE "${DEFS}" "$<$<CONFIG:Debug>:${DEFS_DEBUG}>")
 
@@ -149,7 +170,7 @@ IF(NOT DL_ONLY_LIBRARY)
 
 		FUNCTION(PUSH_TEST name files)
 			add_executable(dl_test_${name} ${files})
-			target_link_libraries(dl_test_${name} ${DL_TARGET})
+			target_link_libraries(dl_test_${name} datalisp)
 			set_target_properties(dl_test_${name} PROPERTIES VERSION ${DL_Version})
 			target_compile_definitions(dl_test_${name} PRIVATE "${DEFS}" "$<$<CONFIG:Debug>:${DEFS_DEBUG}>")
 			add_test(NAME ${name} COMMAND dl_test_${name})
@@ -159,3 +180,26 @@ IF(NOT DL_ONLY_LIBRARY)
 		PUSH_TEST(unicode ${DL_TEST_UNICODE_Src})
 	ENDIF()
 ENDIF(NOT DL_ONLY_LIBRARY)
+
+# INSTALL
+install(TARGETS datalisp EXPORT datalisp
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib/static)
+
+IF(NOT DL_ONLY_LIBRARY)
+	install(TARGETS dl_dump
+        RUNTIME DESTINATION bin)
+ENDIF()
+
+SET(DL_Hdr_INSTALL
+  ${CMAKE_CURRENT_BINARY_DIR}/dl_Config.h
+  src/Data.h
+  src/DataArray.h
+  src/DataContainer.h
+  src/DataGroup.h
+  src/DataLisp.h
+  src/Expressions.h
+  src/SourceLogger.h)
+
+install(FILES ${DL_Hdr_INSTALL} DESTINATION include/DataLisp)
+install(EXPORT datalisp NAMESPACE dl_ DESTINATION lib/DataLisp)
