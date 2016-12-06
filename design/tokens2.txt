@@ -1,0 +1,15 @@
+Tokens:
+	(
+	)
+	[
+	]
+	"
+	'
+	~
+	:
+	Numbers
+	Identifiers
+	true
+	false
+	;; Comment
+	

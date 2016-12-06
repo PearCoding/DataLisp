@@ -1,0 +1,38 @@
+translation_unit:		statement
+					| /*EMPTY*/
+					;
+
+statement:			'(' IDENTIFIER data_list ')' /* Can be function */
+					| '~' '(' IDENTIFIER data_list ')' /* Is not a function! */
+					;
+
+data_list			data data_list
+					| /*EMPTY*/
+					;
+
+data:				key value
+					| value
+					;
+
+key:				':' IDENTIFIER
+					;
+
+value:				statement
+					| INTEGER
+					| FLOAT
+					| STRING
+					| boolean
+					| array
+					;
+					
+boolean:			TRUE
+					| FALSE
+					;
+					
+array				'[' array_list ']'
+					;
+					
+array_list			value array_list
+					| value
+					;
+
