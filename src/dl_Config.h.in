@@ -73,7 +73,7 @@
 
 #if defined(__MINGW32__)
 # define DL_CC_MINGW32
-# if !defined(TGJ_CC_GNU)
+# if !defined(DL_CC_GNU)
 #  define DL_CC_NAME "MinGW 32"
 # else
 #  undef DL_CC_NAME
@@ -83,6 +83,9 @@
 
 #if defined(__INTEL_COMPILER)
 # define DL_CC_INTEL
+# ifdef DL_CC_NAME
+#  undef DL_CC_NAME
+# endif
 # define DL_CC_NAME "Intel C/C++"
 #endif
 
