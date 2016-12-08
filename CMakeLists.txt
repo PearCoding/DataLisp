@@ -3,7 +3,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 PROJECT(DataLisp)
 
 #SETS
-SET(VENDOR "DataLisp project 2013-2015")
+SET(VENDOR "DataLisp project 2013-2016")
 SET(VERSION_MAJOR 1)
 SET(VERSION_MINOR 9)
 SET(VERSION_HEX 0x0109)
@@ -37,6 +37,7 @@ ENDIF()
 option(DL_ONLY_LIBRARY "Compile only library" OFF)
 option(DL_WITH_PYTHON "Compile additional python interface module" ON)
 option(DL_BUILD_TESTS "Build tests." ON)
+option(DL_BUILD_DOCUMENTATION "Build documentation with doxygen." ON)
 
 IF(DL_WITH_PYTHON)
 	find_package(Boost 1.45 COMPONENTS python)
@@ -94,7 +95,7 @@ SET(DEFS "${DEFS};")
 SET(DEFS_DEBUG "${DEFS_DEBUG};DL_DEBUG")
 
 #CONFIGURE
-configure_file(src/dl_Config.h.in ${CMAKE_CURRENT_BINARY_DIR}/dl_Config.h)
+configure_file(src/DataLispConfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/DataLispConfig.h)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 SET(DL_Src
@@ -109,7 +110,7 @@ SET(DL_Src
   src/SourceLogger.cpp)
 
 SET(DL_Hdr
-  src/dl_Config.h.in
+  src/DataLispConfig.h.in
   src/Data.h
   src/DataArray.h
   src/DataContainer.h
@@ -203,7 +204,7 @@ IF(NOT DL_ONLY_LIBRARY)
 ENDIF()
 
 SET(DL_Hdr_INSTALL
-  ${CMAKE_CURRENT_BINARY_DIR}/dl_Config.h
+  ${CMAKE_CURRENT_BINARY_DIR}/DataLispConfig.h
   src/Data.h
   src/DataArray.h
   src/DataContainer.h
@@ -212,5 +213,18 @@ SET(DL_Hdr_INSTALL
   src/Expressions.h
   src/SourceLogger.h)
 
-install(FILES ${DL_Hdr_INSTALL} DESTINATION include/DataLisp)
-install(EXPORT datalisp NAMESPACE dl_ DESTINATION lib/DataLisp)
+install(FILES ${DL_Hdr_INSTALL} DESTINATION include/DL)
+install(EXPORT datalisp NAMESPACE dl_ DESTINATION lib/DL)
+
+# DOCUMENTATION
+IF(DL_BUILD_DOCUMENTATION)
+  find_package(Doxygen)
+  IF(DOXYGEN_FOUND)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/tools/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+    add_custom_target(doc
+    ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Generating API documentation with Doxygen" VERBATIM
+  )
+  ENDIF()
+ENDIF()

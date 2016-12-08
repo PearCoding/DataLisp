@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, �mercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -46,7 +46,10 @@ namespace DL
 
 	Data DataArray::at(size_t i) const
 	{
-		return mList.at(i);
+		if(i < mList.size())
+			return mList.at(i);
+		else
+			return Data();
 	}
 
 	void DataArray::add(const Data& d)
@@ -57,7 +60,12 @@ namespace DL
 
 	void DataArray::set(size_t i, const Data& d)
 	{
-		if(d.isValid())
+		if(!d.isValid())
+			return;
+			
+		if(i == mList.size())
+			mList.push_back(d);
+		else if(i < mList.size())
 			mList[i] = d;
 	}
 

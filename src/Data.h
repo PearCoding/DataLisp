@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, �mercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -29,68 +29,188 @@
  */
 #pragma once
 
-#include "dl_Config.h"
+#include "DataLispConfig.h"
 
 namespace DL
 {
 	class DataArray;
 	class DataContainer;
 	class DataGroup;
+
+	/** @class Data Data.h DL/Data.h
+	 * @brief Main class encapsulating all types of data useable by %DataLisp
+	 *
+	 * The data can be anonymous (key is empty) or non anonymous (key is set).<br>
+	 * Resembles a source code entry of type:
+	 * @code{.lisp}
+	 * ;...
+	 * :KEY ;Content
+	 * ;...
+	 * @endcode
+	 */
 	class DL_LIB Data
 	{
 	public:
+		/// Type of encapsulated value
 		enum Type
 		{
-			T_Group,
-			T_Integer,
-			T_Float,
-			T_Bool,
-			T_String,
-			T_Array,
-			T_None
+			T_Group, 	///< DataGroup instance
+			T_Integer,	///< Integer number 
+			T_Float,	///< Floating point number
+			T_Bool,		///< Boolean value with two states (@p true and @p false)
+			T_String,	///< String value
+			T_Array,	///< DataArray instance
+			T_None		///< No data. Invalid state
 		};
 
+		/**
+		 * @brief Constructs a data with the given key
+		 *
+		 * Initial type is @link T_None @endlink, therefor initially the data is invalid.
+		 * @param key If empty an anonymous data will be created, non anonymous otherwise
+		 */
 		Data(const string_t& key = "");
 		~Data();
 
+		/**
+		 * @brief Returns the @p key (also called @p id)
+		 *
+		 * The data is anonymous if key is empty, non anonyous otherwise.
+		 * @see setKey
+		 */
 		inline string_t key() const
 		{
 			return mKey;
 		}
 
+		/**
+		 * @brief Sets the key of the data
+		 *
+		 * The data is anonymous if key is empty, non anonyous otherwise.
+		 * @see key
+		 */
 		void setKey(const string_t& key);
 
+		/**
+		 * @brief Returns the type of the encapsulated value
+		 * 
+		 * @link T_None @endlink stands for an invalid data.
+		 * @see Type
+		 */
 		inline Type type() const
 		{
 			return mType;
 		}
 
+		/**
+		 * @brief Checks if data is valid to use
+		 *
+		 * Equals to @code{.cpp} type() != T_None @endcode
+		 */ 
 		inline bool isValid() const
 		{
 			return mType != T_None;
 		}
 
+		/**
+		 * @brief Returns encapsulated DataGroup value
+		 *
+		 * Only valid if type is @link T_Group @endlink.
+		 * @see setGroup
+		 */
 		DataGroup* getGroup() const;
+
+		/**
+		 * @brief Set data to a DataGroup value. Type will be set to @link T_Group @endlink
+		 * @see getGroup
+		 */
 		void setGroup(DataGroup*);
 
+		/**
+		 * @brief Returns encapsulated DataArray value
+		 *
+		 * Only valid if type is @link T_Array @endlink.
+		 * @see setArray
+		 */
 		DataArray* getArray() const;
+
+		/**
+		 * @brief Set data to a DataArray value. Type will be set to @link T_Array @endlink
+		 * @see getArray
+		 */
 		void setArray(DataArray*);
 
-		int32 getInt() const;
-		void setInt(int32);
+		/**
+		 * @brief Returns encapsulated integer value
+		 *
+		 * Only valid if type is @link T_Integer @endlink.
+		 * @see setInt
+		 */
+		Integer getInt() const;
 
-		float getFloat() const;
-		void setFloat(float);
+		/**
+		 * @brief Set data to an integer value. Type will be set to @link T_Integer @endlink
+		 * @see getInt
+		 */
+		void setInt(Integer);
 
-		float getNumber() const;
+		/**
+		 * @brief Returns encapsulated float value
+		 *
+		 * Only valid if type is @link T_Float @endlink.
+		 * @see setFloat
+		 */
+		Float getFloat() const;
 
+		/**
+		 * @brief Set data to a float value. Type will be set to @link T_Float @endlink
+		 * @see getFloat
+		 */
+		void setFloat(Float);
+
+		/**
+		 * @brief Returns encapsulated integer or float value as a float value
+		 *
+		 * Only valid if type is @link T_Integer @endlink or @link T_Float @endlink.
+		 * @see isNumber
+		 */
+		Float getNumber() const;
+
+		/**
+		 * @brief Checks if value is a number
+		 *
+		 * A number is defined as a type of @link T_Integer @endlink or @link T_Float @endlink.
+		 * @see getNumber
+		 */
+		bool isNumber() const;
+
+		/**
+		 * @brief Returns encapsulated boolean value
+		 *
+		 * Only valid if type is @link T_Bool @endlink.
+		 * @see setBool
+		 */
 		bool getBool() const;
+
+		/**
+		 * @brief Set data to a boolean value. Type will be set to @link T_Bool @endlink
+		 * @see getBool
+		 */
 		void setBool(bool);
 
+		/**
+		 * @brief Returns encapsulated string value
+		 *
+		 * Only valid if type is @link T_String @endlink.
+		 * @see setString
+		 */
 		string_t getString() const;
-		void setString(const string_t&);
 
-		bool isNumber() const;
+		/**
+		 * @brief Set data to a string value. Type will be set to @link T_String @endlink
+		 * @see getString
+		 */
+		void setString(const string_t&);
 	private:
 		string_t mKey;
 
@@ -99,8 +219,8 @@ namespace DL
 		{
 			DataGroup* mGroup;
 			DataArray* mArray;
-			int32 mInt;
-			float mFloat;
+			Integer mInt;
+			Float mFloat;
 			bool mBool;
 		};
 		string_t mString;

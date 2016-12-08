@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, �mercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  */
 #pragma once
 
-#include "dl_Config.h"
+#include "DataLispConfig.h"
 
 namespace DL
 {
@@ -66,14 +66,14 @@ namespace DL
 		ValueNodeType 		Type;
 		union
 		{
-			StatementNode*  Statement;
-			ArrayNode*		Array;
-			int32			Integer;
-			float			Float;
-			bool			Boolean;
-			ExpressionNode* Expression;
+			StatementNode*  _Statement;
+			ArrayNode*		_Array;
+			Integer			_Integer;
+			Float			_Float;
+			bool			_Boolean;
+			ExpressionNode* _Expression;
 		};
-		string_t			String;//Can not be in the union......
+		string_t			_String;//Can not be in the union......
 	};
 
 	struct StatementNode

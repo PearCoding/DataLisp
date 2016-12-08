@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, Ömercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
  */
 #pragma once
 
-#include "dl_Config.h"
+#include "DataLispConfig.h"
 #include "Token.h"
 #include "SourceLogger.h"
 

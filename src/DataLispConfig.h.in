@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, �mercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -38,7 +38,7 @@
 #define DL_VERSION_MAJOR	${VERSION_MAJOR}
 #define DL_VERSION_MINOR	${VERSION_MINOR}
 #define DL_VERSION_STRING 	DL_DOUBLEQUOTE(${VERSION_MAJOR}) "." DL_DOUBLEQUOTE(${VERSION_MINOR})
-#define DL_VERSION 		${VERSION_HEX}
+#define DL_VERSION 			${VERSION_HEX}
 #define DL_VERSION_CHECK(major, minor) (((major) << 8) | (minor))
 
 //OS
@@ -109,14 +109,6 @@
 # define DL_BUILD_STRING DL_NAME_STRING " " DL_VERSION_STRING " build variant " DL_BUILDVARIANT_NAME " { OS: " DL_OS_NAME " }\n"
 #endif
 
-#ifdef DL_CC_MSC
-# define DL_DEBUG_BREAK() __debugbreak()
-# define DL_ALIGN(x) __declspec(align(x))
-#else//FIXME: Really use CPU dependent assembler?
-# define DL_DEBUG_BREAK() __asm__ __volatile__ ("int $0x03")
-# define DL_ALIGN(x) __attribute__((aligned(x)))
-#endif
-
 #if !defined(DL_STATIC)
 # if defined(DL_OS_WINDOWS)//Really OS dependent, more tool chain dependent!
 #  define DL_EXPORT_ __declspec(dllexport)
@@ -135,21 +127,15 @@
 #ifdef DL_LIB_BUILD
 # define DL_LIB DL_EXPORT_
 # ifdef DL_CC_MSC
-#  pragma warning(disable : 4251)//Just to annoying 
+#  pragma warning(disable : 4251)//Just too annoying 
 # endif
 #else
 # define DL_LIB DL_IMPORT_
 #endif
 
 #ifndef DL_NO_ASSERTS
-# define DL_ASSERT(cond) \
-	do \
-	{ \
-		if(!(cond)) \
-		{ \
-			DL_DEBUG_BREAK(); \
-		} \
-	} while(0)
+#include <assert.h>
+# define DL_ASSERT(cond) assert((cond))
 #else
 # define DL_ASSERT(cond)
 #endif
@@ -180,6 +166,9 @@
 # define DL_MAP_TYPE std::map
 #endif
 
+/** @file DataLispConfig.h DL/DataLispConfig.h 
+ */
+
 namespace DL
 {
 	inline void dl_Noop()
@@ -206,29 +195,33 @@ namespace DL
 	typedef unsigned long int uint64;
 #endif
 
-	typedef uint32 DataRefID;
-
 	typedef DL_STRING_TYPE string_t;
-	
+
+	typedef int64 Integer;
+	typedef float Float;
+
+	/// Wrapper to the used list structure.
 	template <typename T>
 	struct list_t
 	{
-		typedef DL_LIST_TYPE<T> type;
+		typedef DL_LIST_TYPE<T> type;///< Type of used list structure. Default is std::list
 	};
 
+	/// Wrapper to the used vector structure. 
 	template <typename T>
 	struct vector_t
 	{
-		typedef DL_VECTOR_TYPE<T> type;
+		typedef DL_VECTOR_TYPE<T> type;///< Type of used list structure. Default is std::vector
 	};
 
+	/// Wrapper to the used map structure. 
 	template <typename K, typename V>
 	struct map_t
 	{
-		typedef DL_MAP_TYPE<K, V> type;
+		typedef DL_MAP_TYPE<K, V> type;///< Type of used map structure. Default is std::map
 	};
 
 	class Data;
 	class SourceLogger;
-	typedef Data (*expr_t)(const list_t<Data>::type& args, SourceLogger* log);
+	typedef Data (*expr_t)(const list_t<Data>::type& args, SourceLogger* log);///< Expression Callback
 }

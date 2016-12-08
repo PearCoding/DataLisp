@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, �mercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -29,25 +29,16 @@
  */
 #pragma once
 
-#include "dl_Config.h"
+#include "DataLispConfig.h"
 
 namespace DL
 {
-	class DL_LIB Expressions
+	/**
+	 * @brief Contains the StdLib expressions
+	 */
+	namespace Expressions
 	{
-	public:
-		Expressions(SourceLogger* log);
-		~Expressions();
-
-		void addExpression(const string_t& name, expr_t handler);
-		expr_t expression(const string_t& name);
-		Data exec(const string_t& name, const list_t<Data>::type& args);
-
-	private:
-		map_t<string_t, expr_t>::type mHandler;
-		SourceLogger* mLogger;
-
-		static Data print_func(const list_t<Data>::type& args, SourceLogger* log);
-		static Data if_func(const list_t<Data>::type& args, SourceLogger* log);
-	};
+		Data print_func(const list_t<Data>::type& args, SourceLogger* log);
+		Data if_func(const list_t<Data>::type& args, SourceLogger* log);
+	}
 }

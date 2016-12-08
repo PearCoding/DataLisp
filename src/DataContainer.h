@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, �mercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -29,45 +29,56 @@
  */
 #pragma once
 
-#include "dl_Config.h"
+#include "DataLispConfig.h"
 
 namespace DL
 {
-	class Expressions;
-
 	class Data;
 	class DataGroup;
 	class DataArray;
 
-	struct SyntaxTree;
-	struct ExpressionNode;
-	struct StatementNode;
-	struct DataNode;
-	struct ArrayNode;
-	struct ValueNode;
-
+	/** @class DataContainer DataContainer.h DL/DataContainer.h
+	 * @brief Container class containing all data used by %DataLisp
+	 */
 	class DL_LIB DataContainer
 	{
 	public:
 		DataContainer();
 		~DataContainer();
 
-		void build(SyntaxTree* tree, Expressions* expr);
-
+		/**
+		 * @brief Returns all groups on top of the hierarchy 
+		 */
 		list_t<DataGroup*>::type getTopGroups() const;
+
+		/**
+		 * @brief Returns all groups with the given id
+		 * @param id A string with the id of the group
+		 */
 		list_t<DataGroup*>::type getAllGroupsID(const string_t& id) const;
 
+		/**
+		 * @brief Adds a group to the top of the hierachy
+		 *
+		 * Does not take ownership of the group or his content 
+		 * @param group A valid (not null) DataGroup
+		 */
 		void addTopGroup(DataGroup* group);
 
+		/**
+		 * @brief Creates a group and takes his memory ownership
+		 *
+		 * @attention Do not delete the group on your own!
+		 */
 		DataGroup* createGroup();
+
+		/**
+		 * @brief Creates a array and takes his memory ownership
+		 *
+		 * @attention Do not delete the array on your own!
+		 */
 		DataArray* createArray();
 	private:
-		DataGroup* buildGroup(StatementNode* n, Expressions* expr);
-		Data buildData(DataNode* n, Expressions* expr);
-		DataArray* buildArray(ArrayNode* n, Expressions* expr);
-		Data buildArrayValue(ValueNode* n, Expressions* expr);
-		Data buildExpression(ExpressionNode* n, Expressions* expr);
-
 		list_t<DataGroup*>::type mTopGroups;
 
 		list_t<DataGroup*>::type mGroups;

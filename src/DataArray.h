@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, �mercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -33,21 +33,62 @@
 
 namespace DL
 {
-	class DataContainer;
+	/** @class DataArray DataArray.h DL/DataArray.h
+	 * @brief Capsulate an anonymous group containing only anonymous data 
+	 *
+	 * Resembles an entry of type:
+	 * @code{.lisp}
+	 * [
+	 *   ;...
+	 * ]
+	 * @endcode
+	 */
 	class DL_LIB DataArray
 	{
 	public:
 		DataArray();
 		~DataArray();
 
+		/**
+		 * @brief Returns amount of anonymous data
+		 */
 		size_t size() const;
 
+		/**
+		 * @brief Returns anonymous data at index i
+		 * @param i Index of data
+		 */
 		Data at(size_t i) const;
 
+		/**
+		 * @brief Appends given data at the back
+		 * @param d Non-invalid data 
+		 */
 		void add(const Data& d);
+
+		/**
+		 * @brief Replaces data at index i
+		 *
+		 * If index i is equal to size(), data will be added instead.<br>
+		 * It ignores an out of bound index.
+		 * @param i Index of data to be replaced
+		 * @param d Non-invalid data
+		 */
 		void set(size_t i, const Data& d);
 
+		/**
+		 * @brief Checks if all data is from the same type
+		 * @param type The type to check against
+		 * @return Returns true if all entries are from the same type, false otherwise
+		 * @see DL::Data::type
+		 */
 		bool isAllType(Data::Type type) const;
+
+		/**
+		 * @brief Checks if all data is a number
+		 * @return Returns true if all entries are numbers, false otherwise
+		 * @see DL::Data::isNumber
+		 */
 		bool isAllNumber() const;
 	private:
 		vector_t<Data>::type mList;

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, �mercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -37,140 +37,98 @@
 
 namespace DL
 {
-	Expressions::Expressions(SourceLogger* log) :
-		mLogger(log)
+	namespace Expressions
 	{
-		mHandler["print"] = print_func;
-		mHandler["if"] = if_func;
-	}
-
-	Expressions::~Expressions()
-	{
-	}
-
-	void Expressions::addExpression(const string_t& name, expr_t handler)
-	{
-		DL_ASSERT(mHandler.count(name) == 0);
-		mHandler[name] = handler;
-	}
-
-	expr_t Expressions::expression(const string_t& name)
-	{
-		if (mHandler.count(name))
+		void print_val(const Data& d, std::stringstream& stream)
 		{
-			return mHandler.at(name);
-		}
-		else
-		{
-			return nullptr;
-		}
-	}
+			switch (d.type())
+			{
+			case Data::T_Bool:
+				stream << (d.getBool() ? "true " : "false ");
+				break;
+			case Data::T_Integer:
+				stream << d.getInt() << " ";
+				break;
+			case Data::T_Float:
+				stream << d.getFloat() << " ";
+				break;
+			case Data::T_String:
+				stream << d.getString() << " ";
+				break;
+			case Data::T_Group:
+				stream << "DATA(" << d.getGroup()->id() << ") ";
+				break;
+			case Data::T_Array:
+				stream << "[";
+				for (size_t i = 0; i < d.getArray()->size(); ++i)
+				{
+					Data x = d.getArray()->at(i);
+					print_val(x, stream);
 
-	Data Expressions::exec(const string_t& name, const list_t<Data>::type& args)
-	{
-		expr_t e = expression(name);
+					if (i != d.getArray()->size() - 1)
+					{
+						stream << ",";
+					}
+				}
+				stream << "] ";
+				break;
+			default:
+				stream << "###UNKNOWN### ";
+				break;
+			}
+		}
 
-		if (!e)
+		Data print_func(const list_t<Data>::type& args, SourceLogger* log)
 		{
 			std::stringstream stream;
-			stream << "Couldn't find expression '" << name << "'";
-			mLogger->log(L_Error, stream.str());
 
-			return Data();
-		}
-
-		return e(args, mLogger);
-	}
-
-	void print_val(const Data& d, std::stringstream& stream)
-	{
-		switch (d.type())
-		{
-		case Data::T_Bool:
-			stream << (d.getBool() ? "true " : "false ");
-			break;
-		case Data::T_Integer:
-			stream << d.getInt() << " ";
-			break;
-		case Data::T_Float:
-			stream << d.getFloat() << " ";
-			break;
-		case Data::T_String:
-			stream << d.getString() << " ";
-			break;
-		case Data::T_Group:
-			stream << "DATA(" << d.getGroup()->id() << ") ";
-			break;
-		case Data::T_Array:
-			stream << "[";
-			for (size_t i = 0; i < d.getArray()->size(); ++i)
+			for (list_t<Data>::type::const_iterator it = args.begin();
+				it != args.end();
+				++it)
 			{
-				Data x = d.getArray()->at(i);
-				print_val(x, stream);
-
-				if (i != d.getArray()->size() - 1)
-				{
-					stream << ",";
-				}
+				print_val(*it, stream);
 			}
-			stream << "] ";
-			break;
-		default:
-			stream << "###UNKNOWN### ";
-			break;
-		}
-	}
 
-	Data Expressions::print_func(const list_t<Data>::type& args, SourceLogger* log)
-	{
-		std::stringstream stream;
-
-		for (list_t<Data>::type::const_iterator it = args.begin();
-			it != args.end();
-			++it)
-		{
-			print_val(*it, stream);
-		}
-
-		log->log(L_Info, stream.str());
-		return Data();
-	}
-
-	Data Expressions::if_func(const list_t<Data>::type& args, SourceLogger* log)
-	{
-		if (args.size() != 3 && args.size() != 2)
-		{
-			log->log(L_Error, "Invalid arguments given for $(if ...)");
+			log->log(L_Info, stream.str());
 			return Data();
 		}
 
-		list_t<Data>::type arr = args;
-
-		Data cond = arr.front();
-		arr.pop_front();
-
-		Data succ = arr.front();
-		arr.pop_front();
-
-		Data fail;
-		if (!arr.empty())
-			fail = arr.front();
-
-		bool c = false;
-		if (cond.type() == Data::T_Bool)
+		Data if_func(const list_t<Data>::type& args, SourceLogger* log)
 		{
-			c = cond.getBool();
-		}
-		else if (cond.isNumber())
-		{
-			c = (cond.getNumber() == 0);
-		}
-		else
-		{
-			log->log(L_Error, "Non boolean condition given for $(if ...)");
-			return Data();
-		}
+			if (args.size() != 3 && args.size() != 2)
+			{
+				log->log(L_Error, "Invalid arguments given for $(if ...)");
+				return Data();
+			}
 
-		return c ? succ : fail;
+			list_t<Data>::type arr = args;
+
+			Data cond = arr.front();
+			arr.pop_front();
+
+			Data succ = arr.front();
+			arr.pop_front();
+
+			Data fail;
+			if (!arr.empty())
+				fail = arr.front();
+
+			bool c = false;
+			if (cond.type() == Data::T_Bool)
+			{
+				c = cond.getBool();
+			}
+			else if (cond.isNumber())
+			{
+				c = (cond.getNumber() == 0);
+			}
+			else
+			{
+				log->log(L_Error, "Non boolean condition given for $(if ...)");
+				return Data();
+			}
+
+			return c ? succ : fail;
+		}
 	}
 }

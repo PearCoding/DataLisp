@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, �mercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -70,25 +70,25 @@ namespace DL
 		mArray = a;
 	}
 
-	int32 Data::getInt() const
+	Integer Data::getInt() const
 	{
 		DL_ASSERT(mType == T_Integer);
 		return mInt;
 	}
 
-	void Data::setInt(int32 i)
+	void Data::setInt(Integer i)
 	{
 		mType = T_Integer;
 		mInt = i;
 	}
 
-	float Data::getFloat() const
+	Float Data::getFloat() const
 	{
 		DL_ASSERT(mType == T_Float);
 		return mFloat;
 	}
 
-	float Data::getNumber() const
+	Float Data::getNumber() const
 	{
 		DL_ASSERT(mType == T_Float || mType == T_Integer);
 
@@ -98,11 +98,11 @@ namespace DL
 		}
 		else
 		{
-			return static_cast<float>(mInt);
+			return static_cast<Float>(mInt);
 		}
 	}
 
-	void Data::setFloat(float f)
+	void Data::setFloat(Float f)
 	{
 		mType = T_Float;
 		mFloat = f;

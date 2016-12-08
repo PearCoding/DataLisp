@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, �mercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -62,15 +62,7 @@ namespace DL
 	bool Parser::lookahead(TokenType type)
 	{
 		Token token = mLexer.look();
-
-		if (token.Type == type)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return token.Type == type;
 	}
 
 	const char* Parser::tokenToString(TokenType type)
@@ -204,7 +196,7 @@ namespace DL
 			match(T_OpenParanthese);
 
 			node->Type = VNT_Statement;
-			node->Statement = gr_statement();
+			node->_Statement = gr_statement();
 
 			match(T_CloseParanthese);
 		}
@@ -213,7 +205,7 @@ namespace DL
 			match(T_OpenSquareBracket);
 
 			node->Type = VNT_Array;
-			node->Array = gr_array();
+			node->_Array = gr_array();
 
 			match(T_CloseSquareBracket);
 		}
@@ -222,7 +214,7 @@ namespace DL
 			match(T_ExpressionParanthese);
 
 			node->Type = VNT_Expression;
-			node->Expression = gr_expression();
+			node->_Expression = gr_expression();
 
 			match(T_CloseParanthese);
 		}
@@ -231,35 +223,35 @@ namespace DL
 			Token str = match(T_Integer);
 
 			node->Type = VNT_Integer;
-			std::istringstream(str.Value) >> node->Integer;
+			std::istringstream(str.Value) >> node->_Integer;
 		}
 		else if (lookahead(T_Float))
 		{
 			Token str = match(T_Float);
 
 			node->Type = VNT_Float;
-			std::istringstream(str.Value) >> node->Float;
+			std::istringstream(str.Value) >> node->_Float;
 		}
 		else if (lookahead(T_String))
 		{
 			Token str = match(T_String);
 
 			node->Type = VNT_String;
-			node->String = str.Value;
+			node->_String = str.Value;
 		}
 		else if (lookahead(T_True))
 		{
 			match(T_True);
 
 			node->Type = VNT_Boolean;
-			node->Boolean = true;
+			node->_Boolean = true;
 		}
 		else if (lookahead(T_False))
 		{
 			match(T_False);
 
 			node->Type = VNT_Boolean;
-			node->Boolean = false;
+			node->_Boolean = false;
 		}
 		else
 		{
