@@ -45,11 +45,6 @@ namespace DL
 		ValueNode* Value;
 	};
 
-	struct ArrayNode
-	{
-		list_t<ValueNode*>::type Nodes;
-	};
-
 	enum ValueNodeType
 	{
 		VNT_Statement,
@@ -57,7 +52,6 @@ namespace DL
 		VNT_Float,
 		VNT_String,
 		VNT_Boolean,
-		VNT_Array,
 		VNT_Expression,
 		VNT_Unknown
 	};
@@ -67,7 +61,6 @@ namespace DL
 		union
 		{
 			StatementNode*  _Statement;
-			ArrayNode*		_Array;
 			Integer			_Integer;
 			Float			_Float;
 			bool			_Boolean;

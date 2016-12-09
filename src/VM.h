@@ -27,77 +27,45 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
-#include "DataArray.h"
+#pragma once
+
+#include "DataLispConfig.h"
 
 namespace DL
 {
-	DataArray::DataArray()
+	class DataContainer;
+	class SourceLogger;
+
+	/** @class VM VM.h DL/VM.h
+	 * @brief Utility class for expressions
+	 */
+	class DL_LIB VM
 	{
-	}
+	public:
+		/**
+		 * @brief Constructs the class with the assigned container and logger
+		 */
+		VM(DataContainer& container, SourceLogger* logger);
+		~VM();
 
-	DataArray::~DataArray()
-	{
-	}
+		/**
+		 * @brief Returns assigned DataContainer
+		 */
+		inline const DataContainer& container() const {return mContainer;}
 
-	size_t DataArray::size() const
-	{
-		return mList.size();
-	}
+		/**
+		 * @brief Returns assigned DataContainer
+		 */
+		inline DataContainer& container() {return mContainer;}
 
-	Data DataArray::at(size_t i) const
-	{
-		if(i < mList.size())
-			return mList.at(i);
-		else
-			return Data();
-	}
+		/**
+		 * @brief Returns assigned SourceLogger
+		 */
+		inline SourceLogger* logger() const { return mLogger; }
 
-	void DataArray::add(const Data& d)
-	{
-		if(d.isValid())
-			mList.push_back(d);
-	}
-
-	void DataArray::set(size_t i, const Data& d)
-	{
-		if(!d.isValid())
-			return;
-			
-		if(i == mList.size())
-			mList.push_back(d);
-		else if(i < mList.size())
-			mList[i] = d;
-	}
-
-	bool DataArray::isAllType(Data::Type type) const
-	{
-		if (mList.empty())
-			return false;
-
-		for (std::vector<Data>::const_iterator it = mList.begin();
-			it != mList.end();
-			it++)
-		{
-			if (it->type() != type)
-				return false;
-		}
-
-		return true;
-	}
-
-	bool DataArray::isAllNumber() const
-	{
-		if (mList.empty())
-			return false;
-
-		for (std::vector<Data>::const_iterator it = mList.begin();
-			it != mList.end();
-			it++)
-		{
-			if (!it->isNumber())
-				return false;
-		}
-
-		return true;
-	}
+		
+	private:
+		DataContainer& mContainer;
+		SourceLogger* mLogger;
+	};
 }

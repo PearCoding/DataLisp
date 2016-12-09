@@ -30,11 +30,11 @@
 #include "DataLisp.h"
 #include "Parser.h"
 #include "DataContainer.h"
+#include "VM.h"
 #include "Expressions.h"
 
 #include "Data.h"
 #include "DataGroup.h"
-#include "DataArray.h"
 
 #include "SourceLogger.h"
 
@@ -73,7 +73,10 @@ namespace DL
 				white += " ";
 
 			string_t str;
-			str = white + "Statement {" + n->Name + "\n";
+			if(n->Name.empty())
+				str = white + "Array {" + "\n";
+			else
+				str = white + "Statement {" + n->Name + "\n";
 
 			for (list_t<DataNode*>::type::const_iterator it = n->Nodes.begin();
 				it != n->Nodes.end();
@@ -161,14 +164,6 @@ namespace DL
 				else
 					str += "false";
 				break;
-			case VNT_Array:
-				for (list_t<ValueNode*>::type::const_iterator it = n->_Array->Nodes.begin();
-					it != n->_Array->Nodes.end();
-					++it)
-				{
-					str += dumpNode((*it), depth + 1);
-				}
-				break;
 			case VNT_Expression:
 				str += dumpNode(n->_Expression, depth + 1);
 				break;
@@ -178,29 +173,29 @@ namespace DL
 			return white + str + "\n";
 		}
 
-		static string_t generateDataGroup(DataGroup* d, int depth)
+		static string_t generateDataGroup(const DataGroup& d, int depth)
 		{
-			DL_ASSERT(d);
-
 			string_t white;
 			for (int i = 0; i < depth; ++i)
 				white += " ";
 
 			string_t str;
 
-			str = white + "(" + d->id() + "\n";
+			if(d.isArray())
+				str = white + "[" + "\n";
+			else
+				str = white + "(" + d.id() + "\n";
 
-			for (size_t i = 0; i < d->anonymousCount(); ++i)
-				str += generateData(d->at(i), depth + 1) + "\n";
+			for (size_t i = 0; i < d.anonymousCount(); ++i)
+				str += generateData(d.at(i), depth + 1) + "\n";
 
-			list_t<Data>::type list = d->getNamedEntries();
-			for (list_t<Data>::type::const_iterator it = list.begin();
-				it != list.end();
+			for (vector_t<Data>::type::const_iterator it = d.getNamedEntries().begin();
+				it != d.getNamedEntries().end();
 				++it)
 			{
 				str += generateData(*it, depth + 1) + "\n";
 			}
-			str += white + ")";
+			str += white + (!d.isArray() ? ")" : "]");
 
 			return str;
 		}
@@ -220,33 +215,6 @@ namespace DL
 			return white + str;
 		}
 
-		static string_t generateArray(DataArray* d, int depth)
-		{
-			DL_ASSERT(d);
-
-			string_t white;
-			for (int i = 0; i < depth; ++i)
-				white += " ";
-
-			string_t str;
-
-			if (d->size() == 0)
-			{
-				str = "[]";
-			}
-			else
-			{
-				str = "[" + generateValue(d->at(0), depth + 1) + ",\n";
-
-				for (size_t i = 1; i < d->size(); ++i)
-					str += white + generateValue(d->at(i), depth + 1) + ",\n";
-
-				str += white + "]";
-			}
-
-			return str;
-		}
-
 		static string_t generateValue(const Data& d, int depth)
 		{
 			string_t str;
@@ -255,9 +223,6 @@ namespace DL
 			{
 			case Data::T_Group:
 				str = generateDataGroup(d.getGroup(), depth);
-				break;
-			case Data::T_Array:
-				str = generateArray(d.getArray(), depth);
 				break;
 			case Data::T_Bool:
 				if (d.getBool())
@@ -338,17 +303,6 @@ namespace DL
 			{
 				deleteNode(n->_Statement);
 			}
-			else if (n->Type == VNT_Array)
-			{
-				for (list_t<ValueNode*>::type::const_iterator it = n->_Array->Nodes.begin();
-					it != n->_Array->Nodes.end();
-					++it)
-				{
-					deleteNode(*it);
-				}
-
-				delete n->_Array;
-			}
 			else if (n->Type == VNT_Expression)
 			{
 				deleteNode(n->_Expression);
@@ -357,26 +311,24 @@ namespace DL
 			delete n;
 		}
 
-		DataGroup* buildGroup(StatementNode* n, DataContainer& container)
+		DataGroup buildGroup(StatementNode* n, VM& vm)
 		{
 			DL_ASSERT(n);
 
-			DataGroup* group = container.createGroup();
-			group->setID(n->Name);
-
+			DataGroup group(n->Name);
 			for (list_t<DataNode*>::type::iterator it = n->Nodes.begin();
 				it != n->Nodes.end();
 				++it)
 			{
-				Data data = buildData(*it, container);
+				Data data = buildData(*it, vm);
 				if (data.isValid())
-					group->addData(data);
+					group.add(data);
 			}
 
 			return group;
 		}
 
-		Data buildData(DataNode* n, DataContainer& container)
+		Data buildData(DataNode* n, VM& vm)
 		{
 			DL_ASSERT(n);
 
@@ -386,8 +338,7 @@ namespace DL
 			case VNT_Statement:
 			{
 				data = Data(n->Key);
-				DataGroup* group = buildGroup(n->Value->_Statement, container);
-				data.setGroup(group);
+				data.setGroup(buildGroup(n->Value->_Statement, vm));
 			}
 			break;
 			case VNT_Integer:
@@ -406,16 +357,9 @@ namespace DL
 				data = Data(n->Key);
 				data.setBool(n->Value->_Boolean);
 				break;
-			case VNT_Array:
-			{
-				data = Data(n->Key);
-				DataArray* a = buildArray(n->Value->_Array, container);
-				data.setArray(a);
-			}
-			break;
 			case VNT_Expression:
 			{
-				data = buildExpression(n->Value->_Expression, container);
+				data = buildExpression(n->Value->_Expression, vm);
 				data.setKey(n->Key);
 			}
 			break;
@@ -426,83 +370,23 @@ namespace DL
 			return data;
 		}
 
-		DataArray* buildArray(ArrayNode* n, DataContainer& container)
-		{
-			DL_ASSERT(n);
-
-			DataArray* a = container.createArray();
-
-			for (list_t<ValueNode*>::type::iterator it = n->Nodes.begin();
-				it != n->Nodes.end();
-				++it)
-			{
-				Data dat = buildArrayValue(*it, container);
-
-				if (dat.isValid())
-					a->add(dat);
-			}
-
-			return a;
-		}
-
-		Data buildArrayValue(ValueNode* n, DataContainer& container)
-		{
-			DL_ASSERT(n);
-
-			Data data;
-			switch (n->Type)
-			{
-			case VNT_Statement:
-			{
-				DataGroup* group = buildGroup(n->_Statement, container);
-				data.setGroup(group);
-			}
-			break;
-			case VNT_Integer:
-				data.setInt(n->_Integer);
-				break;
-			case VNT_Float:
-				data.setFloat(n->_Float);
-				break;
-			case VNT_String:
-				data.setString(n->_String);
-				break;
-			case VNT_Boolean:
-				data.setBool(n->_Boolean);
-				break;
-			case VNT_Array:
-			{
-				DataArray* a = buildArray(n->_Array, container);
-				data.setArray(a);
-			}
-			break;
-			case VNT_Expression:
-				data = buildExpression(n->_Expression, container);
-				break;
-			default:
-				break;
-			};
-
-			return data;
-		}
-
-		Data buildExpression(ExpressionNode* n, DataContainer& container)
+		Data buildExpression(ExpressionNode* n, VM& vm)
 		{
 			list_t<Data>::type args;
 			for (list_t<DataNode*>::type::iterator it = n->Nodes.begin();
 				it != n->Nodes.end();
 				++it)
 			{
-				Data data = buildData(*it, container);
+				Data data = buildData(*it, vm);
 
 				if (data.isValid())
 					args.push_back(data);
 			}
 
-			return exec_expression(n->Name, args);
+			return exec_expression(n->Name, args, vm);
 		}
 
-		Data exec_expression(const string_t& name, const list_t<Data>::type& args)
+		Data exec_expression(const string_t& name, const list_t<Data>::type& args, VM& vm)
 		{
 			if (!mExpressions.count(name))
 			{
@@ -513,7 +397,7 @@ namespace DL
 				return Data();
 			}
 
-			return mExpressions[name](args, mLogger);
+			return mExpressions[name](args, vm);
 		}
 
 	public:
@@ -530,10 +414,7 @@ namespace DL
 		DL_ASSERT(log);
 
 		if(stdlib)
-		{
-			addExpression("print", Expressions::print_func);
-			addExpression("if", Expressions::if_func);
-		}
+			mInternal->mExpressions = Expressions::getStdLib();
 	}
 
 	DataLisp::~DataLisp()
@@ -552,20 +433,20 @@ namespace DL
 	{
 		DL_ASSERT(mInternal->mTree);
 
+		VM vm(container, mInternal->mLogger);
 		for (list_t<StatementNode*>::type::iterator it = mInternal->mTree->Nodes.begin();
 			it != mInternal->mTree->Nodes.end();
 			++it)
 		{
-			DataGroup* group = mInternal->buildGroup(*it, container);
-			container.addTopGroup(group);
+			container.addTopGroup(mInternal->buildGroup(*it, vm));
 		}
 	}
 
 	string_t DataLisp::generate(const DataContainer& container)
 	{		string_t output;
 
-		list_t<DataGroup*>::type top = container.getTopGroups();
-		for (list_t<DataGroup*>::type::const_iterator it = top.begin();
+		list_t<DataGroup>::type top = container.getTopGroups();
+		for (list_t<DataGroup>::type::const_iterator it = top.begin();
 			it != top.end();
 			++it)
 		{

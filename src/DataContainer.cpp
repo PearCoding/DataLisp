@@ -31,7 +31,6 @@
 #include "SyntaxTree.h"
 
 #include "DataGroup.h"
-#include "DataArray.h"
 #include "Data.h"
 
 #include "Expressions.h"
@@ -44,62 +43,15 @@ namespace DL
 
 	DataContainer::~DataContainer()
 	{
-		for (list_t<DataGroup*>::type::iterator it = mGroups.begin();
-			it != mGroups.end();
-			++it)
-		{
-			delete *it;
-		}
-
-		for (list_t<DataArray*>::type::iterator it = mArrays.begin();
-			it != mArrays.end();
-			++it)
-		{
-			delete *it;
-		}
 	}
 
-	DataGroup* DataContainer::createGroup()
-	{
-		DataGroup* grp = new DataGroup();
-		mGroups.push_back(grp);
-
-		return grp;
-	}
-
-	DataArray* DataContainer::createArray()
-	{
-		DataArray* arr = new DataArray();
-		mArrays.push_back(arr);
-
-		return arr;
-	}
-
-	list_t<DataGroup*>::type DataContainer::getTopGroups() const
+	const list_t<DataGroup>::type& DataContainer::getTopGroups() const
 	{
 		return mTopGroups;
 	}
 
-	list_t<DataGroup*>::type DataContainer::getAllGroupsID(const string_t& id) const
+	void DataContainer::addTopGroup(const DataGroup& group)
 	{
-		list_t<DataGroup*>::type list;
-
-		for (list_t<DataGroup*>::type::const_iterator it = mGroups.begin();
-			it != mGroups.end();
-			++it)
-		{
-			if ((*it)->id() == id)
-			{
-				list.push_back(*it);
-			}
-		}
-
-		return list;
-	}
-
-	void DataContainer::addTopGroup(DataGroup* group)
-	{
-		DL_ASSERT(group);
 		mTopGroups.push_back(group);
 	}
 }

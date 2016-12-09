@@ -50,13 +50,11 @@ namespace DL
 
 		SyntaxTree* gr_tr_unit();
 		StatementNode* gr_statement();
+		StatementNode* gr_array();
 		ExpressionNode* gr_expression();
 
 		list_t<DataNode*>::type gr_data_list();
 		DataNode* gr_data();
-
-		ArrayNode* gr_array();
-		list_t<ValueNode*>::type gr_array_list();
 
 		ValueNode* gr_value();
 

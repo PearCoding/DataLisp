@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language id="datalisp" _name="DataLisp" _section="Source" version="2.0">
+  <metadata>
+    <property name="globs">*.dl;*.datalisp;*.prc</property>
+    <property name="line-comment-start">;</property>
+  </metadata>
+
+  <styles>
+    <style id="comment" _name="Comment" map-to="def:comment"/>
+    <style id="string" _name="String" map-to="def:string" />
+    <style id="keyword" _name="Keyword" map-to="def:keyword" />
+    <style id="expression" _name="Expression" map-to="def:keyword" />
+    <style id="entry_name" _name="Entry Name" map-to="def:constant" />
+    <style id="escaped-character" _name="Escaped Character" map-to="def:special-char"/>
+  </styles>
+
+  <definitions>
+
+    <define-regex id="identifier">\b[a-zA-Z_.][a-zA-Z0-9_.]*\b</define-regex>
+
+    <context id="comment" style-ref="comment">
+      <start>\/\/</start>
+      <end>$</end>
+    </context>
+
+    <context id="string" end-at-line-end="true" style-ref="string">
+      <start>("|')</start>
+      <end>("|')</end>
+      <include>
+	<context id="escape" style-ref="escaped-character">
+	  <match>\\.</match>
+        </context>
+      </include>
+    </context>
+
+    <context id="named_entry" end-at-line-end="true">
+      <start>\:(\%{identifier})</start>
+      <end>(\,)?</end>
+	  <include>
+	    <context sub-pattern="1" style-ref="entry_name"/>
+	  </include>
+    </context>
+
+    <context id="group">
+      <start>[^\$]?\((\%{identifier})</start>
+      <end>\)</end>
+      <include>
+        <context sub-pattern="1" style-ref="keyword"/>
+	<context ref="named_entry"/>
+      </include>
+    </context>
+
+    <context id="expression">
+      <start>\$\(\s*(\%{identifier})</start>
+      <end>\)</end>
+      <include>
+        <context sub-pattern="1" style-ref="expression"/>
+      </include>
+    </context>
+
+    <context id="array">
+      <start>\[</start>
+      <end>\]</end>
+    </context>
+
+    <context id="datalisp">
+	  <include>
+		<context ref="comment"/>
+
+		<context ref="group"/>
+		<context ref="expression"/>
+		<context ref="array"/>
+
+		<context ref="string"/>
+		<context ref="def:decimal"/>
+		<context ref="def:float"/>
+	  </include>
+    </context>
+
+  </definitions>
+</language>

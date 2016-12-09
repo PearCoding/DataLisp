@@ -35,6 +35,7 @@ ENDIF()
 
 #PACKAGES
 option(DL_ONLY_LIBRARY "Compile only library" OFF)
+option(DL_WITH_CPP11 "Use the C++11 standard" ON)
 option(DL_WITH_PYTHON "Compile additional python interface module" ON)
 option(DL_BUILD_TESTS "Build tests." ON)
 option(DL_BUILD_DOCUMENTATION "Build documentation with doxygen." ON)
@@ -100,19 +101,23 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 SET(DL_Src
   src/Data.cpp
-  src/DataArray.cpp
   src/DataContainer.cpp
   src/DataGroup.cpp
   src/DataLisp.cpp
   src/Expressions.cpp
   src/Lexer.cpp
   src/Parser.cpp
-  src/SourceLogger.cpp)
+  src/SourceLogger.cpp
+  src/VM.cpp
+  src/expressions/cast.cpp
+  src/expressions/conditional.cpp
+  src/expressions/entries.cpp
+  src/expressions/helper.cpp
+  src/expressions/io.cpp)
 
 SET(DL_Hdr
   src/DataLispConfig.h.in
   src/Data.h
-  src/DataArray.h
   src/DataContainer.h
   src/DataGroup.h
   src/DataLisp.h
@@ -121,7 +126,9 @@ SET(DL_Hdr
   src/Parser.h
   src/SourceLogger.h
   src/SyntaxTree.h
-  src/Token.h)
+  src/Token.h
+  src/VM.h
+  src/expressions/helper.h)
 
 SET(DL_PY_Src
   src/python/module.cpp)

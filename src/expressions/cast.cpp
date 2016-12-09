@@ -27,70 +27,47 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
-#pragma once
+#include "Expressions.h"
+#include "DataGroup.h"
+#include "DataContainer.h"
+#include "SourceLogger.h"
 
-#include "Data.h"
+#include <sstream>
+
+#include "helper.h"
 
 namespace DL
 {
-	/** @class DataArray DataArray.h DL/DataArray.h
-	 * @brief Capsulate an anonymous group containing only anonymous data 
-	 *
-	 * Resembles an entry of type:
-	 * @code{.lisp}
-	 * [
-	 *   ;...
-	 * ]
-	 * @endcode
-	 */
-	class DL_LIB DataArray
+	namespace Expressions
 	{
-	public:
-		DataArray();
-		~DataArray();
+		Data bool_func_e(const Data& d, VM& vm)
+		{
+			return castTo(d, Data::T_Bool, vm, true);
+		}
 
-		/**
-		 * @brief Returns amount of anonymous data
-		 */
-		size_t size() const;
+		Data bool_func(const list_t<Data>::type& args, VM& vm)
+		{
+			return doElementWise(bool_func_e, args, vm);
+		}
 
-		/**
-		 * @brief Returns anonymous data at index i
-		 * @param i Index of data
-		 */
-		Data at(size_t i) const;
+		Data int_func_e(const Data& d, VM& vm)
+		{
+			return castTo(d, Data::T_Integer, vm, true);
+		}
 
-		/**
-		 * @brief Appends given data at the back
-		 * @param d Non-invalid data 
-		 */
-		void add(const Data& d);
+		Data int_func(const list_t<Data>::type& args, VM& vm)
+		{	
+			return doElementWise(int_func_e, args, vm);
+		}
 
-		/**
-		 * @brief Replaces data at index i
-		 *
-		 * If index i is equal to size(), data will be added instead.<br>
-		 * It ignores an out of bound index.
-		 * @param i Index of data to be replaced
-		 * @param d Non-invalid data
-		 */
-		void set(size_t i, const Data& d);
+		Data float_func_e(const Data& d, VM& vm)
+		{
+			return castTo(d, Data::T_Float, vm, true);
+		}
 
-		/**
-		 * @brief Checks if all data is from the same type
-		 * @param type The type to check against
-		 * @return Returns true if all entries are from the same type, false otherwise
-		 * @see DL::Data::type
-		 */
-		bool isAllType(Data::Type type) const;
-
-		/**
-		 * @brief Checks if all data is a number
-		 * @return Returns true if all entries are numbers, false otherwise
-		 * @see DL::Data::isNumber
-		 */
-		bool isAllNumber() const;
-	private:
-		vector_t<Data>::type mList;
-	};
+		Data float_func(const list_t<Data>::type& args, VM& vm)
+		{
+			return doElementWise(float_func_e, args, vm);
+		}
+	}
 }

@@ -38,41 +38,86 @@ namespace DL
 	/** @class DataGroup DataGroup.h DL/DataGroup.h
 	 * @brief Capsulate a generic group identified with an id
 	 *
+	 * A generic group is an array if the condition holds:
+	 *   @p id() is empty
 	 * Resembles an entry of type:
 	 * @code{.lisp}
 	 * (ID
 	 *   ;...
 	 * )
 	 * @endcode
+	 * or if anonymous:
+	 * @code{.lisp}
+	 * [
+	 *   ;...
+	 * ]
+	 * @endcode
+	 *
+	 * @attention This class uses reference counting without Copy on Write.<br>
+	 * Every change will be transfered to other instances aswell. 
+	 * @attention This class is not thread safe!
 	 */
 	class DL_LIB DataGroup
 	{
 	public:
-		DataGroup();
+		/**
+		 * @brief Constructs a fresh group
+		 * @param id The id of the new created group. Let it empty to create an array 
+		 */
+		DataGroup(const string_t& id = "");
+
+		/**
+		 * @brief References container and increases reference count 
+		 */
+		DataGroup(const DataGroup& other);
+
+	#ifdef DL_WITH_CPP11
+		/**
+		 * @brief Moves container content
+		 */
+		DataGroup(DataGroup&& o) noexcept;
+	#endif
+
 		~DataGroup();
+
+		/**
+		 * @brief Assigns container and increases reference count 
+		 */
+		DataGroup& operator =(const DataGroup& other);
+
+	#ifdef DL_WITH_CPP11
+		/**
+		 * @brief Moves container content
+		 */
+		DataGroup& operator =(DataGroup&& other) noexcept;
+	#endif
+
+		/**
+		 * @brief Current count of references
+		 */
+		uint32 referenceCount() const;
+
+		/**
+		 * @brief Sets the reference count to 1 and copies data
+		 */
+		void make_unique();
 
 		/**
 		 * @brief Returns id
 		 */
-		inline string_t id() const
-		{
-			return mID;
-		}
+		inline string_t id() const { return mShared->ID; }
 
 		/**
 		 * @brief Replaces id with given one
 		 * @param str New id name
 		 */
-		inline void setID(const string_t& str)
-		{
-			mID = str;
-		}
+		inline void setID(const string_t& str) { mShared->ID = str; }
 
 		/**
 		 * @brief Adds (anonymous or non anonymous) data into group
 		 * @param data Data to add. Can be anonymous or non anonymous
 		 */
-		void addData(const Data& data);
+		void add(const Data& data);
 
 		/**
 		 * @brief Returns anonymous data from position i
@@ -102,7 +147,7 @@ namespace DL
 		 * @param str The id of the non anonymous data
 		 * @see getFromKey
 		 */
-		list_t<Data>::type getAllFromKey(const string_t& key) const;
+		vector_t<Data>::type getAllFromKey(const string_t& key) const;
 
 		/**
 		 * @brief Checks if id is available
@@ -112,12 +157,58 @@ namespace DL
 		bool hasKey(const string_t& key) const;
 
 		/**
+		 * @brief Checks if group is an array (anonymous group)
+		 *
+	 	 * A generic group is an array when the condition holds:
+		 *   @p id() is empty
+		 * @return Returns true if group has the data with the given id, false otherwise
+		 */
+		bool isArray() const { return mShared->ID.empty(); }
+
+		/**
+		 * @brief Returns all data entries
+		 *
+		 * It is more efficient to iterate over named and anonymous entries separately.
+		 */
+		vector_t<Data>::type getAllEntries() const;
+
+		/**
 		 * @brief Returns all non anonymous data entries
 		 */
-		const list_t<Data>::type& getNamedEntries() const;
+		const vector_t<Data>::type& getNamedEntries() const;
+
+		/**
+		 * @brief Returns all anonymous data entries
+		 */
+		const vector_t<Data>::type& getAnonymousEntries() const;
+
+		/**
+		 * @brief Checks if all data is a number
+		 * @return Returns true if all entries are numbers, false otherwise
+		 * @see DL::Data::isNumber
+		 */
+		bool isAllNumber() const;
+
+		/**
+		 * @brief Checks if all anonymous data is a number
+		 * @return Returns true if all entries are numbers, false otherwise
+		 * @see DL::Data::isNumber
+		 */
+		bool isAllAnonymousNumber() const;
+
+		/**
+		 * @brief Checks if all anonymous data is a number
+		 * @return Returns true if all entries are numbers, false otherwise
+		 * @see DL::Data::isNumber
+		 */
+		bool isAllNamedNumber() const;
 	private:
-		string_t mID;
-		vector_t<Data>::type mData;
-		list_t<Data>::type mNamedData;
+		struct SharedData
+		{
+			string_t ID;
+			vector_t<Data>::type AnonymousData;
+			vector_t<Data>::type NamedData;
+			uint32 References;
+		}* mShared;
 	};
 }

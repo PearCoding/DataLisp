@@ -33,9 +33,7 @@
 
 namespace DL
 {
-	class Data;
 	class DataGroup;
-	class DataArray;
 
 	/** @class DataContainer DataContainer.h DL/DataContainer.h
 	 * @brief Container class containing all data used by %DataLisp
@@ -49,39 +47,17 @@ namespace DL
 		/**
 		 * @brief Returns all groups on top of the hierarchy 
 		 */
-		list_t<DataGroup*>::type getTopGroups() const;
-
-		/**
-		 * @brief Returns all groups with the given id
-		 * @param id A string with the id of the group
-		 */
-		list_t<DataGroup*>::type getAllGroupsID(const string_t& id) const;
+		const list_t<DataGroup>::type& getTopGroups() const;
 
 		/**
 		 * @brief Adds a group to the top of the hierachy
 		 *
 		 * Does not take ownership of the group or his content 
-		 * @param group A valid (not null) DataGroup
+		 * @param group The group to add
 		 */
-		void addTopGroup(DataGroup* group);
+		void addTopGroup(const DataGroup& group);
 
-		/**
-		 * @brief Creates a group and takes his memory ownership
-		 *
-		 * @attention Do not delete the group on your own!
-		 */
-		DataGroup* createGroup();
-
-		/**
-		 * @brief Creates a array and takes his memory ownership
-		 *
-		 * @attention Do not delete the array on your own!
-		 */
-		DataArray* createArray();
 	private:
-		list_t<DataGroup*>::type mTopGroups;
-
-		list_t<DataGroup*>::type mGroups;
-		list_t<DataArray*>::type mArrays;
+		list_t<DataGroup>::type mTopGroups;
 	};
 }

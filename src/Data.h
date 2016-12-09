@@ -29,14 +29,10 @@
  */
 #pragma once
 
-#include "DataLispConfig.h"
+#include "DataGroup.h"
 
 namespace DL
 {
-	class DataArray;
-	class DataContainer;
-	class DataGroup;
-
 	/** @class Data Data.h DL/Data.h
 	 * @brief Main class encapsulating all types of data useable by %DataLisp
 	 *
@@ -59,7 +55,6 @@ namespace DL
 			T_Float,	///< Floating point number
 			T_Bool,		///< Boolean value with two states (@p true and @p false)
 			T_String,	///< String value
-			T_Array,	///< DataArray instance
 			T_None		///< No data. Invalid state
 		};
 
@@ -118,27 +113,13 @@ namespace DL
 		 * Only valid if type is @link T_Group @endlink.
 		 * @see setGroup
 		 */
-		DataGroup* getGroup() const;
+		const DataGroup& getGroup() const;
 
 		/**
 		 * @brief Set data to a DataGroup value. Type will be set to @link T_Group @endlink
 		 * @see getGroup
 		 */
-		void setGroup(DataGroup*);
-
-		/**
-		 * @brief Returns encapsulated DataArray value
-		 *
-		 * Only valid if type is @link T_Array @endlink.
-		 * @see setArray
-		 */
-		DataArray* getArray() const;
-
-		/**
-		 * @brief Set data to a DataArray value. Type will be set to @link T_Array @endlink
-		 * @see getArray
-		 */
-		void setArray(DataArray*);
+		void setGroup(const DataGroup& grp);
 
 		/**
 		 * @brief Returns encapsulated integer value
@@ -217,12 +198,11 @@ namespace DL
 		Type mType;
 		union
 		{
-			DataGroup* mGroup;
-			DataArray* mArray;
 			Integer mInt;
 			Float mFloat;
 			bool mBool;
 		};
+		DataGroup mGroup;
 		string_t mString;
 	};
 }

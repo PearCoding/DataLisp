@@ -32,43 +32,129 @@
 
 namespace DL
 {
-	DataGroup::DataGroup() :
-		mID()
+	DataGroup::DataGroup(const string_t& id) :
+		mShared(nullptr)
 	{
+		mShared = new SharedData;
+
+		mShared->ID = id;
+		mShared->References = 1;
+	}
+
+	DataGroup::DataGroup(const DataGroup& other) :
+		mShared(other.mShared)
+	{
+		DL_ASSERT(mShared->References > 0);
+		mShared->References++;
 	}
 
 	DataGroup::~DataGroup()
 	{
+		if(mShared)
+		{
+			DL_ASSERT(mShared->References > 0);
+
+			mShared->References -= 1;
+			if(mShared->References == 0)
+				delete mShared;
+		}
 	}
 
-	void DataGroup::addData(const Data& data)
+#ifdef DL_WITH_CPP11
+	DataGroup::DataGroup(DataGroup&& other) noexcept
 	{
+		mShared = other.mShared;
+		other.mShared = nullptr;
+	}
+
+	DataGroup& DataGroup::operator =(DataGroup&& other) noexcept
+	{
+		DL_ASSERT(other.mShared->References > 0);
+
+		if(mShared != other.mShared)
+		{
+			mShared = other.mShared;
+			other.mShared = nullptr;
+		}
+
+		return *this;
+	}
+#endif
+		
+	DataGroup& DataGroup::operator =(const DataGroup& other)
+	{
+		DL_ASSERT(other.mShared->References > 0);
+		
+		if(mShared != other.mShared)
+		{
+			mShared = other.mShared;
+			mShared->References++;
+		}
+		
+		return *this;
+	}
+
+	uint32 DataGroup::referenceCount() const
+	{
+		DL_ASSERT(mShared);
+
+		return mShared->References;
+	}
+		
+	void DataGroup::make_unique()
+	{
+		DL_ASSERT(mShared && mShared->References > 0);
+
+		if(mShared->References == 1)
+			return;
+		
+		SharedData* p = new SharedData;
+		p->ID = mShared->ID;
+		p->AnonymousData = mShared->AnonymousData;
+		p->NamedData = mShared->NamedData;
+
+		p->References = 1;
+		mShared->References -= 1;
+
+		mShared = p;
+	}
+
+	void DataGroup::add(const Data& data)
+	{
+		DL_ASSERT(mShared && mShared->References > 0);
+
 		if(!data.isValid())
 			return;
 			
 		if (data.key().empty())
-			mData.push_back(data);
+			mShared->AnonymousData.push_back(data);
 		else
-			mNamedData.push_back(data);
+			mShared->NamedData.push_back(data);
 	}
 
 	Data DataGroup::at(size_t i) const
 	{
-		if(i < mData.size())
-			return mData.at(i);
+		DL_ASSERT(mShared && mShared->References > 0);
+
+		if(i < mShared->AnonymousData.size())
+			return mShared->AnonymousData.at(i);
 		else
 			return Data();
 	}
 
 	size_t DataGroup::anonymousCount() const
 	{
-		return mData.size();
+		DL_ASSERT(mShared && mShared->References > 0);
+
+		return mShared->AnonymousData.size();
 	}
 
 	Data DataGroup::getFromKey(const string_t& str) const
 	{
-		for (list_t<Data>::type::const_iterator it = mNamedData.begin();
-			it != mNamedData.end();
+		DL_ASSERT(mShared && mShared->References > 0);
+
+		for (vector_t<Data>::type::const_iterator it = mShared->NamedData.begin();
+			it != mShared->NamedData.end();
 			++it)
 		{
 			if (it->key() == str)
@@ -78,11 +164,13 @@ namespace DL
 		return Data();
 	}
 
-	list_t<Data>::type DataGroup::getAllFromKey(const string_t& key) const
+	vector_t<Data>::type DataGroup::getAllFromKey(const string_t& key) const
 	{
-		list_t<Data>::type list;
-		for (list_t<Data>::type::const_iterator it = mNamedData.begin();
-			it != mNamedData.end();
+		DL_ASSERT(mShared && mShared->References > 0);
+
+		vector_t<Data>::type list;
+		for (vector_t<Data>::type::const_iterator it = mShared->NamedData.begin();
+			it != mShared->NamedData.end();
 			++it)
 		{
 			if (it->key() == key)
@@ -94,8 +182,10 @@ namespace DL
 
 	bool DataGroup::hasKey(const string_t& key) const
 	{
-		for (list_t<Data>::type::const_iterator it = mNamedData.begin();
-			it != mNamedData.end();
+		DL_ASSERT(mShared && mShared->References > 0);
+
+		for (vector_t<Data>::type::const_iterator it = mShared->NamedData.begin();
+			it != mShared->NamedData.end();
 			++it)
 		{
 			if (it->key() == key)
@@ -105,8 +195,70 @@ namespace DL
 		return false;
 	}
 
-	const list_t<Data>::type& DataGroup::getNamedEntries() const
+	vector_t<Data>::type DataGroup::getAllEntries() const
 	{
-		return mNamedData;
+		DL_ASSERT(mShared && mShared->References > 0);
+
+		vector_t<Data>::type ret;
+
+		ret.insert(ret.end(), mShared->NamedData.begin(), mShared->NamedData.end());
+		ret.insert(ret.end(), mShared->AnonymousData.begin(), mShared->AnonymousData.end());
+
+		return ret;
+	}
+
+	const vector_t<Data>::type& DataGroup::getNamedEntries() const
+	{
+		DL_ASSERT(mShared && mShared->References > 0);
+
+		return mShared->NamedData;
+	}
+
+	const vector_t<Data>::type& DataGroup::getAnonymousEntries() const
+	{
+		DL_ASSERT(mShared && mShared->References > 0);
+
+		return mShared->AnonymousData;
+	}
+
+	bool DataGroup::isAllNumber() const
+	{
+		return isAllAnonymousNumber() && isAllNamedNumber();
+	}
+
+	bool DataGroup::isAllAnonymousNumber() const
+	{
+		DL_ASSERT(mShared && mShared->References > 0);
+
+		if (mShared->AnonymousData.empty())
+			return false;
+
+		for (vector_t<Data>::type::const_iterator it = mShared->AnonymousData.begin();
+			it != mShared->AnonymousData.end();
+			it++)
+		{
+			if (!it->isNumber())
+				return false;
+		}
+
+		return true;
+	}
+
+	bool DataGroup::isAllNamedNumber() const
+	{
+		DL_ASSERT(mShared && mShared->References > 0);
+		
+		if (mShared->NamedData.empty())
+			return false;
+
+		for (vector_t<Data>::type::const_iterator it = mShared->NamedData.begin();
+			it != mShared->NamedData.end();
+			it++)
+		{
+			if (!it->isNumber())
+				return false;
+		}
+
+		return true;
 	}
 }

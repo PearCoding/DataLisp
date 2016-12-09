@@ -166,6 +166,8 @@
 # define DL_MAP_TYPE std::map
 #endif
 
+#cmakedefine DL_WITH_CPP11
+
 /** @file DataLispConfig.h DL/DataLispConfig.h 
  */
 
@@ -222,6 +224,6 @@ namespace DL
 	};
 
 	class Data;
-	class SourceLogger;
-	typedef Data (*expr_t)(const list_t<Data>::type& args, SourceLogger* log);///< Expression Callback
+	class VM;
+	typedef Data (*expr_t)(const list_t<Data>::type& args, VM& vm);///< Expression Callback
 }

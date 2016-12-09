@@ -50,7 +50,7 @@ int main(int argc, char** argv)
 
 	lisp.parse(TEST_FILE);
 	lisp.build(container);
-	std::string str = container.getTopGroups().front()->getFromKey("test").getString();
+	std::string str = container.getTopGroups().front().getFromKey("test").getString();
 
 	std::cout << str << std::endl;
 

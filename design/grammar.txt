@@ -5,6 +5,7 @@ statement:			'(' IDENTIFIER data_list ')'
 					;
 
 data_list			data data_list
+					| data ',' data_list
 					| /*EMPTY*/
 					;
 
@@ -28,11 +29,7 @@ boolean:			TRUE
 					| FALSE
 					;
 					
-array				'[' array_list ']'
-					;
-					
-array_list			value ',' array_list
-					| value
+array				'[' data_list ']' /* Anonymous statement */
 					;
 
 expression			'$(' IDENTIFIER data_list ')'

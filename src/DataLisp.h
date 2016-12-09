@@ -50,10 +50,6 @@
 namespace DL
 {
 	class DataContainer;
-	class Data;
-	class DataGroup;
-	class DataArray;
-
 	class SourceLogger;
 
 	/** @class DataLisp DataLisp.h DL/DataLisp.h

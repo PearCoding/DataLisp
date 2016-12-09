@@ -38,7 +38,85 @@ namespace DL
 	 */
 	namespace Expressions
 	{
-		Data print_func(const list_t<Data>::type& args, SourceLogger* log);
-		Data if_func(const list_t<Data>::type& args, SourceLogger* log);
+		map_t<string_t, expr_t>::type getStdLib();
+
+		/**
+		* @brief Prints content to SourceLogger
+		*/
+		Data print_func(const list_t<Data>::type& args, VM& vm);
+
+		/**
+		 * @brief Standard if function. 
+		 * 
+		 * Has to be called with one or two arguments
+		 */
+		Data if_func(const list_t<Data>::type& args, VM& vm);
+
+		/**
+		 * @brief Standard boolean 'not' function. 
+		 * 
+		 * Has to be called at least one argument
+		 * @see and_func
+		 * @see or_func
+		 */
+		Data not_func(const list_t<Data>::type& args, VM& vm);
+
+		/**
+		 * @brief Standard boolean 'and' function. 
+		 * 
+		 * Has to be called at least one argument
+		 * @see not_func
+		 * @see or_func
+		 */
+		Data and_func(const list_t<Data>::type& args, VM& vm);
+
+		/**
+		 * @brief Standard boolean 'or' function. 
+		 * 
+		 * Has to be called at least one argument
+		 * @see not_func
+		 * @see and_func
+		 */
+		Data or_func(const list_t<Data>::type& args, VM& vm);
+
+		/**
+		 * @brief Returns the union of anonymous data from the args
+		 * @see named_func
+		 * @see union_func
+		 */
+		Data anonymous_func(const list_t<Data>::type& args, VM& vm);
+
+		/**
+		 * @brief Returns the union of named data from the args
+		 * @see anonymous_func
+		 * @see union_func
+		 */
+		Data named_func(const list_t<Data>::type& args, VM& vm);
+
+		/**
+		 * @brief Returns the union of the args
+		 *
+		 * Return type will be it itself if args count is 1.<br>
+		 * It will be of the type Data::T_Array if every parameter is an array.<br>
+		 * Data::T_Group otherwise.
+		 * @see anonymous_func
+		 * @see named_func
+		 */
+		Data union_func(const list_t<Data>::type& args, VM& vm);
+
+		/**
+		 * @brief Cast elementwise to bool
+		 */
+		Data bool_func(const list_t<Data>::type& args, VM& vm);
+
+		/**
+		 * @brief Cast elementwise to integer
+		 */
+		Data int_func(const list_t<Data>::type& args, VM& vm);
+
+		/**
+		 * @brief Cast elementwise to float
+		 */
+		Data float_func(const list_t<Data>::type& args, VM& vm);
 	}
 }

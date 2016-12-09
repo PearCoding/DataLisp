@@ -1,0 +1,5 @@
+This file contains additional files to use or install optionally
+
+- datalisp.lang		A GtkSourceView 3 language specification for syntax highlighting.
+- Doxygen.in		Doxygen configuration file for the reference documentation.
+- notepad.xml		A language specification file for Notepad++.

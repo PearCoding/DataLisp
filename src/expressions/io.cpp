@@ -27,101 +27,74 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
+#include "Expressions.h"
 #include "Data.h"
+#include "DataGroup.h"
+#include "SourceLogger.h"
+#include "VM.h"
+
+#include <sstream>
 
 namespace DL
 {
-	Data::Data(const string_t& source) :
-		mKey(source), mType(T_None)
+	namespace Expressions
 	{
-	}
-
-	Data::~Data()
-	{
-		//Groups are deleted by the container...
-	}
-
-	void Data::setKey(const string_t& key)
-	{
-		mKey = key;
-	}
-
-	const DataGroup& Data::getGroup() const
-	{
-		DL_ASSERT(mType == T_Group);
-		return mGroup;
-	}
-
-	void Data::setGroup(const DataGroup& g)
-	{
-		mType = T_Group;
-		mGroup = g;
-	}
-
-	Integer Data::getInt() const
-	{
-		DL_ASSERT(mType == T_Integer);
-		return mInt;
-	}
-
-	void Data::setInt(Integer i)
-	{
-		mType = T_Integer;
-		mInt = i;
-	}
-
-	Float Data::getFloat() const
-	{
-		DL_ASSERT(mType == T_Float);
-		return mFloat;
-	}
-
-	Float Data::getNumber() const
-	{
-		DL_ASSERT(mType == T_Float || mType == T_Integer);
-
-		if (mType == T_Float)
+		void print_val(const Data& d, std::stringstream& stream)
 		{
-			return mFloat;
+			switch (d.type())
+			{
+			case Data::T_Bool:
+				stream << (d.getBool() ? "true " : "false ");
+				break;
+			case Data::T_Integer:
+				stream << d.getInt() << " ";
+				break;
+			case Data::T_Float:
+				stream << d.getFloat() << " ";
+				break;
+			case Data::T_String:
+				stream << d.getString() << " ";
+				break;
+			case Data::T_Group:
+				if(!d.getGroup().isArray())
+				{
+					stream << "(" << d.getGroup().id() << ") ";
+				}
+				else
+				{
+					stream << "[";
+					for (size_t i = 0; i < d.getGroup().anonymousCount(); ++i)
+					{
+						Data x = d.getGroup().at(i);
+						print_val(x, stream);
+
+						if (i != d.getGroup().anonymousCount() - 1)
+						{
+							stream << ",";
+						}
+					}
+					stream << "] ";
+				}
+				break;
+			default:
+				stream << "###UNKNOWN### ";
+				break;
+			}
 		}
-		else
+
+		Data print_func(const list_t<Data>::type& args, VM& vm)
 		{
-			return static_cast<Float>(mInt);
+			std::stringstream stream;
+
+			for (list_t<Data>::type::const_iterator it = args.begin();
+				it != args.end();
+				++it)
+			{
+				print_val(*it, stream);
+			}
+
+			vm.logger()->log(L_Info, stream.str());
+			return Data();
 		}
-	}
-
-	void Data::setFloat(Float f)
-	{
-		mType = T_Float;
-		mFloat = f;
-	}
-
-	bool Data::getBool() const
-	{
-		DL_ASSERT(mType == T_Bool);
-		return mBool;
-	}
-
-	void Data::setBool(bool b)
-	{
-		mType = T_Bool;
-		mBool = b;
-	}
-
-	string_t Data::getString() const
-	{
-		DL_ASSERT(mType == T_String);
-		return mString;
-	}
-
-	void Data::setString(const string_t& str)
-	{
-		mType = T_String;
-		mString = str;
-	}
-
-	bool Data::isNumber() const
-	{
-		return mType == T_Float || mType == T_Integer;
 	}
 }

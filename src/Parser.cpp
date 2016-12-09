@@ -200,12 +200,12 @@ namespace DL
 
 			match(T_CloseParanthese);
 		}
-		else if (lookahead(T_OpenSquareBracket))
+		else if (lookahead(T_OpenSquareBracket))// Anonymous group
 		{
 			match(T_OpenSquareBracket);
 
-			node->Type = VNT_Array;
-			node->_Array = gr_array();
+			node->Type = VNT_Statement;
+			node->_Statement = gr_array();
 
 			match(T_CloseSquareBracket);
 		}
@@ -265,38 +265,13 @@ namespace DL
 		return node;
 	}
 
-	ArrayNode* Parser::gr_array()
+	StatementNode* Parser::gr_array()
 	{
-		ArrayNode* node = new ArrayNode;
-		node->Nodes = gr_array_list();
+		StatementNode* node = new StatementNode;
+
+		node->Name = "";
+		node->Nodes = gr_data_list();
 
 		return node;
-	}
-
-	list_t<ValueNode*>::type Parser::gr_array_list()
-	{
-		list_t<ValueNode*>::type nodes;
-		while (lookahead(T_OpenParanthese) ||
-			lookahead(T_OpenSquareBracket) ||
-			lookahead(T_ExpressionParanthese) ||
-			lookahead(T_Integer) ||
-			lookahead(T_Float) ||
-			lookahead(T_String) ||
-			lookahead(T_True) ||
-			lookahead(T_False))
-		{
-			nodes.push_back(gr_value());
-
-			if (lookahead(T_Comma))
-			{
-				match(T_Comma);
-			}
-			else
-			{
-				break;
-			}
-		}
-
-		return nodes;
 	}
 }
