@@ -86,12 +86,8 @@ namespace DL
 		{
 			std::stringstream stream;
 
-			for (list_t<Data>::type::const_iterator it = args.begin();
-				it != args.end();
-				++it)
-			{
-				print_val(*it, stream);
-			}
+			for (const Data& d : args)
+				print_val(d, stream);
 
 			vm.logger()->log(L_Info, stream.str());
 			return Data();

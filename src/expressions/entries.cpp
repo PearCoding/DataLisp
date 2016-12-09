@@ -47,8 +47,8 @@ namespace DL
 			if(d.type() == Data::T_Group)
 			{
 				DataGroup grp;
-				for(size_t i = 0; i < d.getGroup().anonymousCount(); ++i)
-					grp.add(d.getGroup().at(i));
+				for (const Data& data : d.getGroup().getAnonymousEntries())
+					grp.add(data);
 
 				Data r;
 				r.setGroup(grp);
@@ -69,12 +69,8 @@ namespace DL
 				return Data();
 
 			DataGroup grp;
-			for (vector_t<Data>::type::const_iterator it = d.getGroup().getNamedEntries().begin();
-				 it != d.getGroup().getNamedEntries().end();
-				 ++it)
-			{
-				grp.add(*it);
-			}
+			for (const Data& data : d.getGroup().getNamedEntries())
+				grp.add(data);
 
 			Data r;
 			r.setGroup(grp);
@@ -94,27 +90,19 @@ namespace DL
 			else 
 			{
 				DataGroup grp;
-				for (list_t<Data>::type::const_iterator it = args.begin();
-					 it != args.end();
-					 ++it)
+				for (const Data& d : args)
 				{					
-					if(it->type() == Data::T_Group)
+					if(d.type() == Data::T_Group)
 					{
-						for (vector_t<Data>::type::const_iterator it2 = it->getGroup().getNamedEntries().begin();
-							it2 != it->getGroup().getNamedEntries().end();
-							++it2)
-						{
-							grp.add(*it2);
-						}
+						for (const Data& data : d.getGroup().getNamedEntries())
+							grp.add(data);
 
-						for(size_t i = 0; i < it->getGroup().anonymousCount(); ++i)
-						{
-							grp.add(it->getGroup().at(i));
-						}
+						for (const Data& data : d.getGroup().getAnonymousEntries())
+							grp.add(data);
 					}
 					else
 					{
-						grp.add(*it);
+						grp.add(d);
 					}
 				}
 

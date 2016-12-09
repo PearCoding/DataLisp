@@ -31,10 +31,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 #include <fstream>
 
 #include "DataLisp.h"
-#include "DataContainer.h"
-#include "DataGroup.h"
-#include "Data.h"
-#include "SourceLogger.h"
 
 const char* TEST_FILE =
 "(test "

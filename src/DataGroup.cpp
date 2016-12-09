@@ -60,7 +60,6 @@ namespace DL
 		}
 	}
 
-#ifdef DL_WITH_CPP11
 	DataGroup::DataGroup(DataGroup&& other) noexcept
 	{
 		mShared = other.mShared;
@@ -79,7 +78,6 @@ namespace DL
 
 		return *this;
 	}
-#endif
 		
 	DataGroup& DataGroup::operator =(const DataGroup& other)
 	{
@@ -101,7 +99,7 @@ namespace DL
 		return mShared->References;
 	}
 		
-	void DataGroup::make_unique()
+	void DataGroup::makeUnique()
 	{
 		DL_ASSERT(mShared && mShared->References > 0);
 
@@ -153,12 +151,10 @@ namespace DL
 	{
 		DL_ASSERT(mShared && mShared->References > 0);
 
-		for (vector_t<Data>::type::const_iterator it = mShared->NamedData.begin();
-			it != mShared->NamedData.end();
-			++it)
+		for (const Data& d : mShared->NamedData)
 		{
-			if (it->key() == str)
-				return *it;
+			if (d.key() == str)
+				return d;
 		}
 
 		return Data();
@@ -169,12 +165,10 @@ namespace DL
 		DL_ASSERT(mShared && mShared->References > 0);
 
 		vector_t<Data>::type list;
-		for (vector_t<Data>::type::const_iterator it = mShared->NamedData.begin();
-			it != mShared->NamedData.end();
-			++it)
+		for (const Data& d : mShared->NamedData)
 		{
-			if (it->key() == key)
-				list.push_back(*it);
+			if (d.key() == key)
+				list.push_back(d);
 		}
 
 		return list;
@@ -182,17 +176,7 @@ namespace DL
 
 	bool DataGroup::hasKey(const string_t& key) const
 	{
-		DL_ASSERT(mShared && mShared->References > 0);
-
-		for (vector_t<Data>::type::const_iterator it = mShared->NamedData.begin();
-			it != mShared->NamedData.end();
-			++it)
-		{
-			if (it->key() == key)
-				return true;
-		}
-
-		return false;
+		return getFromKey(key).isValid();
 	}
 
 	vector_t<Data>::type DataGroup::getAllEntries() const
@@ -233,11 +217,9 @@ namespace DL
 		if (mShared->AnonymousData.empty())
 			return false;
 
-		for (vector_t<Data>::type::const_iterator it = mShared->AnonymousData.begin();
-			it != mShared->AnonymousData.end();
-			it++)
+		for (const Data& d : mShared->AnonymousData)
 		{
-			if (!it->isNumber())
+			if (!d.isNumber())
 				return false;
 		}
 
@@ -247,15 +229,13 @@ namespace DL
 	bool DataGroup::isAllNamedNumber() const
 	{
 		DL_ASSERT(mShared && mShared->References > 0);
-		
+
 		if (mShared->NamedData.empty())
 			return false;
 
-		for (vector_t<Data>::type::const_iterator it = mShared->NamedData.begin();
-			it != mShared->NamedData.end();
-			it++)
+		for (const Data& d : mShared->NamedData)
 		{
-			if (!it->isNumber())
+			if (!d.isNumber())
 				return false;
 		}
 

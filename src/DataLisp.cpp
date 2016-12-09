@@ -55,12 +55,8 @@ namespace DL
 		{
 			if (mTree)
 			{
-				for (list_t<StatementNode*>::type::iterator it = mTree->Nodes.begin();
-					it != mTree->Nodes.end();
-					++it)
-				{
-					deleteNode(*it);
-				}
+				for (StatementNode* ptr : mTree->Nodes)
+					deleteNode(ptr);
 
 				delete mTree;
 			}
@@ -78,12 +74,8 @@ namespace DL
 			else
 				str = white + "Statement {" + n->Name + "\n";
 
-			for (list_t<DataNode*>::type::const_iterator it = n->Nodes.begin();
-				it != n->Nodes.end();
-				++it)
-			{
-				str += dumpNode((*it), depth + 1);
-			}
+			for (DataNode* ptr : n->Nodes)
+				str += dumpNode(ptr, depth + 1);
 
 			str += white + "}\n";
 
@@ -99,12 +91,8 @@ namespace DL
 			string_t str;
 			str = white + "Expression {" + n->Name + "\n";
 
-			for (list_t<DataNode*>::type::const_iterator it = n->Nodes.begin();
-				it != n->Nodes.end();
-				++it)
-			{
-				str += dumpNode((*it), depth + 1);
-			}
+			for (DataNode* ptr : n->Nodes)
+				str += dumpNode(ptr, depth + 1);
 
 			str += white + "}\n";
 
@@ -186,15 +174,12 @@ namespace DL
 			else
 				str = white + "(" + d.id() + "\n";
 
-			for (size_t i = 0; i < d.anonymousCount(); ++i)
-				str += generateData(d.at(i), depth + 1) + "\n";
+			for (const Data& data : d.getAnonymousEntries())
+				str += generateData(data, depth + 1) + "\n";
 
-			for (vector_t<Data>::type::const_iterator it = d.getNamedEntries().begin();
-				it != d.getNamedEntries().end();
-				++it)
-			{
-				str += generateData(*it, depth + 1) + "\n";
-			}
+			for (const Data& data : d.getNamedEntries())
+				str += generateData(data, depth + 1) + "\n";
+
 			str += white + (!d.isArray() ? ")" : "]");
 
 			return str;
@@ -259,12 +244,8 @@ namespace DL
 			if (!n)
 				return;
 
-			for (list_t<DataNode*>::type::const_iterator it = n->Nodes.begin();
-				it != n->Nodes.end();
-				++it)
-			{
-				deleteNode(*it);
-			}
+			for (DataNode* ptr : n->Nodes)
+				deleteNode(ptr);
 
 			delete n;
 		}
@@ -274,12 +255,8 @@ namespace DL
 			if (!n)
 				return;
 
-			for (list_t<DataNode*>::type::const_iterator it = n->Nodes.begin();
-				it != n->Nodes.end();
-				++it)
-			{
-				deleteNode(*it);
-			}
+			for (DataNode* ptr : n->Nodes)
+				deleteNode(ptr);
 
 			delete n;
 		}
@@ -300,13 +277,9 @@ namespace DL
 				return;
 
 			if (n->Type == VNT_Statement)
-			{
 				deleteNode(n->_Statement);
-			}
 			else if (n->Type == VNT_Expression)
-			{
 				deleteNode(n->_Expression);
-			}
 
 			delete n;
 		}
@@ -316,11 +289,9 @@ namespace DL
 			DL_ASSERT(n);
 
 			DataGroup group(n->Name);
-			for (list_t<DataNode*>::type::iterator it = n->Nodes.begin();
-				it != n->Nodes.end();
-				++it)
+			for (DataNode* ptr : n->Nodes)
 			{
-				Data data = buildData(*it, vm);
+				Data data = buildData(ptr, vm);
 				if (data.isValid())
 					group.add(data);
 			}
@@ -373,11 +344,9 @@ namespace DL
 		Data buildExpression(ExpressionNode* n, VM& vm)
 		{
 			list_t<Data>::type args;
-			for (list_t<DataNode*>::type::iterator it = n->Nodes.begin();
-				it != n->Nodes.end();
-				++it)
+			for (DataNode* ptr : n->Nodes)
 			{
-				Data data = buildData(*it, vm);
+				Data data = buildData(ptr, vm);
 
 				if (data.isValid())
 					args.push_back(data);
@@ -434,24 +403,17 @@ namespace DL
 		DL_ASSERT(mInternal->mTree);
 
 		VM vm(container, mInternal->mLogger);
-		for (list_t<StatementNode*>::type::iterator it = mInternal->mTree->Nodes.begin();
-			it != mInternal->mTree->Nodes.end();
-			++it)
+		for (StatementNode* ptr : mInternal->mTree->Nodes)
 		{
-			container.addTopGroup(mInternal->buildGroup(*it, vm));
+			container.addTopGroup(mInternal->buildGroup(ptr, vm));
 		}
 	}
 
 	string_t DataLisp::generate(const DataContainer& container)
-	{		string_t output;
-
-		list_t<DataGroup>::type top = container.getTopGroups();
-		for (list_t<DataGroup>::type::const_iterator it = top.begin();
-			it != top.end();
-			++it)
-		{
-			output += DataLisp_Internal::generateDataGroup(*it, 0) + "\n";
-		}
+	{
+		string_t output;
+		for (const DataGroup& grp : container.getTopGroups())
+			output += DataLisp_Internal::generateDataGroup(grp, 0) + "\n";
 
 		return output;
 	}
@@ -465,12 +427,9 @@ namespace DL
 		else
 		{
 			string_t str;
-			for (list_t<StatementNode*>::type::const_iterator it = mInternal->mTree->Nodes.begin();
-				it != mInternal->mTree->Nodes.end();
-				++it)
-			{
-				str += DataLisp_Internal::dumpNode((*it), 1);
-			}
+			for (StatementNode* ptr : mInternal->mTree->Nodes)
+				str += DataLisp_Internal::dumpNode(ptr, 1);
+
 			return str;
 		}
 	}

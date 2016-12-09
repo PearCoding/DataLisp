@@ -81,13 +81,9 @@ namespace DL
 		DL_ASSERT(mType == T_Float || mType == T_Integer);
 
 		if (mType == T_Float)
-		{
 			return mFloat;
-		}
 		else
-		{
 			return static_cast<Float>(mInt);
-		}
 	}
 
 	void Data::setFloat(Float f)

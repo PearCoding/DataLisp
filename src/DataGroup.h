@@ -38,8 +38,8 @@ namespace DL
 	/** @class DataGroup DataGroup.h DL/DataGroup.h
 	 * @brief Capsulate a generic group identified with an id
 	 *
-	 * A generic group is an array if the condition holds:
-	 *   @p id() is empty
+	 * A generic group is an array if the condition holds:<br>
+	 *   @p id() is empty<br>
 	 * Resembles an entry of type:
 	 * @code{.lisp}
 	 * (ID
@@ -71,13 +71,17 @@ namespace DL
 		 */
 		DataGroup(const DataGroup& other);
 
-	#ifdef DL_WITH_CPP11
 		/**
 		 * @brief Moves container content
 		 */
 		DataGroup(DataGroup&& o) noexcept;
-	#endif
 
+		/**
+		 * @brief Deconstructs class
+		 *
+		 * Decreases reference count.
+		 * If reference count reaches zero internal content will be deleted. 
+		 */
 		~DataGroup();
 
 		/**
@@ -85,12 +89,10 @@ namespace DL
 		 */
 		DataGroup& operator =(const DataGroup& other);
 
-	#ifdef DL_WITH_CPP11
 		/**
 		 * @brief Moves container content
 		 */
 		DataGroup& operator =(DataGroup&& other) noexcept;
-	#endif
 
 		/**
 		 * @brief Current count of references
@@ -100,7 +102,7 @@ namespace DL
 		/**
 		 * @brief Sets the reference count to 1 and copies data
 		 */
-		void make_unique();
+		void makeUnique();
 
 		/**
 		 * @brief Returns id

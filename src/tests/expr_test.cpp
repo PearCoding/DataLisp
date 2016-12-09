@@ -30,8 +30,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 #include <iostream>
 
 #include "DataLisp.h"
-#include "DataContainer.h"
-#include "SourceLogger.h"
 
 const char* TEST_FILE =
 "(test "

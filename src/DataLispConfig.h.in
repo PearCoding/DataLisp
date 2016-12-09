@@ -166,8 +166,6 @@
 # define DL_MAP_TYPE std::map
 #endif
 
-#cmakedefine DL_WITH_CPP11
-
 /** @file DataLispConfig.h DL/DataLispConfig.h 
  */
 

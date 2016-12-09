@@ -3,10 +3,6 @@
 #include <boost/python.hpp>
 
 #include "DataLisp.h"
-#include "Data.h"
-#include "DataContainer.h"
-#include "DataGroup.h"
-#include "SourceLogger.h"
 
 using namespace DL;
 namespace bpy = boost::python; 

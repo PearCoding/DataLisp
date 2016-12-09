@@ -103,11 +103,9 @@ namespace DL
 			{
 				bool b = true;
 				
-				for (list_t<Data>::type::const_iterator it = args.begin();
-					it != args.end();
-					++it)
+				for (const Data& d : args)
 				{
-					Data e = castTo(*it, Data::T_Bool, vm);
+					Data e = castTo(d, Data::T_Bool, vm);
 					if(!e.isValid() || !e.getBool())
 					{
 						b = false;
@@ -135,11 +133,9 @@ namespace DL
 			{
 				bool b = false;
 				
-				for (list_t<Data>::type::const_iterator it = args.begin();
-					it != args.end();
-					++it)
+				for (const Data& d : args)
 				{
-					Data e = castTo(*it, Data::T_Bool, vm);
+					Data e = castTo(d, Data::T_Bool, vm);
 					if(e.isValid() && e.getBool())
 					{
 						b = true;

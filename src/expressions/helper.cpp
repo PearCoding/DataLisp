@@ -155,12 +155,8 @@ namespace DL
 			{
 				DataGroup grp;
 				
-				for (list_t<Data>::type::const_iterator it = args.begin();
-					it != args.end();
-					++it)
-				{
-					grp.add(expr(*it, vm));
-				}
+				for (const Data& d : args)
+					grp.add(expr(d, vm));
 
 				Data r;
 				r.setGroup(grp);

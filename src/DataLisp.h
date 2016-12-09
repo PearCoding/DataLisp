@@ -29,7 +29,10 @@
  */
 #pragma once
 
-#include "DataLispConfig.h"
+#include "Data.h"
+#include "DataContainer.h"
+#include "DataGroup.h"
+#include "SourceLogger.h"
 
 /** @mainpage notitle
  * DataLisp is an modular and modable configuration scripting language for C++ and Python.<br>
@@ -49,9 +52,6 @@
   */
 namespace DL
 {
-	class DataContainer;
-	class SourceLogger;
-
 	/** @class DataLisp DataLisp.h DL/DataLisp.h
 	 * @brief General class to parse or generate %DataLisp source code
 	 *

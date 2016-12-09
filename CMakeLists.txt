@@ -35,7 +35,6 @@ ENDIF()
 
 #PACKAGES
 option(DL_ONLY_LIBRARY "Compile only library" OFF)
-option(DL_WITH_CPP11 "Use the C++11 standard" ON)
 option(DL_WITH_PYTHON "Compile additional python interface module" ON)
 option(DL_BUILD_TESTS "Build tests." ON)
 option(DL_BUILD_DOCUMENTATION "Build documentation with doxygen." ON)
@@ -200,6 +199,19 @@ IF(NOT DL_ONLY_LIBRARY)
 	ENDIF()
 ENDIF(NOT DL_ONLY_LIBRARY)
 
+# DOCUMENTATION
+IF(DL_BUILD_DOCUMENTATION)
+  find_package(Doxygen)
+  IF(DOXYGEN_FOUND)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/tools/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+    add_custom_target(doc
+    ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Generating API documentation with Doxygen" VERBATIM
+  )
+  ENDIF()
+ENDIF()
+
 # INSTALL
 install(TARGETS datalisp EXPORT datalisp
         LIBRARY DESTINATION lib
@@ -213,25 +225,16 @@ ENDIF()
 SET(DL_Hdr_INSTALL
   ${CMAKE_CURRENT_BINARY_DIR}/DataLispConfig.h
   src/Data.h
-  src/DataArray.h
   src/DataContainer.h
   src/DataGroup.h
   src/DataLisp.h
   src/Expressions.h
-  src/SourceLogger.h)
+  src/SourceLogger.h
+  src/VM.h)
 
 install(FILES ${DL_Hdr_INSTALL} DESTINATION include/DL)
 install(EXPORT datalisp NAMESPACE dl_ DESTINATION lib/DL)
 
-# DOCUMENTATION
 IF(DL_BUILD_DOCUMENTATION)
-  find_package(Doxygen)
-  IF(DOXYGEN_FOUND)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/tools/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
-    add_custom_target(doc
-    ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMENT "Generating API documentation with Doxygen" VERBATIM
-  )
-  ENDIF()
+  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc DESTINATION share/DL)
 ENDIF()
