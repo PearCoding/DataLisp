@@ -9,8 +9,6 @@ class Exporter:
     def _fromData(self, data):
         if data.type == dl.Type.Group:
             return self._fromGroup(data.group)
-        elif data.type == dl.Type.Array:
-            return self._fromArray(data.array)
         elif data.type == dl.Type.String:
             return data.string
         elif data.type == dl.Type.Integer:
@@ -23,14 +21,6 @@ class Exporter:
             return None
 
 
-    def _fromArray(self, arr):
-        a = []
-        for data in arr:
-            a.append(self._fromData(data))
-
-        return a
-
-
     def _fromGroup(self, grp):
         d = dict()
 
@@ -40,7 +30,9 @@ class Exporter:
         for i in range(grp.anonymousCount):
             d[i] = self._fromData(grp.at(i))
 
-        if self.asDict:
+        if grp.isArray:
+            return d
+        elif self.asDict:
             d['__id__'] = grp.id
             return d
         else:

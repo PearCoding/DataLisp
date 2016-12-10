@@ -9,9 +9,7 @@ class Importer:
 
     def _toData(self, obj):
         data = dl.Data()
-        if isinstance(obj, list):
-            data.array = self._toArray(obj)
-        elif isinstance(obj, (str, unicode)):
+        if isinstance(obj, (str, unicode)):
             data.string = str(obj)
         elif isinstance(obj, bool):
             data.bool = bool(obj)
@@ -25,24 +23,19 @@ class Importer:
         return data
 
 
-    def _toArray(self, arr):
-        a = self.container.createArray()
-        for data in arr:
-            a.add(self._toData(data))
-        return a
-
-
     def _toGroup(self, obj):
         if isinstance(obj, dict):
             id = '__unknown__'
             if '__id__' in obj:
                 id = obj['__id__']
+        elif isinstance(obj, list):
+            id = ''
+            obj = dict(obj)
         else:
             id = type(obj).__name__
             obj = dict(obj)
         
-        grp = self.container.createGroup()
-        grp.id = str(id)
+        grp = dl.DataGroup(id)
 
         for key in obj:
             if key == "__id__":
