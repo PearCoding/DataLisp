@@ -39,42 +39,56 @@ namespace DL
 {
 	namespace Expressions
 	{
-		void print_val(const Data& d, std::stringstream& stream)
+		static void print_val(const Data& d, std::stringstream& stream)
 		{
 			switch (d.type())
 			{
 			case Data::T_Bool:
-				stream << (d.getBool() ? "true " : "false ");
+				stream << (d.getBool() ? "true" : "false");
 				break;
 			case Data::T_Integer:
-				stream << d.getInt() << " ";
+				stream << d.getInt();
 				break;
 			case Data::T_Float:
-				stream << d.getFloat() << " ";
+				stream << d.getFloat();
 				break;
 			case Data::T_String:
-				stream << d.getString() << " ";
+				stream << d.getString();
 				break;
 			case Data::T_Group:
-				if(!d.getGroup().isArray())
-				{
-					stream << "(" << d.getGroup().id() << ") ";
-				}
-				else
-				{
+				if(d.getGroup().isArray())
 					stream << "[";
-					for (size_t i = 0; i < d.getGroup().anonymousCount(); ++i)
-					{
-						Data x = d.getGroup().at(i);
-						print_val(x, stream);
+				else
+					stream << "(" << d.getGroup().id() << " ";
+					
+				for (size_t i = 0; i < d.getGroup().anonymousCount(); ++i)
+				{
+					Data x = d.getGroup().at(i);
+					print_val(x, stream);
 
-						if (i != d.getGroup().anonymousCount() - 1)
-						{
-							stream << ",";
-						}
-					}
-					stream << "] ";
+					if (i != d.getGroup().anonymousCount() - 1)
+						stream << ", ";
 				}
+
+				if(d.getGroup().anonymousCount() > 0 && d.getGroup().getNamedEntries().size() > 0)
+					stream << ", ";
+				
+				for(auto it = d.getGroup().getNamedEntries().begin();
+					it != d.getGroup().getNamedEntries().end();)
+				{
+					stream << ":" << it->key() << " ";
+					print_val(*it, stream);
+
+					it++;
+					if(it != d.getGroup().getNamedEntries().end())
+						stream << ", ";
+				}
+
+				if(d.getGroup().isArray())
+					stream << "]";
+				else
+					stream << ")";
+				
 				break;
 			default:
 				stream << "###UNKNOWN### ";

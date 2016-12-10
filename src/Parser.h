@@ -35,7 +35,7 @@
 
 namespace DL
 {
-	class DL_LIB Parser
+	class DL_INTERNAL_LIB Parser
 	{
 	public:
 		Parser(const string_t& str, SourceLogger* logger);

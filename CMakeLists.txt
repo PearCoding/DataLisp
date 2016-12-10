@@ -4,9 +4,9 @@ PROJECT(DataLisp)
 
 #SETS
 SET(VENDOR "DataLisp project 2013-2016")
-SET(VERSION_MAJOR 1)
-SET(VERSION_MINOR 9)
-SET(VERSION_HEX 0x0109)
+SET(VERSION_MAJOR 2)
+SET(VERSION_MINOR 0)
+SET(VERSION_HEX 0x0200)
 SET(DL_Version ${VERSION_MAJOR}.${VERSION_MINOR})
 if(NOT DEFINED DL_TARGET)
 	SET(DL_TARGET "DataLisp")
@@ -111,7 +111,6 @@ SET(DL_Src
   src/expressions/cast.cpp
   src/expressions/conditional.cpp
   src/expressions/entries.cpp
-  src/expressions/helper.cpp
   src/expressions/io.cpp)
 
 SET(DL_Hdr
@@ -126,8 +125,7 @@ SET(DL_Hdr
   src/SourceLogger.h
   src/SyntaxTree.h
   src/Token.h
-  src/VM.h
-  src/expressions/helper.h)
+  src/VM.h)
 
 SET(DL_PY_Src
   src/python/module.cpp)
@@ -228,7 +226,6 @@ SET(DL_Hdr_INSTALL
   src/DataContainer.h
   src/DataGroup.h
   src/DataLisp.h
-  src/Expressions.h
   src/SourceLogger.h
   src/VM.h)
 

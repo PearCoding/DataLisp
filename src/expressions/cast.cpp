@@ -28,46 +28,44 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 #include "Expressions.h"
-#include "DataGroup.h"
+#include "VM.h"
 #include "DataContainer.h"
 #include "SourceLogger.h"
 
 #include <sstream>
 
-#include "helper.h"
-
 namespace DL
 {
 	namespace Expressions
 	{
-		Data bool_func_e(const Data& d, VM& vm)
+		static Data bool_func_e(const Data& d, VM& vm)
 		{
-			return castTo(d, Data::T_Bool, vm, true);
+			return vm.castTo(d, Data::T_Bool, true);
 		}
 
 		Data bool_func(const list_t<Data>::type& args, VM& vm)
 		{
-			return doElementWise(bool_func_e, args, vm);
+			return vm.doElementWise(bool_func_e, args);
 		}
 
-		Data int_func_e(const Data& d, VM& vm)
+		static Data int_func_e(const Data& d, VM& vm)
 		{
-			return castTo(d, Data::T_Integer, vm, true);
+			return vm.castTo(d, Data::T_Integer, true);
 		}
 
 		Data int_func(const list_t<Data>::type& args, VM& vm)
 		{	
-			return doElementWise(int_func_e, args, vm);
+			return vm.doElementWise(int_func_e, args);
 		}
 
-		Data float_func_e(const Data& d, VM& vm)
+		static Data float_func_e(const Data& d, VM& vm)
 		{
-			return castTo(d, Data::T_Float, vm, true);
+			return vm.castTo(d, Data::T_Float, true);
 		}
 
 		Data float_func(const list_t<Data>::type& args, VM& vm)
 		{
-			return doElementWise(float_func_e, args, vm);
+			return vm.doElementWise(float_func_e, args);
 		}
 	}
 }

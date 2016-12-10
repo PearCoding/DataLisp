@@ -39,7 +39,7 @@ namespace DL
 	struct ExpressionNode;
 	struct ArrayNode;
 
-	struct DataNode
+	struct DL_INTERNAL_LIB DataNode
 	{
 		string_t Key;
 		ValueNode* Value;
@@ -55,7 +55,7 @@ namespace DL
 		VNT_Expression,
 		VNT_Unknown
 	};
-	struct ValueNode
+	struct DL_INTERNAL_LIB ValueNode
 	{
 		ValueNodeType 		Type;
 		union
@@ -69,19 +69,19 @@ namespace DL
 		string_t			_String;//Can not be in the union......
 	};
 
-	struct StatementNode
+	struct DL_INTERNAL_LIB StatementNode
 	{
 		string_t Name;
 		list_t<DataNode*>::type Nodes;
 	};
 
-	struct ExpressionNode
+	struct DL_INTERNAL_LIB ExpressionNode
 	{
 		string_t Name;
 		list_t<DataNode*>::type Nodes;
 	};
 
-	struct SyntaxTree
+	struct DL_INTERNAL_LIB SyntaxTree
 	{
 		list_t<StatementNode*>::type Nodes;
 	};

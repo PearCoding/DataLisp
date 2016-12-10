@@ -158,16 +158,6 @@ public:
     void addTopGroup_PY(const DataGroup_PY& group) { addTopGroup(group); }
 };
 
-//--
-class DataLisp_PY : public DataLisp
-{
-public:
-    DataLisp_PY(SourceLogger* log) : DataLisp(log) {}
-
-	void build_PY(DataContainer_PY& container) { build(container); }
-	static string_t generate_PY(const DataContainer_PY& container) { return generate(container); }
-};
-
 //----------
 BOOST_PYTHON_MODULE(pydatalisp)
 {
@@ -180,13 +170,13 @@ BOOST_PYTHON_MODULE(pydatalisp)
     ;
 
     //--// TODO: Add expressions!
-    bpy::class_<DataLisp_PY>("DataLisp",
+    bpy::class_<DataLisp, boost::noncopyable>("DataLisp",
             bpy::init<SourceLogger*>(bpy::args("source_logger")))
-        .def("parse", &DataLisp_PY::parse)
-        .def("build", &DataLisp_PY::build_PY)
-        .def("generate", &DataLisp_PY::generate_PY)
+        .def("parse", &DataLisp::parse)
+        .def("build", &DataLisp::build)
+        .def("generate", &DataLisp::generate)
         .staticmethod("generate")
-        .def("dump", &DataLisp_PY::dump)
+        .def("dump", &DataLisp::dump)
     ;
 
     //--

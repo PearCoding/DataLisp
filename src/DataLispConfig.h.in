@@ -113,24 +113,29 @@
 # if defined(DL_OS_WINDOWS)//Really OS dependent, more tool chain dependent!
 #  define DL_EXPORT_ __declspec(dllexport)
 #  define DL_IMPORT_ __declspec(dllimport)
+#  define DL_HIDDEN_ 
 # elif defined(DL_OS_LINUX)
 #  define DL_EXPORT_ __attribute__((visibility ("default")))
 #  define DL_IMPORT_
+#  define DL_HIDDEN_ __attribute__((visibility ("hidden")))
 # else
 #  error Unsupported operating system
 # endif
 #else
 # define DL_EXPORT_
 # define DL_IMPORT_
+# define DL_HIDDEN_
 #endif
 
 #ifdef DL_LIB_BUILD
 # define DL_LIB DL_EXPORT_
+# define DL_INTERNAL_LIB DL_HIDDEN_
 # ifdef DL_CC_MSC
 #  pragma warning(disable : 4251)//Just too annoying 
 # endif
 #else
 # define DL_LIB DL_IMPORT_
+# define DL_INTERNAL_LIB "THIS SHOULDN'T BE VISIBLE TO THE USER"
 #endif
 
 #ifndef DL_NO_ASSERTS

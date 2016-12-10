@@ -49,5 +49,5 @@ int main(int argc, char** argv)
 	lisp.parse(TEST_FILE);
 	lisp.build(container);
 
-	return 0;
+	return logger.errorCount();
 }

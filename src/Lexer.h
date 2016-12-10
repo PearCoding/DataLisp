@@ -35,7 +35,7 @@
 
 namespace DL
 {
-	class DL_LIB Lexer
+	class DL_INTERNAL_LIB Lexer
 	{
 	public:
 		Lexer(const string_t& source, SourceLogger* logger);

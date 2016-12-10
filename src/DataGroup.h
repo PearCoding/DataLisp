@@ -107,13 +107,13 @@ namespace DL
 		/**
 		 * @brief Returns id
 		 */
-		inline string_t id() const { return mShared->ID; }
+		string_t id() const;
 
 		/**
 		 * @brief Replaces id with given one
 		 * @param str New id name
 		 */
-		inline void setID(const string_t& str) { mShared->ID = str; }
+		void setID(const string_t& str);
 
 		/**
 		 * @brief Adds (anonymous or non anonymous) data into group
@@ -165,7 +165,7 @@ namespace DL
 		 *   @p id() is empty
 		 * @return Returns true if group has the data with the given id, false otherwise
 		 */
-		bool isArray() const { return mShared->ID.empty(); }
+		bool isArray() const;
 
 		/**
 		 * @brief Returns all data entries
@@ -205,12 +205,6 @@ namespace DL
 		 */
 		bool isAllNamedNumber() const;
 	private:
-		struct SharedData
-		{
-			string_t ID;
-			vector_t<Data>::type AnonymousData;
-			vector_t<Data>::type NamedData;
-			uint32 References;
-		}* mShared;
+		struct DataInternal* mShared;
 	};
 }

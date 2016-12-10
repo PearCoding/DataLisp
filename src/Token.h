@@ -51,7 +51,7 @@ namespace DL
 		T_EOF,
 	};
 
-	struct Token
+	struct DL_INTERNAL_LIB Token
 	{
 		TokenType Type;
 		string_t Value;

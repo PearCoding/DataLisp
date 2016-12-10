@@ -28,6 +28,9 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 #include "VM.h"
+#include "SourceLogger.h"
+
+#include <sstream>
 
 namespace DL
 {
@@ -38,5 +41,129 @@ namespace DL
 
 	VM::~VM() 
 	{
+	}
+
+	static std::string typeToName(Data::Type type)
+	{
+		switch(type)
+		{
+		case Data::T_Bool:
+			return "Bool";
+		case Data::T_Integer:
+			return "Integer";
+		case Data::T_Float:
+			return "Float";
+		case Data::T_String:
+			return "String";
+		case Data::T_Group:
+			return "Group";
+		case Data::T_None:
+			return "None";
+		default:
+			return "Unknown";
+		}
+	}
+
+	Data VM::castTo(const Data& d, DL::Data::Type type, bool isExplicit)
+	{
+		if(d.type() == type)
+			return d;
+		
+		switch (type)
+		{
+		case Data::T_Bool:
+			switch(d.type())
+			{
+			case Data::T_Integer:
+			{
+				Data r(d.key());
+				r.setBool(d.getInt() != 0);
+				return r;
+			}
+			case Data::T_Float:
+			{
+				Data r(d.key());
+				r.setBool(d.getFloat() != 0);
+				return r;
+			}
+			default:
+				break;
+			}
+			break;
+		case Data::T_Integer:
+			switch(d.type())
+			{
+			case Data::T_Bool:
+			{
+				Data r(d.key());
+				r.setInt(d.getBool() ? 1 : 0);
+				return r;
+			}
+			case Data::T_Float:
+			{
+				Data r(d.key());
+				r.setInt(d.getFloat());
+				return r;
+			}
+			default:
+				break;
+			}
+			break;
+		case Data::T_Float:
+			switch(d.type())
+			{
+			case Data::T_Bool:
+			{
+				Data r(d.key());
+				r.setFloat(d.getBool() ? 1 : 0);
+				return r;
+			}
+			case Data::T_Integer:
+			{
+				if(!isExplicit)
+					mLogger->log(L_Warning, "Implicit conversion from 'Integer' to 'Float'");
+				
+				Data r(d.key());
+				r.setFloat(d.getInt());
+				return r;
+			}
+			default:
+				break;
+			}
+			break;
+		default:
+			break;
+		}
+
+		std::stringstream stream;
+		stream << "Can not convert '" <<
+			typeToName(d.type()) << "' to '" << typeToName(type) << "'"; 
+		mLogger->log(L_Error, stream.str());
+		return Data();
+	}
+
+	Data VM::doElementWise(element_expr_t expr, const list_t<Data>::type& args)
+	{
+		DL_ASSERT(expr);
+
+		if(args.size() == 0)
+		{
+			return Data();
+		}
+		else if(args.size() == 1)
+		{
+			return expr(args.front(), *this);
+		}
+		else
+		{
+			DataGroup grp;
+			
+			for (const Data& d : args)
+				grp.add(expr(d, *this));
+
+			Data r;
+			r.setGroup(grp);
+			return r;
+		}
 	}
 }

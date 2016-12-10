@@ -29,20 +29,14 @@
  */
 #include "DataLisp.h"
 #include "Parser.h"
-#include "DataContainer.h"
 #include "VM.h"
 #include "Expressions.h"
-
-#include "Data.h"
-#include "DataGroup.h"
-
-#include "SourceLogger.h"
 
 #include <sstream>
 
 namespace DL
 {
-	class DataLisp_Internal
+	class DL_INTERNAL_LIB DataLisp_Internal
 	{
 	public:
 		typedef map_t<string_t, expr_t>::type ExpressionMap;
@@ -376,7 +370,6 @@ namespace DL
 	};
 
 //---------------------------------------------------
-
 	DataLisp::DataLisp(SourceLogger* log, bool stdlib) :
 		mInternal(new DataLisp_Internal(log))
 	{
@@ -388,7 +381,25 @@ namespace DL
 
 	DataLisp::~DataLisp()
 	{
-		delete mInternal;
+		if(mInternal)
+			delete mInternal;
+	}
+
+	DataLisp::DataLisp(DataLisp&& other) noexcept
+	{
+		mInternal = other.mInternal;
+		other.mInternal = nullptr;
+	}
+
+	DataLisp& DataLisp::operator =(DataLisp&& other) noexcept
+	{
+		if(mInternal != other.mInternal)
+		{
+			mInternal = other.mInternal;
+			other.mInternal = nullptr;
+		}
+
+		return *this;
 	}
 
 	void DataLisp::parse(const string_t& source)

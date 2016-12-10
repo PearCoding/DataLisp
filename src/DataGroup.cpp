@@ -32,10 +32,17 @@
 
 namespace DL
 {
+	struct DL_INTERNAL_LIB DataInternal {
+		string_t ID;
+		vector_t<Data>::type AnonymousData;
+		vector_t<Data>::type NamedData;
+		uint32 References;
+	};
+
 	DataGroup::DataGroup(const string_t& id) :
 		mShared(nullptr)
 	{
-		mShared = new SharedData;
+		mShared = new DataInternal;
 
 		mShared->ID = id;
 		mShared->References = 1;
@@ -106,7 +113,7 @@ namespace DL
 		if(mShared->References == 1)
 			return;
 		
-		SharedData* p = new SharedData;
+		DataInternal* p = new DataInternal;
 		p->ID = mShared->ID;
 		p->AnonymousData = mShared->AnonymousData;
 		p->NamedData = mShared->NamedData;
@@ -241,4 +248,8 @@ namespace DL
 
 		return true;
 	}
+
+	bool DataGroup::isArray() const { return mShared->ID.empty(); }
+	string_t DataGroup::id() const { return mShared->ID; }
+	void DataGroup::setID(const string_t& str) { mShared->ID = str; }
 }

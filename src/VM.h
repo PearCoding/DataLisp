@@ -29,7 +29,7 @@
  */
 #pragma once
 
-#include "DataLispConfig.h"
+#include "Data.h"
 
 namespace DL
 {
@@ -63,7 +63,26 @@ namespace DL
 		 */
 		inline SourceLogger* logger() const { return mLogger; }
 
-		
+		/**
+		 * @brief Casts data to type based on casting table
+		 *
+		 * @param d The original data 
+		 * @param type The new type to cast to
+		 * @param isExplicit Cast explicit or implicit
+		 * @return Data of the new type or @link Data::T_None @endlink if failure
+		 */
+		Data castTo(const Data& d, DL::Data::Type type, bool isExplicit = false);
+
+		typedef Data (*element_expr_t)(const Data&, VM&);///< Elementwise expression callback
+
+		/**
+		 * @brief Call function per element
+		 *
+		 * @param expr The expression to call per element
+		 * @param args Array to iterate over
+		 * @return Data of type @link Data::T_Group @endlink or @link Data::T_None @endlink if failure
+		 */
+		Data doElementWise(element_expr_t expr, const list_t<Data>::type& args);
 	private:
 		DataContainer& mContainer;
 		SourceLogger* mLogger;

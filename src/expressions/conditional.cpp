@@ -35,8 +35,6 @@
 
 #include <sstream>
 
-#include "helper.h"
-
 namespace DL
 {
 	namespace Expressions
@@ -61,7 +59,7 @@ namespace DL
 			if (!arr.empty())
 				fail = arr.front();
 
-			Data conv = castTo(cond, Data::T_Bool, vm);
+			Data conv = vm.castTo(cond, Data::T_Bool);
 
 			bool c = false;
 			if (conv.type() == Data::T_Bool)
@@ -77,16 +75,16 @@ namespace DL
 			return c ? succ : fail;
 		}
 
-		Data not_func_e(const Data& d, VM& vm)
+		static Data not_func_e(const Data& d, VM& vm)
 		{
-			Data r = castTo(d, Data::T_Bool, vm);
+			Data r = vm.castTo(d, Data::T_Bool);
 			r.setBool(!r.getBool());
 			return r;
 		}
 
 		Data not_func(const list_t<Data>::type& args, VM& vm)
 		{
-			return doElementWise(not_func_e, args, vm);
+			return vm.doElementWise(not_func_e, args);
 		}
 
 		Data and_func(const list_t<Data>::type& args, VM& vm)
@@ -97,7 +95,7 @@ namespace DL
 			}
 			else if(args.size() == 1)
 			{
-				return castTo(args.front(), Data::T_Bool, vm);
+				return vm.castTo(args.front(), Data::T_Bool);
 			}
 			else
 			{
@@ -105,7 +103,7 @@ namespace DL
 				
 				for (const Data& d : args)
 				{
-					Data e = castTo(d, Data::T_Bool, vm);
+					Data e = vm.castTo(d, Data::T_Bool);
 					if(!e.isValid() || !e.getBool())
 					{
 						b = false;
@@ -127,7 +125,7 @@ namespace DL
 			}
 			else if(args.size() == 1)
 			{
-				return castTo(args.front(), Data::T_Bool, vm);
+				return vm.castTo(args.front(), Data::T_Bool);
 			}
 			else
 			{
@@ -135,7 +133,7 @@ namespace DL
 				
 				for (const Data& d : args)
 				{
-					Data e = castTo(d, Data::T_Bool, vm);
+					Data e = vm.castTo(d, Data::T_Bool);
 					if(e.isValid() && e.getBool())
 					{
 						b = true;

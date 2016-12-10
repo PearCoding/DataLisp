@@ -100,8 +100,21 @@ namespace DL
 		 * @param log Logging class. Should never be NULL
 		 * @param stdlib Enable the standard library expressions
 		 */
-		DataLisp(SourceLogger* log, bool stdlib = true);
+		explicit DataLisp(SourceLogger* log, bool stdlib = true);
 		~DataLisp();
+		
+		DataLisp(const DataLisp& other) = delete;
+		DataLisp& operator =(const DataLisp& other) = delete;
+
+		/**
+		 * @brief Moves container content
+		 */
+		DataLisp(DataLisp&& o) noexcept;
+
+		/**
+		 * @brief Moves container content
+		 */
+		DataLisp& operator =(DataLisp&& other) noexcept;
 
 		/**
 		 * @brief Parse a given string
