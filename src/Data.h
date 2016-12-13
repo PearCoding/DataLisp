@@ -65,6 +65,52 @@ namespace DL
 		 * @param key If empty an anonymous data will be created, non anonymous otherwise
 		 */
 		Data(const string_t& key = "");
+
+		/**
+		 * @brief Constructs a data with the given key and group
+		 *
+		 * Initial type is @link T_Group @endlink.
+		 * @param key If empty an anonymous data will be created, non anonymous otherwise
+		 * @param grp DataGroup to initialize with
+		 */
+		Data(const string_t& key, const DataGroup& grp);
+
+		/**
+		 * @brief Constructs a data with the given key and integer
+		 *
+		 * Initial type is @link T_Integer @endlink.
+		 * @param key If empty an anonymous data will be created, non anonymous otherwise
+		 * @param i Integer to initialize with
+		 */
+		Data(const string_t& key, Integer i);
+
+		/**
+		 * @brief Constructs a data with the given key and floating point number
+		 *
+		 * Initial type is @link T_Float @endlink.
+		 * @param key If empty an anonymous data will be created, non anonymous otherwise
+		 * @param f Float to initialize with
+		 */
+		Data(const string_t& key, Float f);
+
+		/**
+		 * @brief Constructs a data with the given key and bool
+		 *
+		 * Initial type is @link T_Bool @endlink.
+		 * @param key If empty an anonymous data will be created, non anonymous otherwise
+		 * @param b Boolean to initialize with
+		 */
+		Data(const string_t& key, bool b);
+
+		/**
+		 * @brief Constructs a data with the given key and string
+		 *
+		 * Initial type is @link T_String @endlink.
+		 * @param key If empty an anonymous data will be created, non anonymous otherwise
+		 * @param str String to initialize with
+		 */
+		Data(const string_t& key, const string_t& str);
+
 		~Data();
 
 		/**
@@ -73,10 +119,7 @@ namespace DL
 		 * The data is anonymous if key is empty, non anonyous otherwise.
 		 * @see setKey
 		 */
-		inline string_t key() const
-		{
-			return mKey;
-		}
+		inline string_t key() const;
 
 		/**
 		 * @brief Sets the key of the data
@@ -84,7 +127,7 @@ namespace DL
 		 * The data is anonymous if key is empty, non anonyous otherwise.
 		 * @see key
 		 */
-		void setKey(const string_t& key);
+		inline void setKey(const string_t& key);
 
 		/**
 		 * @brief Returns the type of the encapsulated value
@@ -92,20 +135,14 @@ namespace DL
 		 * @link T_None @endlink stands for an invalid data.
 		 * @see Type
 		 */
-		inline Type type() const
-		{
-			return mType;
-		}
+		inline Type type() const;
 
 		/**
 		 * @brief Checks if data is valid to use
 		 *
 		 * Equals to @code{.cpp} type() != T_None @endcode
 		 */ 
-		inline bool isValid() const
-		{
-			return mType != T_None;
-		}
+		inline bool isValid() const;
 
 		/**
 		 * @brief Returns encapsulated DataGroup value
@@ -113,13 +150,13 @@ namespace DL
 		 * Only valid if type is @link T_Group @endlink.
 		 * @see setGroup
 		 */
-		const DataGroup& getGroup() const;
+		inline const DataGroup& getGroup() const;
 
 		/**
 		 * @brief Set data to a DataGroup value. Type will be set to @link T_Group @endlink
 		 * @see getGroup
 		 */
-		void setGroup(const DataGroup& grp);
+		inline void setGroup(const DataGroup& grp);
 
 		/**
 		 * @brief Returns encapsulated integer value
@@ -127,13 +164,13 @@ namespace DL
 		 * Only valid if type is @link T_Integer @endlink.
 		 * @see setInt
 		 */
-		Integer getInt() const;
+		inline Integer getInt() const;
 
 		/**
 		 * @brief Set data to an integer value. Type will be set to @link T_Integer @endlink
 		 * @see getInt
 		 */
-		void setInt(Integer);
+		inline void setInt(Integer);
 
 		/**
 		 * @brief Returns encapsulated float value
@@ -141,13 +178,13 @@ namespace DL
 		 * Only valid if type is @link T_Float @endlink.
 		 * @see setFloat
 		 */
-		Float getFloat() const;
+		inline Float getFloat() const;
 
 		/**
 		 * @brief Set data to a float value. Type will be set to @link T_Float @endlink
 		 * @see getFloat
 		 */
-		void setFloat(Float);
+		inline void setFloat(Float);
 
 		/**
 		 * @brief Returns encapsulated integer or float value as a float value
@@ -155,7 +192,7 @@ namespace DL
 		 * Only valid if type is @link T_Integer @endlink or @link T_Float @endlink.
 		 * @see isNumber
 		 */
-		Float getNumber() const;
+		inline Float getNumber() const;
 
 		/**
 		 * @brief Checks if value is a number
@@ -163,7 +200,7 @@ namespace DL
 		 * A number is defined as a type of @link T_Integer @endlink or @link T_Float @endlink.
 		 * @see getNumber
 		 */
-		bool isNumber() const;
+		inline bool isNumber() const;
 
 		/**
 		 * @brief Returns encapsulated boolean value
@@ -171,13 +208,13 @@ namespace DL
 		 * Only valid if type is @link T_Bool @endlink.
 		 * @see setBool
 		 */
-		bool getBool() const;
+		inline bool getBool() const;
 
 		/**
 		 * @brief Set data to a boolean value. Type will be set to @link T_Bool @endlink
 		 * @see getBool
 		 */
-		void setBool(bool);
+		inline void setBool(bool);
 
 		/**
 		 * @brief Returns encapsulated string value
@@ -185,13 +222,13 @@ namespace DL
 		 * Only valid if type is @link T_String @endlink.
 		 * @see setString
 		 */
-		string_t getString() const;
+		inline string_t getString() const;
 
 		/**
 		 * @brief Set data to a string value. Type will be set to @link T_String @endlink
 		 * @see getString
 		 */
-		void setString(const string_t&);
+		inline void setString(const string_t&);
 	private:
 		string_t mKey;
 
@@ -206,3 +243,7 @@ namespace DL
 		string_t mString;
 	};
 }
+
+#define _DL_DATA_INL_
+#include "Data.inl"
+#undef _DL_DATA_INL_

@@ -116,6 +116,7 @@ SET(DL_Src
 SET(DL_Hdr
   src/DataLispConfig.h.in
   src/Data.h
+  src/Data.inl
   src/DataContainer.h
   src/DataGroup.h
   src/DataLisp.h
@@ -223,6 +224,7 @@ ENDIF()
 SET(DL_Hdr_INSTALL
   ${CMAKE_CURRENT_BINARY_DIR}/DataLispConfig.h
   src/Data.h
+  src/Data.inl
   src/DataContainer.h
   src/DataGroup.h
   src/DataLisp.h
