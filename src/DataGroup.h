@@ -31,6 +31,8 @@
 
 #include "DataLispConfig.h"
 
+#include <memory>
+
 namespace DL
 {
 	class Data;
@@ -205,6 +207,6 @@ namespace DL
 		 */
 		bool isAllNamedNumber() const;
 	private:
-		struct DataInternal* mShared;
+		std::shared_ptr<struct DataInternal> mShared;
 	};
 }

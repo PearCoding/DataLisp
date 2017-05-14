@@ -36,81 +36,50 @@ namespace DL
 		string_t ID;
 		vector_t<Data>::type AnonymousData;
 		vector_t<Data>::type NamedData;
-		uint32 References;
 	};
 
 	DataGroup::DataGroup(const string_t& id) :
-		mShared(nullptr)
+		mShared(new DataInternal)
 	{
-		mShared = new DataInternal;
-
 		mShared->ID = id;
-		mShared->References = 1;
 	}
 
 	DataGroup::DataGroup(const DataGroup& other) :
 		mShared(other.mShared)
 	{
-		DL_ASSERT(mShared->References > 0);
-		mShared->References++;
 	}
 
 	DataGroup::~DataGroup()
 	{
-		if(mShared)
-		{
-			DL_ASSERT(mShared->References > 0);
-
-			mShared->References -= 1;
-			if(mShared->References == 0)
-				delete mShared;
-		}
 	}
 
-	DataGroup::DataGroup(DataGroup&& other) noexcept
+	DataGroup::DataGroup(DataGroup&& other) noexcept :
+		mShared(std::move(other.mShared))
 	{
-		mShared = other.mShared;
-		other.mShared = nullptr;
 	}
 
 	DataGroup& DataGroup::operator =(DataGroup&& other) noexcept
 	{
-		DL_ASSERT(other.mShared->References > 0);
-
-		if(mShared != other.mShared)
-		{
-			mShared = other.mShared;
-			other.mShared = nullptr;
-		}
-
+		mShared = std::move(other.mShared);
 		return *this;
 	}
 		
 	DataGroup& DataGroup::operator =(const DataGroup& other)
 	{
-		DL_ASSERT(other.mShared->References > 0);
-		
-		if(mShared != other.mShared)
-		{
-			mShared = other.mShared;
-			mShared->References++;
-		}
-		
+		mShared = other.mShared;
 		return *this;
 	}
 
 	uint32 DataGroup::referenceCount() const
 	{
-		DL_ASSERT(mShared);
-
-		return mShared->References;
+		return mShared.use_count();
 	}
 		
 	void DataGroup::makeUnique()
 	{
-		DL_ASSERT(mShared && mShared->References > 0);
+		DL_ASSERT(mShared);
 
-		if(mShared->References == 1)
+		if(mShared.unique())
 			return;
 		
 		DataInternal* p = new DataInternal;
@@ -118,15 +87,12 @@ namespace DL
 		p->AnonymousData = mShared->AnonymousData;
 		p->NamedData = mShared->NamedData;
 
-		p->References = 1;
-		mShared->References -= 1;
-
-		mShared = p;
+		mShared = std::shared_ptr<DataInternal>(p);
 	}
 
 	void DataGroup::add(const Data& data)
 	{
-		DL_ASSERT(mShared && mShared->References > 0);
+		DL_ASSERT(mShared);
 
 		if(!data.isValid())
 			return;
@@ -139,7 +105,7 @@ namespace DL
 
 	Data DataGroup::at(size_t i) const
 	{
-		DL_ASSERT(mShared && mShared->References > 0);
+		DL_ASSERT(mShared);
 
 		if(i < mShared->AnonymousData.size())
 			return mShared->AnonymousData.at(i);
@@ -149,14 +115,14 @@ namespace DL
 
 	size_t DataGroup::anonymousCount() const
 	{
-		DL_ASSERT(mShared && mShared->References > 0);
+		DL_ASSERT(mShared);
 
 		return mShared->AnonymousData.size();
 	}
 
 	Data DataGroup::getFromKey(const string_t& str) const
 	{
-		DL_ASSERT(mShared && mShared->References > 0);
+		DL_ASSERT(mShared);
 
 		for (const Data& d : mShared->NamedData)
 		{
@@ -169,7 +135,7 @@ namespace DL
 
 	vector_t<Data>::type DataGroup::getAllFromKey(const string_t& key) const
 	{
-		DL_ASSERT(mShared && mShared->References > 0);
+		DL_ASSERT(mShared);
 
 		vector_t<Data>::type list;
 		for (const Data& d : mShared->NamedData)
@@ -188,7 +154,7 @@ namespace DL
 
 	vector_t<Data>::type DataGroup::getAllEntries() const
 	{
-		DL_ASSERT(mShared && mShared->References > 0);
+		DL_ASSERT(mShared);
 
 		vector_t<Data>::type ret;
 
@@ -200,14 +166,14 @@ namespace DL
 
 	const vector_t<Data>::type& DataGroup::getNamedEntries() const
 	{
-		DL_ASSERT(mShared && mShared->References > 0);
+		DL_ASSERT(mShared);
 
 		return mShared->NamedData;
 	}
 
 	const vector_t<Data>::type& DataGroup::getAnonymousEntries() const
 	{
-		DL_ASSERT(mShared && mShared->References > 0);
+		DL_ASSERT(mShared);
 
 		return mShared->AnonymousData;
 	}
@@ -219,7 +185,7 @@ namespace DL
 
 	bool DataGroup::isAllAnonymousNumber() const
 	{
-		DL_ASSERT(mShared && mShared->References > 0);
+		DL_ASSERT(mShared);
 
 		if (mShared->AnonymousData.empty())
 			return false;
@@ -235,7 +201,7 @@ namespace DL
 
 	bool DataGroup::isAllNamedNumber() const
 	{
-		DL_ASSERT(mShared && mShared->References > 0);
+		DL_ASSERT(mShared);
 
 		if (mShared->NamedData.empty())
 			return false;
