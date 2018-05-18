@@ -30,6 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <sstream>
 
 #include "DataLisp.h"
 
