@@ -3,10 +3,10 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 PROJECT(DataLisp)
 
 #SETS
-SET(VENDOR "DataLisp project 2013-2016")
+SET(VENDOR "DataLisp project 2013-2018")
 SET(VERSION_MAJOR 2)
-SET(VERSION_MINOR 0)
-SET(VERSION_HEX 0x0200)
+SET(VERSION_MINOR 1)
+SET(VERSION_HEX 0x0201)
 SET(DL_Version ${VERSION_MAJOR}.${VERSION_MINOR})
 if(NOT DEFINED DL_TARGET)
 	SET(DL_TARGET "DataLisp")
@@ -140,6 +140,9 @@ SET(DL_TEST_EXPR_Src
 SET(DL_TEST_UNICODE_Src
   src/tests/unicode_test.cpp)
 
+SET(DL_TEST_FLOAT_Src
+  src/tests/float_test.cpp)
+
 SET(DL_Python
   python/datalisp/__init__.py
   python/datalisp/datalisp2json.py
@@ -181,22 +184,24 @@ IF(NOT DL_ONLY_LIBRARY)
 	target_link_libraries(dl_dump datalisp)
 	set_target_properties(dl_dump PROPERTIES VERSION ${DL_Version})
 	target_compile_definitions(dl_dump PRIVATE "${DEFS}" "$<$<CONFIG:Debug>:${DEFS_DEBUG}>")
-
-	IF(DL_BUILD_TESTS)
-		enable_testing()
-
-		FUNCTION(PUSH_TEST name files)
-			add_executable(dl_test_${name} ${files})
-			target_link_libraries(dl_test_${name} datalisp)
-			set_target_properties(dl_test_${name} PROPERTIES VERSION ${DL_Version})
-			target_compile_definitions(dl_test_${name} PRIVATE "${DEFS}" "$<$<CONFIG:Debug>:${DEFS_DEBUG}>")
-			add_test(NAME ${name} COMMAND dl_test_${name})
-		ENDFUNCTION(PUSH_TEST)
-
-		PUSH_TEST(expr ${DL_TEST_EXPR_Src})
-		PUSH_TEST(unicode ${DL_TEST_UNICODE_Src})
-	ENDIF()
 ENDIF(NOT DL_ONLY_LIBRARY)
+
+IF(DL_BUILD_TESTS)
+  MESSAGE(STATUS "Building DataLisp tests")
+  enable_testing()
+
+  FUNCTION(PUSH_TEST name files)
+    add_executable(dl_test_${name} ${files})
+    target_link_libraries(dl_test_${name} datalisp)
+    set_target_properties(dl_test_${name} PROPERTIES VERSION ${DL_Version})
+    target_compile_definitions(dl_test_${name} PRIVATE "${DEFS}" "$<$<CONFIG:Debug>:${DEFS_DEBUG}>")
+    add_test(NAME ${name} COMMAND dl_test_${name})
+  ENDFUNCTION(PUSH_TEST)
+
+  PUSH_TEST(expr ${DL_TEST_EXPR_Src})
+  PUSH_TEST(unicode ${DL_TEST_UNICODE_Src})
+  PUSH_TEST(float ${DL_TEST_FLOAT_Src})
+ENDIF()
 
 # DOCUMENTATION
 IF(DL_BUILD_DOCUMENTATION)

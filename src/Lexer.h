@@ -51,9 +51,6 @@ namespace DL
 		static bool isAscii(char c);
 		static bool isAlpha(char c);
 
-		static bool isInteger(const string_t& str);
-		static bool isFloat(const string_t& str);
-
 		line_t mLineNumber;
 		column_t mColumnNumber;
 
