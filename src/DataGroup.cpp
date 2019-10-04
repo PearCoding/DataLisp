@@ -63,7 +63,7 @@ namespace DL
 		mShared = std::move(other.mShared);
 		return *this;
 	}
-		
+
 	DataGroup& DataGroup::operator =(const DataGroup& other)
 	{
 		mShared = other.mShared;
@@ -74,14 +74,14 @@ namespace DL
 	{
 		return mShared.use_count();
 	}
-		
+
 	void DataGroup::makeUnique()
 	{
 		DL_ASSERT(mShared);
 
 		if(mShared.unique())
 			return;
-		
+
 		DataInternal* p = new DataInternal;
 		p->ID = mShared->ID;
 		p->AnonymousData = mShared->AnonymousData;
@@ -96,7 +96,7 @@ namespace DL
 
 		if(!data.isValid())
 			return;
-			
+
 		if (data.key().empty())
 			mShared->AnonymousData.push_back(data);
 		else
@@ -180,7 +180,11 @@ namespace DL
 
 	bool DataGroup::isAllNumber() const
 	{
-		return isAllAnonymousNumber() && isAllNamedNumber();
+		if(mShared->AnonymousData.empty() && mShared->NamedData.empty())
+			return false;
+
+		return (mShared->AnonymousData.empty() || isAllAnonymousNumber())
+			&& (mShared->NamedData.empty() || isAllNamedNumber());
 	}
 
 	bool DataGroup::isAllAnonymousNumber() const
