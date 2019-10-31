@@ -1,25 +1,22 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+cmake_minimum_required(VERSION 3.1...3.15)
 
-PROJECT(DataLisp)
+if(${CMAKE_VERSION} VERSION_LESS 3.12)
+    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
+endif()
+
+project(DataLisp
+	VERSION 2.1
+	DESCRIPTION "Lisp based configuration and settings language")
 
 #SETS
-SET(VENDOR "DataLisp project 2013-2018")
-SET(VERSION_MAJOR 2)
-SET(VERSION_MINOR 1)
-SET(VERSION_HEX 0x0201)
-SET(DL_Version ${VERSION_MAJOR}.${VERSION_MINOR})
-if(NOT DEFINED DL_TARGET)
-	SET(DL_TARGET "DataLisp")
-ENDIF()
-
-SET(DL_Root ${CMAKE_CURRENT_SOURCE_DIR}/src)
+SET(VENDOR "DataLisp project 2013-2020")
 
 SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 SET(CMAKE_DEBUG_POSTFIX  "_d")
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 #CHECKS
-MESSAGE(STATUS "Building DataLisp ${DL_Version}")
-MESSAGE(STATUS "Root: ${DL_Root}")
+MESSAGE(STATUS "Building DataLisp ${DataLisp_VERSION}")
 
 IF(MINGW)
 	MESSAGE(WARNING "Please don't use MinGW with DataLisp, use the MSVC version instead")
@@ -34,7 +31,7 @@ IF(CYGWIN)
 ENDIF()
 
 #PACKAGES
-option(DL_ONLY_LIBRARY "Compile only library" OFF)
+option(DL_WITH_TOOLS "Compile additional tools" ON)
 option(DL_WITH_PYTHON "Compile additional python interface module" ON)
 option(DL_BUILD_TESTS "Build tests." ON)
 option(DL_BUILD_DOCUMENTATION "Build documentation with doxygen." ON)
@@ -42,61 +39,17 @@ option(DL_BUILD_DOCUMENTATION "Build documentation with doxygen." ON)
 IF(DL_WITH_PYTHON)
 	find_package(Boost 1.45 COMPONENTS python)
 	IF(Boost_FOUND)
-		find_package(PythonLibs)
-		find_package(PythonInterp)
-		IF(PythonLibs_FOUND AND PythonInterp_FOUND)
-  			include_directories(${PYTHON_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+    find_package(PythonLibs)
+		IF(PYTHONLIBS_FOUND)
 			SET(DL_HAS_PYTHON True)
 		ENDIF()
 	ENDIF()
 ENDIF()
 
 #DEFINITIONS AND FLAGS
-include_directories(${DL_Root})
-link_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-IF(MSVC)
-	#SET(DEFS "_UNICODE;UNICODE;_MT;_USRDLL")
-	#SET(DEFS_DEBUG "_DEBUG")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Oi /fp:fast /EHsc")
-	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Ox /Ob2 /Ot /GL")
-	#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /MDd")
-	#set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /DEBUG")
-	IF(CMAKE_CL_64)
-		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /bigobj")
-	ENDIF()
-ELSEIF(CMAKE_COMPILER_IS_GNUCXX)
-	execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
-	IF (GCC_VERSION VERSION_GREATER 4.7 OR GCC_VERSION VERSION_EQUAL 4.7)
-        message(STATUS "C++11 activated.")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-    ELSEIF (GCC_VERSION VERSION_GREATER 4.3 OR GCC_VERSION VERSION_EQUAL 4.3)
-        message(WARNING "C++0x activated. If you get any errors update to a compiler which fully supports C++11")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x")
-    ELSE ()
-        message(WARNING "C++11 needed. Build can fail.")   
-    ENDIF ()
-ELSEIF(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-	# We do not check version any further.
-	if(VERBOSE)
-		message(STATUS "C++11 activated.")
-	endif()
-  
-  IF(WIN32)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Qstd=c++11")
-  ELSE()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  ENDIF()
-ELSE()
-    message(WARNING "Unknown Compiler. C++11 needed. Build can fail.")   
-ENDIF()
-
-SET(DEFS "${DEFS};")
-SET(DEFS_DEBUG "${DEFS_DEBUG};DL_DEBUG")
-
 #CONFIGURE
 configure_file(src/DataLispConfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/DataLispConfig.h)
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
+include_directories(src/ ${CMAKE_CURRENT_BINARY_DIR})
 
 SET(DL_Src
   src/Data.cpp
@@ -128,21 +81,6 @@ SET(DL_Hdr
   src/Token.h
   src/VM.h)
 
-SET(DL_PY_Src
-  src/python/module.cpp)
-
-SET(DL_DUMP_Src
-  src/dump/main.cpp)
-
-SET(DL_TEST_EXPR_Src
-  src/tests/expr_test.cpp)
-
-SET(DL_TEST_UNICODE_Src
-  src/tests/unicode_test.cpp)
-
-SET(DL_TEST_FLOAT_Src
-  src/tests/float_test.cpp)
-
 SET(DL_Python
   python/datalisp/__init__.py
   python/datalisp/datalisp2json.py
@@ -152,39 +90,21 @@ SET(DL_Python
 
 #DEPENDIES, LIBARIES AND EXECUTABLES
 add_library(datalisp SHARED ${DL_Src} ${DL_Hdr})
-set_target_properties(datalisp PROPERTIES VERSION ${DL_Version})
-target_compile_definitions(datalisp PRIVATE "${DEFS};DL_LIB_BUILD" "$<$<CONFIG:Debug>:${DEFS_DEBUG}>")
+target_compile_definitions(datalisp PRIVATE "DL_LIB_BUILD" "$<$<CONFIG:Build>:DL_DEBUG>")
 
 IF(DL_HAS_PYTHON)
-	add_library(pydatalisp SHARED ${DL_PY_Src})
-	target_link_libraries(pydatalisp datalisp ${Boost_LIBRARIES})
-	set_target_properties(pydatalisp PROPERTIES VERSION ${DL_Version})
-	set_target_properties(pydatalisp PROPERTIES PREFIX "" )
-  set_target_properties(pydatalisp PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/datalisp)
-	target_compile_definitions(pydatalisp PRIVATE "${DEFS}" "$<$<CONFIG:Debug>:${DEFS_DEBUG}>")
-
-  file(COPY python/datalisp DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
-	set(SETUP_PY ${CMAKE_CURRENT_BINARY_DIR}/setup.py)
-  set(TIMESTAMP ${CMAKE_CURRENT_BINARY_DIR}/build/timestamp)
-  configure_file(python/setup.py.in ${SETUP_PY})
-
-  add_custom_command(OUTPUT ${TIMESTAMP}
-                       COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} build
-                       COMMAND ${CMAKE_COMMAND} -E touch ${TIMESTAMP}
-                       DEPENDS ${DL_Python} pydatalisp)
-
-  add_custom_target(pydatalisp_module ALL DEPENDS ${TIMESTAMP})
-
-  install(CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} install --prefix ${CMAKE_INSTALL_PREFIX})")
+	add_library(pydatalisp SHARED src/python/module.cpp)
+  target_link_libraries(pydatalisp PRIVATE datalisp Boost::python ${PYTHON_LIBRARIES})
+  set_target_properties(pydatalisp PROPERTIES DEBUG_POSTFIX "")# Disable suffix for this target
+  set_target_properties(pydatalisp PROPERTIES PREFIX "${PYTHON_MODULE_PREFIX}"
+                                              SUFFIX "${PYTHON_MODULE_EXTENSION}")
+  target_include_directories(pydatalisp PRIVATE ${PYTHON_INCLUDE_DIRS})
 ENDIF()
 
-IF(NOT DL_ONLY_LIBRARY)
-	add_executable(dl_dump ${DL_DUMP_Src})
+IF(DL_WITH_TOOLS)
+	add_executable(dl_dump src/dump/main.cpp)
 	target_link_libraries(dl_dump datalisp)
-	set_target_properties(dl_dump PROPERTIES VERSION ${DL_Version})
-	target_compile_definitions(dl_dump PRIVATE "${DEFS}" "$<$<CONFIG:Debug>:${DEFS_DEBUG}>")
-ENDIF(NOT DL_ONLY_LIBRARY)
+ENDIF(DL_WITH_TOOLS)
 
 IF(DL_BUILD_TESTS)
   MESSAGE(STATUS "Building DataLisp tests")
@@ -193,14 +113,12 @@ IF(DL_BUILD_TESTS)
   FUNCTION(PUSH_TEST name files)
     add_executable(dl_test_${name} ${files})
     target_link_libraries(dl_test_${name} datalisp)
-    set_target_properties(dl_test_${name} PROPERTIES VERSION ${DL_Version})
-    target_compile_definitions(dl_test_${name} PRIVATE "${DEFS}" "$<$<CONFIG:Debug>:${DEFS_DEBUG}>")
     add_test(NAME ${name} COMMAND dl_test_${name})
   ENDFUNCTION(PUSH_TEST)
 
-  PUSH_TEST(expr ${DL_TEST_EXPR_Src})
-  PUSH_TEST(unicode ${DL_TEST_UNICODE_Src})
-  PUSH_TEST(float ${DL_TEST_FLOAT_Src})
+  PUSH_TEST(expr src/tests/expr_test.cpp)
+  PUSH_TEST(unicode src/tests/unicode_test.cpp)
+  PUSH_TEST(float src/tests/float_test.cpp)
 ENDIF()
 
 # DOCUMENTATION
@@ -221,8 +139,8 @@ install(TARGETS datalisp EXPORT datalisp
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib/static)
 
-IF(NOT DL_ONLY_LIBRARY)
-	install(TARGETS dl_dump
+IF(DL_WITH_TOOLS)
+install(TARGETS dl_dump
         RUNTIME DESTINATION bin)
 ENDIF()
 

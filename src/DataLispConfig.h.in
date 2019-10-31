@@ -32,14 +32,14 @@
 #define DL_STRINGIFY(str) #str
 #define DL_DOUBLEQUOTE(str) DL_STRINGIFY(str)
 
-#define DL_NAME_STRING		DL_DOUBLEQUOTE(${CMAKE_PROJECT_NAME})
+#define DL_NAME_STRING		DL_DOUBLEQUOTE(${PROJECT_NAME})
 #define DL_VENDOR_STRING	DL_DOUBLEQUOTE(${VENDOR})
 
-#define DL_VERSION_MAJOR	${VERSION_MAJOR}
-#define DL_VERSION_MINOR	${VERSION_MINOR}
-#define DL_VERSION_STRING 	DL_DOUBLEQUOTE(${VERSION_MAJOR}) "." DL_DOUBLEQUOTE(${VERSION_MINOR})
-#define DL_VERSION 			${VERSION_HEX}
-#define DL_VERSION_CHECK(major, minor) (((major) << 8) | (minor))
+#define DL_VERSION_MAJOR	${DataLisp_VERSION_MAJOR}
+#define DL_VERSION_MINOR	${DataLisp_VERSION_MINOR}
+#define DL_VERSION_STRING 	"${DataLisp_VERSION}"
+#define DL_VERSION_BUILD(major, minor) (((major) << 8) | (minor))
+#define DL_VERSION 			DL_VERSION_BUILD(DL_VERSION_MAJOR, DL_VERSION_MINOR)
 
 //OS
 #if defined(__linux) || defined(linux)
@@ -113,7 +113,7 @@
 # if defined(DL_OS_WINDOWS)//Really OS dependent, more tool chain dependent!
 #  define DL_EXPORT_ __declspec(dllexport)
 #  define DL_IMPORT_ __declspec(dllimport)
-#  define DL_HIDDEN_ 
+#  define DL_HIDDEN_
 # elif defined(DL_OS_LINUX)
 #  define DL_EXPORT_ __attribute__((visibility ("default")))
 #  define DL_IMPORT_
@@ -131,7 +131,7 @@
 # define DL_LIB DL_EXPORT_
 # define DL_INTERNAL_LIB DL_HIDDEN_
 # ifdef DL_CC_MSC
-#  pragma warning(disable : 4251)//Just too annoying 
+#  pragma warning(disable : 4251)//Just too annoying
 # endif
 #else
 # define DL_LIB DL_IMPORT_
@@ -171,7 +171,7 @@
 # define DL_MAP_TYPE std::map
 #endif
 
-/** @file DataLispConfig.h DL/DataLispConfig.h 
+/** @file DataLispConfig.h DL/DataLispConfig.h
  */
 
 namespace DL
@@ -179,7 +179,7 @@ namespace DL
 	inline void dl_Noop()
 	{
 	}
-	
+
 	typedef signed char int8;
 	typedef unsigned char uint8;
 
@@ -212,14 +212,14 @@ namespace DL
 		typedef DL_LIST_TYPE<T> type;///< Type of used list structure. Default is std::list
 	};
 
-	/// Wrapper to the used vector structure. 
+	/// Wrapper to the used vector structure.
 	template <typename T>
 	struct vector_t
 	{
 		typedef DL_VECTOR_TYPE<T> type;///< Type of used list structure. Default is std::vector
 	};
 
-	/// Wrapper to the used map structure. 
+	/// Wrapper to the used map structure.
 	template <typename K, typename V>
 	struct map_t
 	{
