@@ -30,6 +30,9 @@ IF(CYGWIN)
 	MESSAGE(WARNING "Please don't use CYGWIN with DataLisp, use the MSVC version instead")
 ENDIF()
 
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 #PACKAGES
 option(DL_WITH_TOOLS "Compile additional tools" ON)
 option(DL_WITH_PYTHON "Compile additional python interface module" ON)
