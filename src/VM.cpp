@@ -102,7 +102,7 @@ namespace DL
 			case Data::T_Float:
 			{
 				Data r(d.key());
-				r.setInt(d.getFloat());
+				r.setInt(static_cast<Integer>(d.getFloat()));
 				return r;
 			}
 			default:
@@ -115,7 +115,7 @@ namespace DL
 			case Data::T_Bool:
 			{
 				Data r(d.key());
-				r.setFloat(d.getBool() ? 1 : 0);
+				r.setFloat(d.getBool() ? 1.0f : 0.0f);
 				return r;
 			}
 			case Data::T_Integer:
@@ -124,7 +124,7 @@ namespace DL
 					mLogger->log(L_Warning, "Implicit conversion from 'Integer' to 'Float'");
 				
 				Data r(d.key());
-				r.setFloat(d.getInt());
+				r.setFloat(static_cast<Float>(d.getInt()));
 				return r;
 			}
 			default:

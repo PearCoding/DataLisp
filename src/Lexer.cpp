@@ -194,7 +194,13 @@ Token Lexer::next()
 
 						if (uni_val.length() == length) {
 							size_t r		  = 0;
-							unsigned long uni = std::stoul(uni_val, &r, 16);
+							unsigned long uni;
+							try {
+								uni = std::stoul(uni_val, &r, 16);
+							} catch (const std::exception&) {
+								mLogger->log(mLineNumber, mColumnNumber, L_Error, "Given escape sequence is invalid.");
+								break;
+							}
 
 							if (r != length) {
 								mLogger->log(mLineNumber, mColumnNumber, L_Error, "Given Unicode sequence is invalid.");
