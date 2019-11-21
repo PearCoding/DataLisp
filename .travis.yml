@@ -3,7 +3,7 @@ dist: bionic
 env:
   global:
     - MAKE_FLAGS=-j4
-    - CXXFLAGS="-Wall -Wextra"
+    - CXXFLAGS="-Wall -Wextra -Werror"
 jobs:
   fast_finish: true
   include:

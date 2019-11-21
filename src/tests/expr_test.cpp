@@ -31,16 +31,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 
 #include "DataLisp.h"
 
-const char* TEST_FILE =
-"(test "
-":steps	$(if false 0.041666667 0.833333333)"
-"$(print \"Test: \" $(if true 111))"
-"$(print \"Anonymous: \" $(anonymous (test 1 2 3 :named 4)))"
-"$(print \"Named: \" $(named (test 1 2 3 :named 4)))"
-")"
-;
+const char* TEST_FILE = "(test "
+						":steps	$(if false 0.041666667 0.833333333)"
+						"$(print \"Test: \" $(if true 111))"
+						"$(print \"Anonymous: \" $(anonymous (test 1 2 3 :named 4)))"
+						"$(print \"Named: \" $(named (test 1 2 3 :named 4)))"
+						")";
 
-int main(int argc, char** argv)
+int main()
 {
 	DL::SourceLogger logger;
 	DL::DataLisp lisp(&logger);

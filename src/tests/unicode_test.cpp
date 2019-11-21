@@ -27,18 +27,16 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 */
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 #include "DataLisp.h"
 
-const char* TEST_FILE =
-"(test "
-":test \"Binary: \\xE2\\x80\\xA2 \xe2\x80\xa2\\nU(4): \\u2022 \u2022\\nU(8): \\U00002022 \U00002022\""
-")"
-;
+const char* TEST_FILE = "(test "
+						":test \"Binary: \\xE2\\x80\\xA2 \xe2\x80\xa2\\nU(4): \\u2022 \u2022\\nU(8): \\U00002022 \U00002022\""
+						")";
 
-int main(int argc, char** argv)
+int main()
 {
 	DL::SourceLogger logger;
 	DL::DataLisp lisp(&logger);

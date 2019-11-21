@@ -27,43 +27,41 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 */
-#include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 
 #include "DataLisp.h"
 
-const char* TEST_FILE =
-"(test \n"
-":test01 1\n"
-":test02 +1\n"
-":test03 -1\n"
-":test04 1.0\n"
-":test05 +1.0\n"
-":test06 -1.0\n"
-":test07 1e42\n"
-":test08 +1e42\n"
-":test09 -1e42\n"
-":test10 1e+42\n"
-":test11 +1e+42\n"
-":test12 -1e+42\n"
-":test13 1e-42\n"
-":test14 +1e-42\n"
-":test15 -1e-42\n"
-":test16 1.0e42\n"
-":test17 +1.0e42\n"
-":test18 -1.0e42\n"
-":test19 1.0e+42\n"
-":test20 +1.0e+42\n"
-":test21 -1.0e+42\n"
-":test22 1.0e-42\n"
-":test23 +1.0e-42\n"
-":test24 -1.0e-42\n"
-")"
-;
+const char* TEST_FILE = "(test \n"
+						":test01 1\n"
+						":test02 +1\n"
+						":test03 -1\n"
+						":test04 1.0\n"
+						":test05 +1.0\n"
+						":test06 -1.0\n"
+						":test07 1e42\n"
+						":test08 +1e42\n"
+						":test09 -1e42\n"
+						":test10 1e+42\n"
+						":test11 +1e+42\n"
+						":test12 -1e+42\n"
+						":test13 1e-42\n"
+						":test14 +1e-42\n"
+						":test15 -1e-42\n"
+						":test16 1.0e42\n"
+						":test17 +1.0e42\n"
+						":test18 -1.0e42\n"
+						":test19 1.0e+42\n"
+						":test20 +1.0e+42\n"
+						":test21 -1.0e+42\n"
+						":test22 1.0e-42\n"
+						":test23 +1.0e-42\n"
+						":test24 -1.0e-42\n"
+						")";
 
-int main(int argc, char** argv)
+int main()
 {
 	DL::SourceLogger logger;
 	DL::DataLisp lisp(&logger);
@@ -75,15 +73,15 @@ int main(int argc, char** argv)
 
 	// Integers
 	bool err = grp.getFromKey("test01").type() != DL::DT_Integer;
-	err = err || grp.getFromKey("test02").type() != DL::DT_Integer;
-	err = err || grp.getFromKey("test03").type() != DL::DT_Integer;
+	err		 = err || grp.getFromKey("test02").type() != DL::DT_Integer;
+	err		 = err || grp.getFromKey("test03").type() != DL::DT_Integer;
 
-	for(int i = 4; i <= 24; ++i) {
+	for (int i = 4; i <= 24; ++i) {
 		std::stringstream stream;
 		stream << "test" << std::setw(2) << std::setfill('0') << i;
 
 		err = err || grp.getFromKey(stream.str()).type() != DL::DT_Float;
-		if(err) {
+		if (err) {
 			std::cout << "Error in test " << i << std::endl;
 			break;
 		}
