@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2020, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -27,35 +27,30 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
-#pragma once
+#include "Expressions.h"
 
-#include "DataLispConfig.h"
-#include "Token.h"
-#include "SourceLogger.h"
-
-namespace DL
+namespace DL {
+namespace Expressions {
+map_t<string_t, expr_t>::type getStdLib()
 {
-	class DL_INTERNAL_LIB Lexer
-	{
-	public:
-		Lexer(const string_t& source, SourceLogger* logger);
-		virtual ~Lexer();
+	map_t<string_t, expr_t>::type lib;
 
-		Token next();
-		Token look();
+	lib["print"] = print_func;
 
-		line_t currentLine() const;
-		column_t currentColumn() const;
-	private:
-		static bool isWhitespace(char c);/* UNICODE? */
-		static bool isAscii(char c);
-		static bool isAlpha(char c);
+	lib["if"] = if_func;
 
-		line_t mLineNumber;
-		column_t mColumnNumber;
+	lib["not"] = not_func;
+	lib["and"] = and_func;
+	lib["or"]  = or_func;
 
-		string_t mSource;
-		string_t::const_iterator mIterator;
-		SourceLogger* mLogger;
-	};
+	lib["anonymous"] = anonymous_func;
+	lib["named"]	 = named_func;
+
+	lib["bool"]  = bool_func;
+	lib["int"]   = int_func;
+	lib["float"] = float_func;
+
+	return lib;
 }
+} // namespace Expressions
+} // namespace DL

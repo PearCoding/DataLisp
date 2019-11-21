@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2020, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -30,103 +30,102 @@
 #pragma once
 
 #ifndef _DL_DATA_INL_
-# error Data.inl should only be included by Data.h
+#error Data.inl should only be included by Data.h
 #endif
 
-namespace DL
+namespace DL {
+string_t Data::key() const
 {
-	string_t Data::key() const 
-	{
-		return mKey;
-	}
-
-	void Data::setKey(const string_t& key)
-	{
-		mKey = key;
-	}
-
-	Data::Type Data::type() const 
-	{
-		return mType;
-	}
-
-	bool Data::isValid() const
-	{
-		return mType != T_None;
-	}
-
-	const DataGroup& Data::getGroup() const
-	{
-		DL_ASSERT(mType == T_Group);
-		return mGroup;
-	}
-
-	void Data::setGroup(const DataGroup& g)
-	{
-		mType = T_Group;
-		mGroup = g;
-	}
-
-	Integer Data::getInt() const
-	{
-		DL_ASSERT(mType == T_Integer);
-		return mInt;
-	}
-
-	void Data::setInt(Integer i)
-	{
-		mType = T_Integer;
-		mInt = i;
-	}
-
-	Float Data::getFloat() const
-	{
-		DL_ASSERT(mType == T_Float);
-		return mFloat;
-	}
-
-	Float Data::getNumber() const
-	{
-		DL_ASSERT(mType == T_Float || mType == T_Integer);
-
-		if (mType == T_Float)
-			return mFloat;
-		else
-			return static_cast<Float>(mInt);
-	}
-
-	void Data::setFloat(Float f)
-	{
-		mType = T_Float;
-		mFloat = f;
-	}
-
-	bool Data::getBool() const
-	{
-		DL_ASSERT(mType == T_Bool);
-		return mBool;
-	}
-
-	void Data::setBool(bool b)
-	{
-		mType = T_Bool;
-		mBool = b;
-	}
-
-	string_t Data::getString() const
-	{
-		DL_ASSERT(mType == T_String);
-		return mString;
-	}
-
-	void Data::setString(const string_t& str)
-	{
-		mType = T_String;
-		mString = str;
-	}
-
-	bool Data::isNumber() const
-	{
-		return mType == T_Float || mType == T_Integer;
-	}
+	return mKey;
 }
+
+void Data::setKey(const string_t& key)
+{
+	mKey = key;
+}
+
+DataType Data::type() const
+{
+	return mType;
+}
+
+bool Data::isValid() const
+{
+	return mType != DT_None;
+}
+
+const DataGroup& Data::getGroup() const
+{
+	DL_ASSERT(mType == DT_Group);
+	return mGroup;
+}
+
+void Data::setGroup(const DataGroup& g)
+{
+	mType  = DT_Group;
+	mGroup = g;
+}
+
+Integer Data::getInt() const
+{
+	DL_ASSERT(mType == DT_Integer);
+	return mInt;
+}
+
+void Data::setInt(Integer i)
+{
+	mType = DT_Integer;
+	mInt  = i;
+}
+
+Float Data::getFloat() const
+{
+	DL_ASSERT(mType == DT_Float);
+	return mFloat;
+}
+
+Float Data::getNumber() const
+{
+	DL_ASSERT(mType == DT_Float || mType == DT_Integer);
+
+	if (mType == DT_Float)
+		return mFloat;
+	else
+		return static_cast<Float>(mInt);
+}
+
+void Data::setFloat(Float f)
+{
+	mType  = DT_Float;
+	mFloat = f;
+}
+
+bool Data::getBool() const
+{
+	DL_ASSERT(mType == DT_Bool);
+	return mBool;
+}
+
+void Data::setBool(bool b)
+{
+	mType = DT_Bool;
+	mBool = b;
+}
+
+string_t Data::getString() const
+{
+	DL_ASSERT(mType == DT_String);
+	return mString;
+}
+
+void Data::setString(const string_t& str)
+{
+	mType   = DT_String;
+	mString = str;
+}
+
+bool Data::isNumber() const
+{
+	return mType == DT_Float || mType == DT_Integer;
+}
+} // namespace DL

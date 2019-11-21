@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2020, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -47,131 +47,129 @@
  * If you want to help us, please write an e-mail to &Ouml;mercan Yazici < omercan AT pearcoding.eu >
  */
 
- /**
-  * @brief Main namespace containing all classes, structures, functions and types
-  */
-namespace DL
-{
-	/** @class DataLisp DataLisp.h DL/DataLisp.h
-	 * @brief General class to parse or generate %DataLisp source code
-	 *
-	 * This class handles all variations to use %DataLisp. 
-	 *
-	 * @section Parsing
-	 * When parsing a source code first the source has to be parsed,
-	 * afterwards it can be @link build @endlink to fill a DataContainer.<br>
-	 * Possible expression should be added before filling the container.
-
-	 * @subsection Example
-	 * @code{.cpp}
-	 * DL::DataContainer parse_datalisp(const std::string& source, bool& error) {
-	 *   DL::SourceLogger logger;
-	 *   DL::DataLisp datalisp(&logger);
-	 *   DL::DataContainer container;
-	 * 
-	 *   datalisp.parse(source);
-	 *   if(logger.errorCount() == 0)
-	 *     datalisp.build(container);
-	 * 
-	 *   error = logger.errorCount() > 0;
-	 *   return container;
-	 * }
-	 * @endcode 
-     *
-	 * @section Generating
-	 * It is really easy to generate a source code from a container.<br>
-	 * Just use @link generate @endlink to produce the code.<br>
-	 * Be aware that no expressions will be added,
-	 * as there is no way to generate expression code from plain data.
-     *
-	 * @subsection Example
-	 * @code{.cpp}
-	 * // Better use it directly, but this is just an example code
-	 * std::string generate_datalisp(const DL::DataContainer& container) {
-	 *   return DL::DataLisp::generate(container);
-	 * }
-	 * @endcode 
+/**
+ * @brief Main namespace containing all classes, structures, functions and types
+ */
+namespace DL {
+/** @class DataLisp DataLisp.h DL/DataLisp.h
+ * @brief General class to parse or generate %DataLisp source code
+ *
+ * This class handles all variations to use %DataLisp.
+ *
+ * @section Parsing
+ * When parsing a source code first the source has to be parsed,
+ * afterwards it can be @link build @endlink to fill a DataContainer.<br>
+ * Possible expression should be added before filling the container.
+ *
+ * @subsection Example
+ * @code{.cpp}
+ * DL::DataContainer parse_datalisp(const std::string& source, bool& error) {
+ *   DL::SourceLogger logger;
+ *   DL::DataLisp datalisp(&logger);
+ *   DL::DataContainer container;
+ *
+ *   datalisp.parse(source);
+ *   if(logger.errorCount() == 0)
+ *     datalisp.build(container);
+ *
+ *   error = logger.errorCount() > 0;
+ *   return container;
+ * }
+ * @endcode
+ *
+ * @section Generating
+ * It is really easy to generate a source code from a container.<br>
+ * Just use @link generate @endlink to produce the code.<br>
+ * Be aware that no expressions will be added,
+ * as there is no way to generate expression code from plain data.
+ *
+ * @subsection Example
+ * @code{.cpp}
+ * // Better use it directly, but this is just an example code
+ * std::string generate_datalisp(const DL::DataContainer& container) {
+ *   return DL::DataLisp::generate(container);
+ * }
+ * @endcode
+ */
+class DL_LIB DataLisp {
+public:
+	/**
+	 * @brief Construct the class with a given logging class
+	 * @param log Logging class. Should never be NULL
+	 * @param stdlib Enable the standard library expressions
 	 */
-	class DL_LIB DataLisp
-	{
-	public:
-		/**
-		 * @brief Construct the class with a given logging class
-		 * @param log Logging class. Should never be NULL
-		 * @param stdlib Enable the standard library expressions
-		 */
-		explicit DataLisp(SourceLogger* log, bool stdlib = true);
-		~DataLisp();
-		
-		DataLisp(const DataLisp& other) = delete;
-		DataLisp& operator =(const DataLisp& other) = delete;
+	explicit DataLisp(SourceLogger* log, bool stdlib = true);
+	~DataLisp();
 
-		/**
-		 * @brief Moves container content
-		 */
-		DataLisp(DataLisp&& o) noexcept;
+	DataLisp(const DataLisp& other) = delete;
+	DataLisp& operator=(const DataLisp& other) = delete;
 
-		/**
-		 * @brief Moves container content
-		 */
-		DataLisp& operator =(DataLisp&& other) noexcept;
+	/**
+	 * @brief Moves container content
+	 */
+	DataLisp(DataLisp&& o) noexcept;
 
-		/**
-		 * @brief Parse a given string
+	/**
+	 * @brief Moves container content
+	 */
+	DataLisp& operator=(DataLisp&& other) noexcept;
 
-		 * @attention Parsing errors or warnings will be post to the given SourceLogger instance.
-		 * @param source A source string. Can be UTF8 encoded
-		 * @see build
-		 */
-		void parse(const string_t& source);
+	/**
+	 * @brief Parse a given string
 
-		/**
-		 * @brief Fills a DataContainer with the content parsed beforehand
+	 * @attention Parsing errors or warnings will be post to the given SourceLogger instance.
+	 * @param source A source string. Can be UTF8 encoded
+	 * @see build
+	 */
+	void parse(const string_t& source);
 
-		 * @link parse @endlink should be called beforehand or nothing will be built.
-		 * The given expression will be executed.
-		 * @attention Building errors or warnings will be post to the given SourceLogger instance.
-		 * @param container The container to fill. Will not be cleared!
-		 * @see parse
-		 * @see expression
-		 */
-		void build(DataContainer& container);
+	/**
+	 * @brief Fills a DataContainer with the content parsed beforehand
 
-		/**
-		 * @brief Add expression to run when built
-		 *
-		 * @param name Name of the expression. Will replace if already set
-		 * @param handler Callback function to run
-		 * @see build
-		 */
-		void addExpression(const string_t& name, expr_t handler);
+	 * @link parse @endlink should be called beforehand or nothing will be built.
+	 * The given expression will be executed.
+	 * @attention Building errors or warnings will be post to the given SourceLogger instance.
+	 * @param container The container to fill. Will not be cleared!
+	 * @see parse
+	 * @see expression
+	 */
+	void build(DataContainer& container);
 
-		/**
-		 * @brief Returns callback function of a expression
-		 * 
-		 * @param name Name of the expression
-		 * @return Callback of the expression. Can be NULL if not found
-		 * @see addExpression
-		 */
-		expr_t expression(const string_t& name);
+	/**
+	 * @brief Add expression to run when built
+	 *
+	 * @param name Name of the expression. Will replace if already set
+	 * @param handler Callback function to run
+	 * @see build
+	 */
+	void addExpression(const string_t& name, expr_t handler);
 
-		/**
-		 * @brief Generates a overview of the parsed content
-		 * 
-		 * No expression will be evaluated.
-		 * @see parse
-		 */
-		string_t dump();
+	/**
+	 * @brief Returns callback function of a expression
+	 *
+	 * @param name Name of the expression
+	 * @return Callback of the expression. Can be NULL if not found
+	 * @see addExpression
+	 */
+	expr_t expression(const string_t& name);
 
-		/**
-		 * @brief Returns a source string based on the content of the container
-		 *
-		 * No expression will be in the source.
-		 * @param container A container to whom to construct the source code
-		 */
-		static string_t generate(const DataContainer& container);
+	/**
+	 * @brief Generates a overview of the parsed content
+	 *
+	 * No expression will be evaluated.
+	 * @see parse
+	 */
+	string_t dump();
 
-	private:
-		class DataLisp_Internal* mInternal;
-	};
-}
+	/**
+	 * @brief Returns a source string based on the content of the container
+	 *
+	 * No expression will be in the source.
+	 * @param container A container to whom to construct the source code
+	 */
+	static string_t generate(const DataContainer& container);
+
+private:
+	class DataLisp_Internal* mInternal;
+};
+} // namespace DL

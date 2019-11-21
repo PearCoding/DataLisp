@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2020, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -27,32 +27,30 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
-#include "Expressions.h"
+#pragma once
 
-namespace DL
-{
-	namespace Expressions
-	{
-		map_t<string_t, expr_t>::type getStdLib()
-		{
-			map_t<string_t, expr_t>::type lib;
+#include "DataLispConfig.h"
 
-			lib["print"] = print_func;
+namespace DL {
+enum TokenType {
+	T_Identifier,
+	T_String,
+	T_Integer,
+	T_Float,
+	T_True,
+	T_False,
+	T_OpenParanthese,
+	T_CloseParanthese,
+	T_OpenSquareBracket,
+	T_CloseSquareBracket,
+	T_Comma,
+	T_Colon,
+	T_ExpressionParanthese,
+	T_EOF,
+};
 
-			lib["if"] = if_func;
-
-			lib["not"] = not_func;
-			lib["and"] = and_func;
-			lib["or"] = or_func;
-
-			lib["anonymous"] = anonymous_func;
-			lib["named"] = named_func;
-
-			lib["bool"] = bool_func;
-			lib["int"] = int_func;
-			lib["float"] = float_func;
-
-			return lib;
-		}
-	}
-}
+struct DL_INTERNAL_LIB Token {
+	TokenType Type;
+	string_t Value;
+};
+} // namespace DL

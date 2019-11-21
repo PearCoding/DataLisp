@@ -74,18 +74,18 @@ int main(int argc, char** argv)
 	DL::DataGroup grp = container.getTopGroups().front();
 
 	// Integers
-	bool err = grp.getFromKey("test01").type() != DL::Data::T_Integer;
-	err = err || grp.getFromKey("test02").type() != DL::Data::T_Integer;
-	err = err || grp.getFromKey("test03").type() != DL::Data::T_Integer;
+	bool err = grp.getFromKey("test01").type() != DL::DT_Integer;
+	err = err || grp.getFromKey("test02").type() != DL::DT_Integer;
+	err = err || grp.getFromKey("test03").type() != DL::DT_Integer;
 
 	for(int i = 4; i <= 24; ++i) {
 		std::stringstream stream;
 		stream << "test" << std::setw(2) << std::setfill('0') << i;
 
-		err = err || grp.getFromKey(stream.str()).type() != DL::Data::T_Float;
+		err = err || grp.getFromKey(stream.str()).type() != DL::DT_Float;
 		if(err) {
 			std::cout << "Error in test " << i << std::endl;
-			break; 
+			break;
 		}
 	}
 

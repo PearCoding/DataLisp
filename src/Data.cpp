@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2020, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -29,39 +29,49 @@
  */
 #include "Data.h"
 
-namespace DL
+namespace DL {
+Data::Data(const string_t& source)
+	: mKey(source)
+	, mType(DT_None)
 {
-	Data::Data(const string_t& source) :
-		mKey(source), mType(T_None)
-	{
-	}
-	
-	Data::Data(const string_t& key, const DataGroup& grp) :
-		mKey(key), mType(T_Group), mGroup(grp)
-	{
-	}
-	
-	Data::Data(const string_t& key, Integer i) :
-		mKey(key), mType(T_Integer), mInt(i)
-	{
-	}
-	
-	Data::Data(const string_t& key, Float f) :
-		mKey(key), mType(T_Float), mFloat(f)
-	{
-	}
-	
-	Data::Data(const string_t& key, bool b) :
-		mKey(key), mType(T_Bool), mBool(b)
-	{
-	}
-	
-	Data::Data(const string_t& key, const string_t& str) :
-		mKey(key), mType(T_String), mString(str)
-	{
-	}
-
-	Data::~Data()
-	{
-	}
 }
+
+Data::Data(const string_t& key, const DataGroup& grp)
+	: mKey(key)
+	, mType(DT_Group)
+	, mGroup(grp)
+{
+}
+
+Data::Data(const string_t& key, Integer i)
+	: mKey(key)
+	, mType(DT_Integer)
+	, mInt(i)
+{
+}
+
+Data::Data(const string_t& key, Float f)
+	: mKey(key)
+	, mType(DT_Float)
+	, mFloat(f)
+{
+}
+
+Data::Data(const string_t& key, bool b)
+	: mKey(key)
+	, mType(DT_Bool)
+	, mBool(b)
+{
+}
+
+Data::Data(const string_t& key, const string_t& str)
+	: mKey(key)
+	, mType(DT_String)
+	, mString(str)
+{
+}
+
+Data::~Data()
+{
+}
+} // namespace DL

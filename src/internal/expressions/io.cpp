@@ -27,52 +27,79 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
-#include <iostream>
-#include <fstream>
-
-#include "DataLisp.h"
+#include "Data.h"
+#include "DataGroup.h"
 #include "SourceLogger.h"
+#include "VM.h"
+#include "internal/Expressions.h"
 
-std::string get_file_contents(const char *filename)
+#include <sstream>
+
+namespace DL {
+namespace Expressions {
+static void print_val(const Data& d, std::stringstream& stream)
 {
-	std::ifstream in(filename, std::ios::in | std::ios::binary);
-	if (in)
-	{
-		std::string contents;
-		in.seekg(0, std::ios::end);
-		contents.resize(in.tellg());
-		in.seekg(0, std::ios::beg);
-		in.read(&contents[0], contents.size());
-		in.close();
-		return(contents);
+	switch (d.type()) {
+	case DT_Bool:
+		stream << (d.getBool() ? "true" : "false");
+		break;
+	case DT_Integer:
+		stream << d.getInt();
+		break;
+	case DT_Float:
+		stream << d.getFloat();
+		break;
+	case DT_String:
+		stream << d.getString();
+		break;
+	case DT_Group:
+		if (d.getGroup().isArray())
+			stream << "[";
+		else
+			stream << "(" << d.getGroup().id() << " ";
+
+		for (size_t i = 0; i < d.getGroup().anonymousCount(); ++i) {
+			Data x = d.getGroup().at(i);
+			print_val(x, stream);
+
+			if (i != d.getGroup().anonymousCount() - 1)
+				stream << ", ";
+		}
+
+		if (d.getGroup().anonymousCount() > 0 && d.getGroup().getNamedEntries().size() > 0)
+			stream << ", ";
+
+		for (auto it = d.getGroup().getNamedEntries().begin();
+			 it != d.getGroup().getNamedEntries().end();) {
+			stream << ":" << it->key() << " ";
+			print_val(*it, stream);
+
+			it++;
+			if (it != d.getGroup().getNamedEntries().end())
+				stream << ", ";
+		}
+
+		if (d.getGroup().isArray())
+			stream << "]";
+		else
+			stream << ")";
+
+		break;
+	default:
+		stream << "###UNKNOWN### ";
+		break;
 	}
-	throw(errno);
 }
 
-int main(int argc, char** argv)
+Data print_func(const list_t<Data>::type& args, VM& vm)
 {
-	if (argc != 2)
-	{
-		std::cout << "Use 'dl_dump [INPUT]'" << std::endl;
-		return -1;
-	}
+	std::stringstream stream;
 
-	std::string content;
-	try
-	{
-		content = get_file_contents(argv[1]);
-	}
-	catch (...)
-	{
-		std::cout << "Couldn't read file '" << argv[1] << "'" << std::endl;
-		return -2;
-	}
+	for (const Data& d : args)
+		print_val(d, stream);
 
-	DL::SourceLogger logger;
-	DL::DataLisp lisp(&logger);
-
-	lisp.parse(content);
-	std::cout << lisp.dump() << std::endl;
-
-	return 0;
+	vm.logger()->log(L_Info, stream.str());
+	return Data();
 }
+} // namespace Expressions
+} // namespace DL

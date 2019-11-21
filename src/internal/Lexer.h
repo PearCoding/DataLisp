@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2020, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -30,35 +30,31 @@
 #pragma once
 
 #include "DataLispConfig.h"
-#include "Lexer.h"
-#include "SyntaxTree.h"
+#include "SourceLogger.h"
+#include "Token.h"
 
-namespace DL
-{
-	class DL_INTERNAL_LIB Parser
-	{
-	public:
-		Parser(const string_t& str, SourceLogger* logger);
-		virtual ~Parser();
+namespace DL {
+class DL_INTERNAL_LIB Lexer {
+public:
+	Lexer(const string_t& source, SourceLogger* logger);
+	virtual ~Lexer();
 
-		SyntaxTree* parse();
+	Token next();
+	Token look();
 
-	private:
-		Token match(TokenType type);
-		bool lookahead(TokenType type);
-		static const char* tokenToString(TokenType type);
+	line_t currentLine() const;
+	column_t currentColumn() const;
 
-		SyntaxTree* gr_tr_unit();
-		StatementNode* gr_statement();
-		StatementNode* gr_array();
-		ExpressionNode* gr_expression();
+private:
+	static bool isWhitespace(char c); /* UNICODE? */
+	static bool isAscii(char c);
+	static bool isAlpha(char c);
 
-		list_t<DataNode*>::type gr_data_list();
-		DataNode* gr_data();
+	line_t mLineNumber;
+	column_t mColumnNumber;
 
-		ValueNode* gr_value();
-
-		Lexer mLexer;
-		SourceLogger* mLogger;
-	};
-}
+	string_t mSource;
+	string_t::const_iterator mIterator;
+	SourceLogger* mLogger;
+};
+} // namespace DL

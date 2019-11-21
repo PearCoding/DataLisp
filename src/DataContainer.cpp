@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2020, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -28,30 +28,27 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 #include "DataContainer.h"
-#include "SyntaxTree.h"
-
-#include "DataGroup.h"
 #include "Data.h"
+#include "DataGroup.h"
+#include "internal/Expressions.h"
+#include "internal/SyntaxTree.h"
 
-#include "Expressions.h"
-
-namespace DL
+namespace DL {
+DataContainer::DataContainer()
 {
-	DataContainer::DataContainer()
-	{
-	}
-
-	DataContainer::~DataContainer()
-	{
-	}
-
-	const list_t<DataGroup>::type& DataContainer::getTopGroups() const
-	{
-		return mTopGroups;
-	}
-
-	void DataContainer::addTopGroup(const DataGroup& group)
-	{
-		mTopGroups.push_back(group);
-	}
 }
+
+DataContainer::~DataContainer()
+{
+}
+
+const list_t<DataGroup>::type& DataContainer::getTopGroups() const
+{
+	return mTopGroups;
+}
+
+void DataContainer::addTopGroup(const DataGroup& group)
+{
+	mTopGroups.push_back(group);
+}
+} // namespace DL

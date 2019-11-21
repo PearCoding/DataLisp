@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2020, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -31,61 +31,58 @@
 
 #include "DataLispConfig.h"
 
-namespace DL
-{
-	typedef uint32 line_t;
-	typedef uint32 column_t;
+namespace DL {
+typedef uint32 line_t;
+typedef uint32 column_t;
 
-	/// Message importance level for SourceLogger
-	enum Level
-	{
-		L_Debug,	///< Debug information. Truncated in release code
-		L_Info,		///< General information. Truncated if not in verbose mode
-		L_Warning,	///< Warning information. Should be investigated, but does not crash applicaton
-		L_Error,	///< Error information. Generated content maybe not useable
-		L_Fatal		///< Fatal information. %DataLisp can not recover but program will @b NOT be aborted 
-	};
+/// Message importance level for SourceLogger
+enum Level {
+	L_Debug,   ///< Debug information. Truncated in release code
+	L_Info,	///< General information. Truncated if not in verbose mode
+	L_Warning, ///< Warning information. Should be investigated, but does not crash applicaton
+	L_Error,   ///< Error information. Generated content maybe not useable
+	L_Fatal	///< Fatal information. %DataLisp can not recover but program will @b NOT be aborted
+};
 
-	/** @class SourceLogger SourceLogger.h DL/SourceLogger.h
-	 * @brief Class logging information to the standard output
-	 *
-	 * This class logs information to the standard output.<br> 
-	 * Other output styles can be added by overriding the virtual functions.
+/** @class SourceLogger SourceLogger.h DL/SourceLogger.h
+ * @brief Class logging information to the standard output
+ *
+ * This class logs information to the standard output.<br>
+ * Other output styles can be added by overriding the virtual functions.
+ */
+class DL_LIB SourceLogger {
+public:
+	SourceLogger();
+	virtual ~SourceLogger();
+
+	/**
+	 * @brief Logs the information additionaly with line and column to standard output
+	 * @param line The line the information refers
+	 * @param column The column the information refers
+	 * @param level Importance level
+	 * @param str The actual message
 	 */
-	class DL_LIB SourceLogger
-	{
-	public:
-		SourceLogger();
-		virtual ~SourceLogger();
+	virtual void log(line_t line, column_t column, Level level, const string_t& str);
 
-		/**
-		 * @brief Logs the information additionaly with line and column to standard output
-		 * @param line The line the information refers
-		 * @param column The column the information refers
-		 * @param level Importance level
-		 * @param str The actual message
-		 */ 
-		virtual void log(line_t line, column_t column, Level level, const string_t& str);
+	/**
+	 * @brief Logs the information to standard output
+	 * @param level Importance level
+	 * @param str The actual message
+	 */
+	virtual void log(Level level, const string_t& str);
 
-		/**
-		 * @brief Logs the information to standard output
-		 * @param level Importance level
-		 * @param str The actual message
-		 */ 
-		virtual void log(Level level, const string_t& str);
+	/**
+	 * @brief Amount of warnings occured
+	 */
+	int warningCount() const;
 
-		/**
-		 * @brief Amount of warnings occured
-		 */
-		int warningCount() const;
+	/**
+	 * @brief Amount of errors and fatal errors occured
+	 */
+	int errorCount() const;
 
-		/**
-		 * @brief Amount of errors and fatal errors occured
-		 */
-		int errorCount() const;
-
-	private:
-		int mWarningCount;
-		int mErrorCount;
-	};
-}
+private:
+	int mWarningCount;
+	int mErrorCount;
+};
+} // namespace DL

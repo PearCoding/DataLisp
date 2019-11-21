@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2020, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -32,201 +32,197 @@
 #define DL_STRINGIFY(str) #str
 #define DL_DOUBLEQUOTE(str) DL_STRINGIFY(str)
 
-#define DL_NAME_STRING		DL_DOUBLEQUOTE(${PROJECT_NAME})
-#define DL_VENDOR_STRING	DL_DOUBLEQUOTE(${VENDOR})
+#define DL_NAME_STRING DL_DOUBLEQUOTE(${PROJECT_NAME})
+#define DL_VENDOR_STRING DL_DOUBLEQUOTE(${VENDOR})
 
-#define DL_VERSION_MAJOR	${DataLisp_VERSION_MAJOR}
-#define DL_VERSION_MINOR	${DataLisp_VERSION_MINOR}
-#define DL_VERSION_STRING 	"${DataLisp_VERSION}"
+#define DL_VERSION_MAJOR ${DataLisp_VERSION_MAJOR}
+#define DL_VERSION_MINOR ${DataLisp_VERSION_MINOR}
+#define DL_VERSION_STRING "${DataLisp_VERSION}"
 #define DL_VERSION_BUILD(major, minor) (((major) << 8) | (minor))
-#define DL_VERSION 			DL_VERSION_BUILD(DL_VERSION_MAJOR, DL_VERSION_MINOR)
+#define DL_VERSION DL_VERSION_BUILD(DL_VERSION_MAJOR, DL_VERSION_MINOR)
 
 //OS
 #if defined(__linux) || defined(linux)
-# define DL_OS_LINUX
-# define DL_OS_NAME "Linux"
+#define DL_OS_LINUX
+#define DL_OS_NAME "Linux"
 #elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__WINDOWS__) || defined(__TOS_WIN__)
-# define DL_OS_WINDOWS
-# if !defined(Win64) && !defined(_WIN64)
-#  define DL_OS_WINDOWS_32
-#  define DL_OS_NAME "Microsoft Windows 32 Bit"
-# else
-#  define DL_OS_WINDOWS_64
-#  define DL_OS_NAME "Microsoft Windows 64 Bit"
-# endif
+#define DL_OS_WINDOWS
+#if !defined(Win64) && !defined(_WIN64)
+#define DL_OS_WINDOWS_32
+#define DL_OS_NAME "Microsoft Windows 32 Bit"
 #else
-# define DL_OS_UNKNOWN
-# define DL_OS_NAME "Unknown"
+#define DL_OS_WINDOWS_64
+#define DL_OS_NAME "Microsoft Windows 64 Bit"
+#endif
+#else
+#define DL_OS_UNKNOWN
+#define DL_OS_NAME "Unknown"
 /*# error Your operating system is currently not supported*/
 #endif
 
 //Compiler
 #if defined(__CYGWIN__)
-# define DL_CC_CYGWIN
-# define DL_CC_NAME "Cygwin"
+#define DL_CC_CYGWIN
+#define DL_CC_NAME "Cygwin"
 #endif
 
 #if defined(__GNUC__)
-# define DL_CC_GNU
-# define DL_CC_NAME "GNU C/C++"
+#define DL_CC_GNU
+#define DL_CC_NAME "GNU C/C++"
 #endif
 
 #if defined(__MINGW32__)
-# define DL_CC_MINGW32
-# if !defined(DL_CC_GNU)
-#  define DL_CC_NAME "MinGW 32"
-# else
-#  undef DL_CC_NAME
-#  define DL_CC_NAME "GNU C/C++(MinGW 32)"
-# endif
+#define DL_CC_MINGW32
+#if !defined(DL_CC_GNU)
+#define DL_CC_NAME "MinGW 32"
+#else
+#undef DL_CC_NAME
+#define DL_CC_NAME "GNU C/C++(MinGW 32)"
+#endif
 #endif
 
 #if defined(__INTEL_COMPILER)
-# define DL_CC_INTEL
-# ifdef DL_CC_NAME
-#  undef DL_CC_NAME
-# endif
-# define DL_CC_NAME "Intel C/C++"
+#define DL_CC_INTEL
+#ifdef DL_CC_NAME
+#undef DL_CC_NAME
+#endif
+#define DL_CC_NAME "Intel C/C++"
 #endif
 
 #if defined(_MSC_VER)
-# define DL_CC_MSC
-# define DL_CC_NAME "Microsoft Visual C++"
+#define DL_CC_MSC
+#define DL_CC_NAME "Microsoft Visual C++"
 #endif
 
 #if !defined(DL_CC_NAME)
-# define DL_CC_NAME "Unknown compiler"
+#define DL_CC_NAME "Unknown compiler"
 #endif
 
 #if defined(DL_DEBUG)
-# define DL_BUILDVARIANT_NAME "Debug"
-# define DL_BUILD_STRING DL_NAME_STRING " " DL_VERSION_STRING " build variant " DL_BUILDVARIANT_NAME " on " __DATE__  " at " __TIME__ " with " DL_CC_NAME " { OS: " DL_OS_NAME "; Last change: " __TIMESTAMP__ "}\n"
+#define DL_BUILDVARIANT_NAME "Debug"
+#define DL_BUILD_STRING DL_NAME_STRING " " DL_VERSION_STRING " build variant " DL_BUILDVARIANT_NAME " on " __DATE__ " at " __TIME__ " with " DL_CC_NAME " { OS: " DL_OS_NAME "; Last change: " __TIMESTAMP__ "}\n"
 #else
-# ifndef DL_RELEASE
-#  define DL_RELEASE
-# endif
-# define DL_BUILDVARIANT_NAME "Release"
-# define DL_BUILD_STRING DL_NAME_STRING " " DL_VERSION_STRING " build variant " DL_BUILDVARIANT_NAME " { OS: " DL_OS_NAME " }\n"
+#ifndef DL_RELEASE
+#define DL_RELEASE
+#endif
+#define DL_BUILDVARIANT_NAME "Release"
+#define DL_BUILD_STRING DL_NAME_STRING " " DL_VERSION_STRING " build variant " DL_BUILDVARIANT_NAME " { OS: " DL_OS_NAME " }\n"
 #endif
 
 #if !defined(DL_STATIC)
-# if defined(DL_OS_WINDOWS)//Really OS dependent, more tool chain dependent!
-#  define DL_EXPORT_ __declspec(dllexport)
-#  define DL_IMPORT_ __declspec(dllimport)
-#  define DL_HIDDEN_
-# elif defined(DL_OS_LINUX)
-#  define DL_EXPORT_ __attribute__((visibility ("default")))
-#  define DL_IMPORT_
-#  define DL_HIDDEN_ __attribute__((visibility ("hidden")))
-# else
-#  error Unsupported operating system
-# endif
+#if defined(DL_OS_WINDOWS) //Really OS dependent, more tool chain dependent!
+#define DL_EXPORT_ __declspec(dllexport)
+#define DL_IMPORT_ __declspec(dllimport)
+#define DL_HIDDEN_
+#elif defined(DL_OS_LINUX)
+#define DL_EXPORT_ __attribute__((visibility("default")))
+#define DL_IMPORT_
+#define DL_HIDDEN_ __attribute__((visibility("hidden")))
 #else
-# define DL_EXPORT_
-# define DL_IMPORT_
-# define DL_HIDDEN_
+#error Unsupported operating system
+#endif
+#else
+#define DL_EXPORT_
+#define DL_IMPORT_
+#define DL_HIDDEN_
 #endif
 
 #ifdef DL_LIB_BUILD
-# define DL_LIB DL_EXPORT_
-# define DL_INTERNAL_LIB DL_HIDDEN_
-# ifdef DL_CC_MSC
-#  pragma warning(disable : 4251)//Just too annoying
-# endif
+#define DL_LIB DL_EXPORT_
+#define DL_INTERNAL_LIB DL_HIDDEN_
+#ifdef DL_CC_MSC
+#pragma warning(disable : 4251) //Just too annoying
+#endif
 #else
-# define DL_LIB DL_IMPORT_
-# define DL_INTERNAL_LIB "THIS SHOULDN'T BE VISIBLE TO THE USER"
+#define DL_LIB DL_IMPORT_
+#define DL_INTERNAL_LIB "THIS SHOULDN'T BE VISIBLE TO THE USER"
 #endif
 
 #ifndef DL_NO_ASSERTS
 #include <assert.h>
-# define DL_ASSERT(cond) assert((cond))
+#define DL_ASSERT(cond) assert((cond))
 #else
-# define DL_ASSERT(cond)
+#define DL_ASSERT(cond)
 #endif
 
 #if defined(DL_DEBUG)
-# define DL_DEBUG_ASSERT(cond) DL_ASSERT(cond)
+#define DL_DEBUG_ASSERT(cond) DL_ASSERT(cond)
 #else
-# define DL_DEBUG_ASSERT(cond) DL::dl_Noop()
+#define DL_DEBUG_ASSERT(cond) DL::dl_Noop()
 #endif
 
 #ifndef DL_STRING_TYPE
-# include <string>
-# define DL_STRING_TYPE std::string
+#include <string>
+#define DL_STRING_TYPE std::string
 #endif
 
 #ifndef DL_LIST_TYPE
-# include <list>
-# define DL_LIST_TYPE std::list
+#include <list>
+#define DL_LIST_TYPE std::list
 #endif
 
 #ifndef DL_VECTOR_TYPE
-# include <vector>
-# define DL_VECTOR_TYPE std::vector
+#include <vector>
+#define DL_VECTOR_TYPE std::vector
 #endif
 
 #ifndef DL_MAP_TYPE
-# include <map>
-# define DL_MAP_TYPE std::map
+#include <map>
+#define DL_MAP_TYPE std::map
 #endif
 
 /** @file DataLispConfig.h DL/DataLispConfig.h
  */
 
-namespace DL
+namespace DL {
+inline void dl_Noop()
 {
-	inline void dl_Noop()
-	{
-	}
+}
 
-	typedef signed char int8;
-	typedef unsigned char uint8;
+typedef signed char int8;
+typedef unsigned char uint8;
 
-	typedef signed short int16;
-	typedef unsigned short uint16;
+typedef signed short int16;
+typedef unsigned short uint16;
 
-	typedef signed int int32;
-	typedef unsigned int uint32;
+typedef signed int int32;
+typedef unsigned int uint32;
 
 #if defined __GLIBC_HAVE_LONG_LONG
-	__extension__ typedef signed long long int int64;
-	__extension__ typedef unsigned long long int uint64;
+__extension__ typedef signed long long int int64;
+__extension__ typedef unsigned long long int uint64;
 #elif defined DL_OS_WINDOWS
-	typedef __int64 int64;
-	typedef unsigned __int64 uint64;
-#else// FIXME: This is bad!
-	typedef signed long int int64;
-	typedef unsigned long int uint64;
+typedef __int64 int64;
+typedef unsigned __int64 uint64;
+#else // FIXME: This is bad!
+typedef signed long long int int64;
+typedef unsigned long long int uint64;
 #endif
 
-	typedef DL_STRING_TYPE string_t;
+typedef DL_STRING_TYPE string_t;
 
-	typedef int64 Integer;
-	typedef float Float;
+typedef int64 Integer;
+typedef float Float;
 
-	/// Wrapper to the used list structure.
-	template <typename T>
-	struct list_t
-	{
-		typedef DL_LIST_TYPE<T> type;///< Type of used list structure. Default is std::list
-	};
+/// Wrapper to the used list structure.
+template <typename T>
+struct list_t {
+	typedef DL_LIST_TYPE<T> type; ///< Type of used list structure. Default is std::list
+};
 
-	/// Wrapper to the used vector structure.
-	template <typename T>
-	struct vector_t
-	{
-		typedef DL_VECTOR_TYPE<T> type;///< Type of used list structure. Default is std::vector
-	};
+/// Wrapper to the used vector structure.
+template <typename T>
+struct vector_t {
+	typedef DL_VECTOR_TYPE<T> type; ///< Type of used list structure. Default is std::vector
+};
 
-	/// Wrapper to the used map structure.
-	template <typename K, typename V>
-	struct map_t
-	{
-		typedef DL_MAP_TYPE<K, V> type;///< Type of used map structure. Default is std::map
-	};
+/// Wrapper to the used map structure.
+template <typename K, typename V>
+struct map_t {
+	typedef DL_MAP_TYPE<K, V> type; ///< Type of used map structure. Default is std::map
+};
 
-	class Data;
-	class VM;
-	typedef Data (*expr_t)(const list_t<Data>::type& args, VM& vm);///< Expression Callback
-}
+class Data;
+class VM;
+typedef Data (*expr_t)(const list_t<Data>::type& args, VM& vm); ///< Expression Callback
+} // namespace DL

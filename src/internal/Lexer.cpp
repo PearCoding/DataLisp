@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2020, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -193,7 +193,7 @@ Token Lexer::next()
 						}
 
 						if (uni_val.length() == length) {
-							size_t r		  = 0;
+							size_t r = 0;
 							unsigned long uni;
 							try {
 								uni = std::stoul(uni_val, &r, 16);
@@ -252,7 +252,7 @@ Token Lexer::next()
 	} else if (isdigit(*mIterator) || *mIterator == '-' || *mIterator == '+' || *mIterator == '.') {
 		string_t identifier;
 
-		bool hasSign = false;
+		//bool hasSign = false;
 		bool hasData = false;
 		bool hasDot  = false;
 
@@ -261,7 +261,7 @@ Token Lexer::next()
 		bool hasExpData = false;
 
 		if (*mIterator == '-' || *mIterator == '+') {
-			hasSign = true;
+			//hasSign = true;
 		} else if (*mIterator == '.') {
 			hasDot = true;
 		} else {
@@ -443,4 +443,4 @@ bool Lexer::isAlpha(char c)
 		return false;
 	}
 }
-}
+} // namespace DL

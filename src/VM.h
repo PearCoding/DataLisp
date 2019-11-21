@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2020, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -31,60 +31,59 @@
 
 #include "Data.h"
 
-namespace DL
-{
-	class DataContainer;
-	class SourceLogger;
+namespace DL {
+class DataContainer;
+class SourceLogger;
 
-	/** @class VM VM.h DL/VM.h
-	 * @brief Utility class for expressions
+/** @class VM VM.h DL/VM.h
+ * @brief Utility class for expressions
+ */
+class DL_LIB VM {
+public:
+	/**
+	 * @brief Constructs the class with the assigned container and logger
 	 */
-	class DL_LIB VM
-	{
-	public:
-		/**
-		 * @brief Constructs the class with the assigned container and logger
-		 */
-		VM(DataContainer& container, SourceLogger* logger);
-		~VM();
+	VM(DataContainer& container, SourceLogger* logger);
+	~VM();
 
-		/**
-		 * @brief Returns assigned DataContainer
-		 */
-		inline const DataContainer& container() const {return mContainer;}
+	/**
+	 * @brief Returns assigned DataContainer
+	 */
+	inline const DataContainer& container() const { return mContainer; }
 
-		/**
-		 * @brief Returns assigned DataContainer
-		 */
-		inline DataContainer& container() {return mContainer;}
+	/**
+	 * @brief Returns assigned DataContainer
+	 */
+	inline DataContainer& container() { return mContainer; }
 
-		/**
-		 * @brief Returns assigned SourceLogger
-		 */
-		inline SourceLogger* logger() const { return mLogger; }
+	/**
+	 * @brief Returns assigned SourceLogger
+	 */
+	inline SourceLogger* logger() const { return mLogger; }
 
-		/**
-		 * @brief Casts data to type based on casting table
-		 *
-		 * @param d The original data 
-		 * @param type The new type to cast to
-		 * @param isExplicit Cast explicit or implicit
-		 * @return Data of the new type or @link Data::T_None @endlink if failure
-		 */
-		Data castTo(const Data& d, DL::Data::Type type, bool isExplicit = false);
+	/**
+	 * @brief Casts data to type based on casting table
+	 *
+	 * @param d The original data
+	 * @param type The new type to cast to
+	 * @param isExplicit Cast explicit or implicit
+	 * @return Data of the new type or @link DT_None @endlink if failure
+	 */
+	Data castTo(const Data& d, DL::DataType type, bool isExplicit = false);
 
-		typedef Data (*element_expr_t)(const Data&, VM&);///< Elementwise expression callback
+	typedef Data (*element_expr_t)(const Data&, VM&); ///< Elementwise expression callback
 
-		/**
-		 * @brief Call function per element
-		 *
-		 * @param expr The expression to call per element
-		 * @param args Array to iterate over
-		 * @return Data of type @link Data::T_Group @endlink or @link Data::T_None @endlink if failure
-		 */
-		Data doElementWise(element_expr_t expr, const list_t<Data>::type& args);
-	private:
-		DataContainer& mContainer;
-		SourceLogger* mLogger;
-	};
-}
+	/**
+	 * @brief Call function per element
+	 *
+	 * @param expr The expression to call per element
+	 * @param args Array to iterate over
+	 * @return Data of type @link DT_Group @endlink or @link DT_None @endlink if failure
+	 */
+	Data doElementWise(element_expr_t expr, const list_t<Data>::type& args);
+
+private:
+	DataContainer& mContainer;
+	SourceLogger* mLogger;
+};
+} // namespace DL

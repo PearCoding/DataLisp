@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2020, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -27,89 +27,43 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
-#include "Expressions.h"
-#include "Data.h"
-#include "DataGroup.h"
 #include "DataContainer.h"
 #include "SourceLogger.h"
 #include "VM.h"
+#include "internal/Expressions.h"
 
 #include <sstream>
 
-namespace DL
+namespace DL {
+namespace Expressions {
+static Data bool_func_e(const Data& d, VM& vm)
 {
-	namespace Expressions
-	{
-		Data anonymous_func(const list_t<Data>::type& args, VM& vm)
-		{
-			Data d = union_func(args, vm);
-			
-			if(d.type() == Data::T_Group)
-			{
-				DataGroup grp;
-				for (const Data& data : d.getGroup().getAnonymousEntries())
-					grp.add(data);
-
-				Data r;
-				r.setGroup(grp);
-				return r;
-			}
-			
-			return d;
-		}
-
-		Data named_func(const list_t<Data>::type& args, VM& vm)
-		{
-			Data d = union_func(args, vm);
-			
-			if(d.type() != Data::T_Group)
-				return Data();
-			
-			if(d.getGroup().getNamedEntries().empty())
-				return Data();
-
-			DataGroup grp;
-			for (const Data& data : d.getGroup().getNamedEntries())
-				grp.add(data);
-
-			Data r;
-			r.setGroup(grp);
-			return r;
-		}
-
-		Data union_func(const list_t<Data>::type& args, VM& vm)
-		{
-			if(args.size() == 0)
-			{
-				return Data();
-			}
-			else if(args.size() == 1)
-			{
-				return args.front();
-			}
-			else 
-			{
-				DataGroup grp;
-				for (const Data& d : args)
-				{					
-					if(d.type() == Data::T_Group)
-					{
-						for (const Data& data : d.getGroup().getNamedEntries())
-							grp.add(data);
-
-						for (const Data& data : d.getGroup().getAnonymousEntries())
-							grp.add(data);
-					}
-					else
-					{
-						grp.add(d);
-					}
-				}
-
-				Data r;
-				r.setGroup(grp);
-				return r;
-			}
-		}
-	}
+	return vm.castTo(d, DT_Bool, true);
 }
+
+Data bool_func(const list_t<Data>::type& args, VM& vm)
+{
+	return vm.doElementWise(bool_func_e, args);
+}
+
+static Data int_func_e(const Data& d, VM& vm)
+{
+	return vm.castTo(d, DT_Integer, true);
+}
+
+Data int_func(const list_t<Data>::type& args, VM& vm)
+{
+	return vm.doElementWise(int_func_e, args);
+}
+
+static Data float_func_e(const Data& d, VM& vm)
+{
+	return vm.castTo(d, DT_Float, true);
+}
+
+Data float_func(const list_t<Data>::type& args, VM& vm)
+{
+	return vm.doElementWise(float_func_e, args);
+}
+} // namespace Expressions
+} // namespace DL

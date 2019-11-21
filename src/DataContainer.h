@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2020, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -31,33 +31,31 @@
 
 #include "DataLispConfig.h"
 
-namespace DL
-{
-	class DataGroup;
+namespace DL {
+class DataGroup;
 
-	/** @class DataContainer DataContainer.h DL/DataContainer.h
-	 * @brief Container class containing all data used by %DataLisp
+/** @class DataContainer DataContainer.h DL/DataContainer.h
+ * @brief Container class containing all data used by %DataLisp
+ */
+class DL_LIB DataContainer {
+public:
+	DataContainer();
+	~DataContainer();
+
+	/**
+	 * @brief Returns all groups on top of the hierarchy
 	 */
-	class DL_LIB DataContainer
-	{
-	public:
-		DataContainer();
-		~DataContainer();
+	const list_t<DataGroup>::type& getTopGroups() const;
 
-		/**
-		 * @brief Returns all groups on top of the hierarchy 
-		 */
-		const list_t<DataGroup>::type& getTopGroups() const;
+	/**
+	 * @brief Adds a group to the top of the hierachy
+	 *
+	 * Does not take ownership of the group or his content
+	 * @param group The group to add
+	 */
+	void addTopGroup(const DataGroup& group);
 
-		/**
-		 * @brief Adds a group to the top of the hierachy
-		 *
-		 * Does not take ownership of the group or his content 
-		 * @param group The group to add
-		 */
-		void addTopGroup(const DataGroup& group);
-
-	private:
-		list_t<DataGroup>::type mTopGroups;
-	};
-}
+private:
+	list_t<DataGroup>::type mTopGroups;
+};
+} // namespace DL

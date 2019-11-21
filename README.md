@@ -1,21 +1,21 @@
-[![Build Status](https://travis-ci.org/PearCoding/DataLisp.svg?branch=master)](https://travis-ci.org/PearCoding/DataLisp)
+# DataLisp [![Build Status](https://travis-ci.org/PearCoding/DataLisp.svg?branch=master)](https://travis-ci.org/PearCoding/DataLisp)
 
-## DataLisp
 DataLisp is an modular and modable configuration scripting language
 
 More information about DataLisp here:
-http://pearcoding.eu/projects/datalisp
+<http://pearcoding.eu/projects/datalisp>
 
 At the moment you can build the library for Windows and Linux with cmake.
 Currently there is no tested support for MacOS X, but due to the non-use of external libraries,
 there should be no problems.
 
-There is also an official C# port: https://github.com/PearCoding/DataLisp-CSharp
+There is also an official C# port: <https://github.com/PearCoding/DataLisp-CSharp>
 
 If you want to help us, please write an e-mail to Ömercan Yazici < omercan AT pearcoding.eu >
 
-### License
-Copyright (c) 2014-2016, Ömercan Yazici < omercan AT pearcoding.eu >
+## License
+
+Copyright (c) 2014-2020, Ömercan Yazici < omercan AT pearcoding.eu >
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -42,4 +42,3 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
 ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
- 

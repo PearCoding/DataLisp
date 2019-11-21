@@ -27,52 +27,77 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
-#include <iostream>
-#include <fstream>
-
-#include "DataLisp.h"
+#include "Data.h"
+#include "DataContainer.h"
+#include "DataGroup.h"
 #include "SourceLogger.h"
+#include "VM.h"
+#include "internal/Expressions.h"
 
-std::string get_file_contents(const char *filename)
+#include <sstream>
+
+namespace DL {
+namespace Expressions {
+Data anonymous_func(const list_t<Data>::type& args, VM& vm)
 {
-	std::ifstream in(filename, std::ios::in | std::ios::binary);
-	if (in)
-	{
-		std::string contents;
-		in.seekg(0, std::ios::end);
-		contents.resize(in.tellg());
-		in.seekg(0, std::ios::beg);
-		in.read(&contents[0], contents.size());
-		in.close();
-		return(contents);
+	Data d = union_func(args, vm);
+
+	if (d.type() == DT_Group) {
+		DataGroup grp;
+		for (const Data& data : d.getGroup().getAnonymousEntries())
+			grp.add(data);
+
+		Data r;
+		r.setGroup(grp);
+		return r;
 	}
-	throw(errno);
+
+	return d;
 }
 
-int main(int argc, char** argv)
+Data named_func(const list_t<Data>::type& args, VM& vm)
 {
-	if (argc != 2)
-	{
-		std::cout << "Use 'dl_dump [INPUT]'" << std::endl;
-		return -1;
-	}
+	Data d = union_func(args, vm);
 
-	std::string content;
-	try
-	{
-		content = get_file_contents(argv[1]);
-	}
-	catch (...)
-	{
-		std::cout << "Couldn't read file '" << argv[1] << "'" << std::endl;
-		return -2;
-	}
+	if (d.type() != DT_Group)
+		return Data();
 
-	DL::SourceLogger logger;
-	DL::DataLisp lisp(&logger);
+	if (d.getGroup().getNamedEntries().empty())
+		return Data();
 
-	lisp.parse(content);
-	std::cout << lisp.dump() << std::endl;
+	DataGroup grp;
+	for (const Data& data : d.getGroup().getNamedEntries())
+		grp.add(data);
 
-	return 0;
+	Data r;
+	r.setGroup(grp);
+	return r;
 }
+
+Data union_func(const list_t<Data>::type& args, VM& /*vm*/)
+{
+	if (args.size() == 0) {
+		return Data();
+	} else if (args.size() == 1) {
+		return args.front();
+	} else {
+		DataGroup grp;
+		for (const Data& d : args) {
+			if (d.type() == DT_Group) {
+				for (const Data& data : d.getGroup().getNamedEntries())
+					grp.add(data);
+
+				for (const Data& data : d.getGroup().getAnonymousEntries())
+					grp.add(data);
+			} else {
+				grp.add(d);
+			}
+		}
+
+		Data r;
+		r.setGroup(grp);
+		return r;
+	}
+}
+} // namespace Expressions
+} // namespace DL

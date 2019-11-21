@@ -5,7 +5,7 @@ if(${CMAKE_VERSION} VERSION_LESS 3.12)
 endif()
 
 project(DataLisp
-	VERSION 2.1
+	VERSION 2.2
 	DESCRIPTION "Lisp based configuration and settings language")
 
 #SETS
@@ -59,15 +59,15 @@ SET(DL_Src
   src/DataContainer.cpp
   src/DataGroup.cpp
   src/DataLisp.cpp
-  src/Expressions.cpp
-  src/Lexer.cpp
-  src/Parser.cpp
   src/SourceLogger.cpp
   src/VM.cpp
-  src/expressions/cast.cpp
-  src/expressions/conditional.cpp
-  src/expressions/entries.cpp
-  src/expressions/io.cpp)
+  src/internal/Expressions.cpp
+  src/internal/Lexer.cpp
+  src/internal/Parser.cpp
+  src/internal/expressions/cast.cpp
+  src/internal/expressions/conditional.cpp
+  src/internal/expressions/entries.cpp
+  src/internal/expressions/io.cpp)
 
 SET(DL_Hdr
   src/DataLispConfig.h.in
@@ -76,13 +76,14 @@ SET(DL_Hdr
   src/DataContainer.h
   src/DataGroup.h
   src/DataLisp.h
-  src/Expressions.h
-  src/Lexer.h
-  src/Parser.h
+  src/DataType.h
   src/SourceLogger.h
-  src/SyntaxTree.h
-  src/Token.h
-  src/VM.h)
+  src/VM.h
+  src/internal/Expressions.h
+  src/internal/Lexer.h
+  src/internal/Parser.h
+  src/internal/SyntaxTree.h
+  src/internal/Token.h)
 
 SET(DL_Python
   python/datalisp/__init__.py
@@ -154,6 +155,7 @@ SET(DL_Hdr_INSTALL
   src/DataContainer.h
   src/DataGroup.h
   src/DataLisp.h
+  src/DataType.h
   src/SourceLogger.h
   src/VM.h)
 

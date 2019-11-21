@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2020, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -27,45 +27,18 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
-#include "Expressions.h"
-#include "VM.h"
-#include "DataContainer.h"
-#include "SourceLogger.h"
+#pragma once
 
-#include <sstream>
-
-namespace DL
-{
-	namespace Expressions
-	{
-		static Data bool_func_e(const Data& d, VM& vm)
-		{
-			return vm.castTo(d, Data::T_Bool, true);
-		}
-
-		Data bool_func(const list_t<Data>::type& args, VM& vm)
-		{
-			return vm.doElementWise(bool_func_e, args);
-		}
-
-		static Data int_func_e(const Data& d, VM& vm)
-		{
-			return vm.castTo(d, Data::T_Integer, true);
-		}
-
-		Data int_func(const list_t<Data>::type& args, VM& vm)
-		{	
-			return vm.doElementWise(int_func_e, args);
-		}
-
-		static Data float_func_e(const Data& d, VM& vm)
-		{
-			return vm.castTo(d, Data::T_Float, true);
-		}
-
-		Data float_func(const list_t<Data>::type& args, VM& vm)
-		{
-			return vm.doElementWise(float_func_e, args);
-		}
-	}
-}
+namespace DL {
+/** @enum DataType DataType.h DL/DataType.h
+ * @brief Lists all types of data useable by %DataLisp
+ */
+enum DataType {
+	DT_Group,   ///< DataGroup instance
+	DT_Integer, ///< Integer number
+	DT_Float,   ///< Floating point number
+	DT_Bool,	///< Boolean value with two states (@p true and @p false)
+	DT_String,  ///< String value
+	DT_None		///< No data. Invalid state
+};
+} // namespace DL

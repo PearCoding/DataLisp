@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2020, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -31,29 +31,50 @@
 
 #include "DataLispConfig.h"
 
-namespace DL
-{
-	enum TokenType
-	{
-		T_Identifier,
-		T_String,
-		T_Integer,
-		T_Float,
-		T_True,
-		T_False,
-		T_OpenParanthese,
-		T_CloseParanthese,
-		T_OpenSquareBracket,
-		T_CloseSquareBracket,
-		T_Comma,
-		T_Colon,
-		T_ExpressionParanthese,
-		T_EOF,
-	};
+namespace DL {
+struct DataNode;
+struct ValueNode;
+struct StatementNode;
+struct ExpressionNode;
+struct ArrayNode;
 
-	struct DL_INTERNAL_LIB Token
-	{
-		TokenType Type;
-		string_t Value;
+struct DL_INTERNAL_LIB DataNode {
+	string_t Key;
+	ValueNode* Value;
+};
+
+enum ValueNodeType {
+	VNT_Statement,
+	VNT_Integer,
+	VNT_Float,
+	VNT_String,
+	VNT_Boolean,
+	VNT_Expression,
+	VNT_Unknown
+};
+struct DL_INTERNAL_LIB ValueNode {
+	ValueNodeType Type;
+	union {
+		StatementNode* _Statement;
+		Integer _Integer;
+		Float _Float;
+		bool _Boolean;
+		ExpressionNode* _Expression;
 	};
-}
+	string_t _String; //Can not be in the union......
+};
+
+struct DL_INTERNAL_LIB StatementNode {
+	string_t Name;
+	list_t<DataNode*>::type Nodes;
+};
+
+struct DL_INTERNAL_LIB ExpressionNode {
+	string_t Name;
+	list_t<DataNode*>::type Nodes;
+};
+
+struct DL_INTERNAL_LIB SyntaxTree {
+	list_t<StatementNode*>::type Nodes;
+};
+} // namespace DL

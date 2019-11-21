@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2020, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -30,25 +30,35 @@
 #pragma once
 
 #include "DataLispConfig.h"
+#include "Lexer.h"
+#include "SyntaxTree.h"
 
 namespace DL
 {
-	/**
-	 * @brief Contains the StdLib expressions
-	 */
-	namespace Expressions
+	class DL_INTERNAL_LIB Parser
 	{
-		DL_INTERNAL_LIB map_t<string_t, expr_t>::type getStdLib();
-		DL_INTERNAL_LIB Data print_func(const list_t<Data>::type& args, VM& vm);
-		DL_INTERNAL_LIB Data if_func(const list_t<Data>::type& args, VM& vm);
-		DL_INTERNAL_LIB Data not_func(const list_t<Data>::type& args, VM& vm);
-		DL_INTERNAL_LIB Data and_func(const list_t<Data>::type& args, VM& vm);
-		DL_INTERNAL_LIB Data or_func(const list_t<Data>::type& args, VM& vm);
-		DL_INTERNAL_LIB Data anonymous_func(const list_t<Data>::type& args, VM& vm);
-		DL_INTERNAL_LIB Data named_func(const list_t<Data>::type& args, VM& vm);
-		DL_INTERNAL_LIB Data union_func(const list_t<Data>::type& args, VM& vm);
-		DL_INTERNAL_LIB Data bool_func(const list_t<Data>::type& args, VM& vm);
-		DL_INTERNAL_LIB Data int_func(const list_t<Data>::type& args, VM& vm);
-		DL_INTERNAL_LIB Data float_func(const list_t<Data>::type& args, VM& vm);
-	}
+	public:
+		Parser(const string_t& str, SourceLogger* logger);
+		virtual ~Parser();
+
+		SyntaxTree* parse();
+
+	private:
+		Token match(TokenType type);
+		bool lookahead(TokenType type);
+		static const char* tokenToString(TokenType type);
+
+		SyntaxTree* gr_tr_unit();
+		StatementNode* gr_statement();
+		StatementNode* gr_array();
+		ExpressionNode* gr_expression();
+
+		list_t<DataNode*>::type gr_data_list();
+		DataNode* gr_data();
+
+		ValueNode* gr_value();
+
+		Lexer mLexer;
+		SourceLogger* mLogger;
+	};
 }

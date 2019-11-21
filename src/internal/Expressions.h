@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014-2016, OEmercan Yazici <omercan AT pearcoding.eu>
+ Copyright (c) 2014-2020, OEmercan Yazici <omercan AT pearcoding.eu>
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification,
@@ -31,58 +31,22 @@
 
 #include "DataLispConfig.h"
 
-namespace DL
-{
-	struct DataNode;
-	struct ValueNode;
-	struct StatementNode;
-	struct ExpressionNode;
-	struct ArrayNode;
-
-	struct DL_INTERNAL_LIB DataNode
-	{
-		string_t Key;
-		ValueNode* Value;
-	};
-
-	enum ValueNodeType
-	{
-		VNT_Statement,
-		VNT_Integer,
-		VNT_Float,
-		VNT_String,
-		VNT_Boolean,
-		VNT_Expression,
-		VNT_Unknown
-	};
-	struct DL_INTERNAL_LIB ValueNode
-	{
-		ValueNodeType 		Type;
-		union
-		{
-			StatementNode*  _Statement;
-			Integer			_Integer;
-			Float			_Float;
-			bool			_Boolean;
-			ExpressionNode* _Expression;
-		};
-		string_t			_String;//Can not be in the union......
-	};
-
-	struct DL_INTERNAL_LIB StatementNode
-	{
-		string_t Name;
-		list_t<DataNode*>::type Nodes;
-	};
-
-	struct DL_INTERNAL_LIB ExpressionNode
-	{
-		string_t Name;
-		list_t<DataNode*>::type Nodes;
-	};
-
-	struct DL_INTERNAL_LIB SyntaxTree
-	{
-		list_t<StatementNode*>::type Nodes;
-	};
-}
+namespace DL {
+/**
+ * @brief Contains the StdLib expressions
+ */
+namespace Expressions {
+DL_INTERNAL_LIB map_t<string_t, expr_t>::type getStdLib();
+DL_INTERNAL_LIB Data print_func(const list_t<Data>::type& args, VM& vm);
+DL_INTERNAL_LIB Data if_func(const list_t<Data>::type& args, VM& vm);
+DL_INTERNAL_LIB Data not_func(const list_t<Data>::type& args, VM& vm);
+DL_INTERNAL_LIB Data and_func(const list_t<Data>::type& args, VM& vm);
+DL_INTERNAL_LIB Data or_func(const list_t<Data>::type& args, VM& vm);
+DL_INTERNAL_LIB Data anonymous_func(const list_t<Data>::type& args, VM& vm);
+DL_INTERNAL_LIB Data named_func(const list_t<Data>::type& args, VM& vm);
+DL_INTERNAL_LIB Data union_func(const list_t<Data>::type& args, VM& vm);
+DL_INTERNAL_LIB Data bool_func(const list_t<Data>::type& args, VM& vm);
+DL_INTERNAL_LIB Data int_func(const list_t<Data>::type& args, VM& vm);
+DL_INTERNAL_LIB Data float_func(const list_t<Data>::type& args, VM& vm);
+} // namespace Expressions
+} // namespace DL
