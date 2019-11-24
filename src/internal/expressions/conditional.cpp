@@ -37,24 +37,21 @@
 
 namespace DL {
 namespace Expressions {
-Data if_func(const list_t<Data>::type& args, VM& vm)
+Data if_func(const vector_t<Data>& args, VM& vm)
 {
 	if (args.size() != 3 && args.size() != 2) {
 		vm.logger()->log(L_Error, "Invalid arguments given for $(if ...)");
 		return Data();
 	}
 
-	list_t<Data>::type arr = args;
+	vector_t<Data> arr = args;
 
-	Data cond = arr.front();
-	arr.pop_front();
-
-	Data succ = arr.front();
-	arr.pop_front();
+	Data cond = arr[0];
+	Data succ = arr[1];
 
 	Data fail;
-	if (!arr.empty())
-		fail = arr.front();
+	if (arr.size() == 3)
+		fail = arr[2];
 
 	Data conv = vm.castTo(cond, DT_Bool);
 
@@ -76,12 +73,12 @@ static Data not_func_e(const Data& d, VM& vm)
 	return r;
 }
 
-Data not_func(const list_t<Data>::type& args, VM& vm)
+Data not_func(const vector_t<Data>& args, VM& vm)
 {
 	return vm.doElementWise(not_func_e, args);
 }
 
-Data and_func(const list_t<Data>::type& args, VM& vm)
+Data and_func(const vector_t<Data>& args, VM& vm)
 {
 	if (args.size() == 0) {
 		return Data();
@@ -104,7 +101,7 @@ Data and_func(const list_t<Data>::type& args, VM& vm)
 	}
 }
 
-Data or_func(const list_t<Data>::type& args, VM& vm)
+Data or_func(const vector_t<Data>& args, VM& vm)
 {
 	if (args.size() == 0) {
 		return Data();

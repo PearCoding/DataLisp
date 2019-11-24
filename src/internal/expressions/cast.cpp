@@ -41,7 +41,7 @@ static Data bool_func_e(const Data& d, VM& vm)
 	return vm.castTo(d, DT_Bool, true);
 }
 
-Data bool_func(const list_t<Data>::type& args, VM& vm)
+Data bool_func(const vector_t<Data>& args, VM& vm)
 {
 	return vm.doElementWise(bool_func_e, args);
 }
@@ -51,7 +51,7 @@ static Data int_func_e(const Data& d, VM& vm)
 	return vm.castTo(d, DT_Integer, true);
 }
 
-Data int_func(const list_t<Data>::type& args, VM& vm)
+Data int_func(const vector_t<Data>& args, VM& vm)
 {
 	return vm.doElementWise(int_func_e, args);
 }
@@ -61,7 +61,7 @@ static Data float_func_e(const Data& d, VM& vm)
 	return vm.castTo(d, DT_Float, true);
 }
 
-Data float_func(const list_t<Data>::type& args, VM& vm)
+Data float_func(const vector_t<Data>& args, VM& vm)
 {
 	return vm.doElementWise(float_func_e, args);
 }

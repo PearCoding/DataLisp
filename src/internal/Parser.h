@@ -53,7 +53,7 @@ namespace DL
 		StatementNode* gr_array();
 		ExpressionNode* gr_expression();
 
-		list_t<DataNode*>::type gr_data_list();
+		vector_t<DataNode*> gr_data_list();
 		DataNode* gr_data();
 
 		ValueNode* gr_value();

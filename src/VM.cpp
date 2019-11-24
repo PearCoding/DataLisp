@@ -130,7 +130,7 @@ Data VM::castTo(const Data& d, DL::DataType type, bool isExplicit)
 	return Data();
 }
 
-Data VM::doElementWise(element_expr_t expr, const list_t<Data>::type& args)
+Data VM::doElementWise(element_expr_t expr, const vector_t<Data>& args)
 {
 	DL_ASSERT(expr);
 

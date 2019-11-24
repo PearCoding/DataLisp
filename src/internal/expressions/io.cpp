@@ -91,7 +91,7 @@ static void print_val(const Data& d, std::stringstream& stream)
 	}
 }
 
-Data print_func(const list_t<Data>::type& args, VM& vm)
+Data print_func(const vector_t<Data>& args, VM& vm)
 {
 	std::stringstream stream;
 

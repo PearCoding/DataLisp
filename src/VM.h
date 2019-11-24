@@ -80,7 +80,7 @@ public:
 	 * @param args Array to iterate over
 	 * @return Data of type @link DT_Group @endlink or @link DT_None @endlink if failure
 	 */
-	Data doElementWise(element_expr_t expr, const list_t<Data>::type& args);
+	Data doElementWise(element_expr_t expr, const vector_t<Data>& args);
 
 private:
 	DataContainer& mContainer;

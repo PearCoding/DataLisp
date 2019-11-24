@@ -133,9 +133,9 @@ ExpressionNode* Parser::gr_expression()
 	return node;
 }
 
-list_t<DataNode*>::type Parser::gr_data_list()
+vector_t<DataNode*> Parser::gr_data_list()
 {
-	list_t<DataNode*>::type list;
+	vector_t<DataNode*> list;
 	while (lookahead(T_Colon) || lookahead(T_OpenParanthese) || lookahead(T_OpenSquareBracket) || lookahead(T_ExpressionParanthese) || lookahead(T_Integer) || lookahead(T_Float) || lookahead(T_String) || lookahead(T_True) || lookahead(T_False)) {
 		list.push_back(gr_data());
 

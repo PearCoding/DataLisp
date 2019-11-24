@@ -34,10 +34,11 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #PACKAGES
-option(DL_WITH_TOOLS "Compile additional tools" ON)
-option(DL_WITH_PYTHON "Compile additional python interface module" ON)
-option(DL_BUILD_TESTS "Build tests." ON)
+option(DL_WITH_TOOLS          "Compile additional tools" ON)
+option(DL_WITH_PYTHON         "Compile additional python interface module" ON)
+option(DL_BUILD_TESTS         "Build tests." ON)
 option(DL_BUILD_DOCUMENTATION "Build documentation with doxygen." ON)
+option(BUILD_SHARED_LIBS      "Build shared library" ON)
 
 IF(DL_WITH_PYTHON)
 	find_package(Boost 1.45 COMPONENTS python)
@@ -93,8 +94,11 @@ SET(DL_Python
   python/datalisp/python2datalisp.py)
 
 #DEPENDIES, LIBARIES AND EXECUTABLES
-add_library(datalisp SHARED ${DL_Src} ${DL_Hdr})
+add_library(datalisp ${DL_Src} ${DL_Hdr})
 target_compile_definitions(datalisp PRIVATE "DL_LIB_BUILD" "$<$<CONFIG:Build>:DL_DEBUG>")
+if(NOT BUILD_SHARED_LIBS)
+  target_compile_definitions(datalisp PUBLIC "DL_LIB_STATIC")
+endif()
 
 IF(DL_HAS_PYTHON)
 	add_library(pydatalisp SHARED src/python/module.cpp)

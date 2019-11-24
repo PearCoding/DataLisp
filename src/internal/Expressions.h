@@ -36,17 +36,17 @@ namespace DL {
  * @brief Contains the StdLib expressions
  */
 namespace Expressions {
-DL_INTERNAL_LIB map_t<string_t, expr_t>::type getStdLib();
-DL_INTERNAL_LIB Data print_func(const list_t<Data>::type& args, VM& vm);
-DL_INTERNAL_LIB Data if_func(const list_t<Data>::type& args, VM& vm);
-DL_INTERNAL_LIB Data not_func(const list_t<Data>::type& args, VM& vm);
-DL_INTERNAL_LIB Data and_func(const list_t<Data>::type& args, VM& vm);
-DL_INTERNAL_LIB Data or_func(const list_t<Data>::type& args, VM& vm);
-DL_INTERNAL_LIB Data anonymous_func(const list_t<Data>::type& args, VM& vm);
-DL_INTERNAL_LIB Data named_func(const list_t<Data>::type& args, VM& vm);
-DL_INTERNAL_LIB Data union_func(const list_t<Data>::type& args, VM& vm);
-DL_INTERNAL_LIB Data bool_func(const list_t<Data>::type& args, VM& vm);
-DL_INTERNAL_LIB Data int_func(const list_t<Data>::type& args, VM& vm);
-DL_INTERNAL_LIB Data float_func(const list_t<Data>::type& args, VM& vm);
+DL_INTERNAL_LIB map_t<string_t, expr_t> getStdLib();
+DL_INTERNAL_LIB Data print_func(const vector_t<Data>& args, VM& vm);
+DL_INTERNAL_LIB Data if_func(const vector_t<Data>& args, VM& vm);
+DL_INTERNAL_LIB Data not_func(const vector_t<Data>& args, VM& vm);
+DL_INTERNAL_LIB Data and_func(const vector_t<Data>& args, VM& vm);
+DL_INTERNAL_LIB Data or_func(const vector_t<Data>& args, VM& vm);
+DL_INTERNAL_LIB Data anonymous_func(const vector_t<Data>& args, VM& vm);
+DL_INTERNAL_LIB Data named_func(const vector_t<Data>& args, VM& vm);
+DL_INTERNAL_LIB Data union_func(const vector_t<Data>& args, VM& vm);
+DL_INTERNAL_LIB Data bool_func(const vector_t<Data>& args, VM& vm);
+DL_INTERNAL_LIB Data int_func(const vector_t<Data>& args, VM& vm);
+DL_INTERNAL_LIB Data float_func(const vector_t<Data>& args, VM& vm);
 } // namespace Expressions
 } // namespace DL

@@ -37,7 +37,7 @@
 namespace DL {
 class DL_INTERNAL_LIB DataLisp_Internal {
 public:
-	typedef map_t<string_t, expr_t>::type ExpressionMap;
+	typedef map_t<string_t, expr_t> ExpressionMap;
 
 	DataLisp_Internal(SourceLogger* logger)
 		: mTree(nullptr)
@@ -322,7 +322,7 @@ public:
 
 	Data buildExpression(ExpressionNode* n, VM& vm)
 	{
-		list_t<Data>::type args;
+		vector_t<Data> args;
 		for (DataNode* ptr : n->Nodes) {
 			Data data = buildData(ptr, vm);
 
@@ -333,7 +333,7 @@ public:
 		return exec_expression(n->Name, args, vm);
 	}
 
-	Data exec_expression(const string_t& name, const list_t<Data>::type& args, VM& vm)
+	Data exec_expression(const string_t& name, const vector_t<Data>& args, VM& vm)
 	{
 		if (!mExpressions.count(name)) {
 			std::stringstream stream;

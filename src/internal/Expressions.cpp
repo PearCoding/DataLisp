@@ -31,9 +31,9 @@
 
 namespace DL {
 namespace Expressions {
-map_t<string_t, expr_t>::type getStdLib()
+map_t<string_t, expr_t> getStdLib()
 {
-	map_t<string_t, expr_t>::type lib;
+	map_t<string_t, expr_t> lib;
 
 	lib["print"] = print_func;
 

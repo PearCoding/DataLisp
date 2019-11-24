@@ -45,7 +45,7 @@ public:
 	/**
 	 * @brief Returns all groups on top of the hierarchy
 	 */
-	const list_t<DataGroup>::type& getTopGroups() const;
+	const vector_t<DataGroup>& getTopGroups() const;
 
 	/**
 	 * @brief Adds a group to the top of the hierachy
@@ -56,6 +56,6 @@ public:
 	void addTopGroup(const DataGroup& group);
 
 private:
-	list_t<DataGroup>::type mTopGroups;
+	vector_t<DataGroup> mTopGroups;
 };
 } // namespace DL

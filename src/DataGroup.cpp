@@ -33,8 +33,8 @@
 namespace DL {
 struct DL_INTERNAL_LIB DataInternal {
 	string_t ID;
-	vector_t<Data>::type AnonymousData;
-	vector_t<Data>::type NamedData;
+	vector_t<Data> AnonymousData;
+	vector_t<Data> NamedData;
 };
 
 DataGroup::DataGroup(const string_t& id)
@@ -131,11 +131,11 @@ Data DataGroup::getFromKey(const string_t& str) const
 	return Data();
 }
 
-vector_t<Data>::type DataGroup::getAllFromKey(const string_t& key) const
+vector_t<Data> DataGroup::getAllFromKey(const string_t& key) const
 {
 	DL_ASSERT(mShared);
 
-	vector_t<Data>::type list;
+	vector_t<Data> list;
 	for (const Data& d : mShared->NamedData) {
 		if (d.key() == key)
 			list.push_back(d);
@@ -149,11 +149,11 @@ bool DataGroup::hasKey(const string_t& key) const
 	return getFromKey(key).isValid();
 }
 
-vector_t<Data>::type DataGroup::getAllEntries() const
+vector_t<Data> DataGroup::getAllEntries() const
 {
 	DL_ASSERT(mShared);
 
-	vector_t<Data>::type ret;
+	vector_t<Data> ret;
 
 	ret.insert(ret.end(), mShared->NamedData.begin(), mShared->NamedData.end());
 	ret.insert(ret.end(), mShared->AnonymousData.begin(), mShared->AnonymousData.end());
@@ -161,14 +161,14 @@ vector_t<Data>::type DataGroup::getAllEntries() const
 	return ret;
 }
 
-const vector_t<Data>::type& DataGroup::getNamedEntries() const
+const vector_t<Data>& DataGroup::getNamedEntries() const
 {
 	DL_ASSERT(mShared);
 
 	return mShared->NamedData;
 }
 
-const vector_t<Data>::type& DataGroup::getAnonymousEntries() const
+const vector_t<Data>& DataGroup::getAnonymousEntries() const
 {
 	DL_ASSERT(mShared);
 

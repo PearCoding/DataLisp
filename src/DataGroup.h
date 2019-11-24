@@ -150,7 +150,7 @@ public:
 	 * @param str The id of the non anonymous data
 	 * @see getFromKey
 	 */
-	vector_t<Data>::type getAllFromKey(const string_t& key) const;
+	vector_t<Data> getAllFromKey(const string_t& key) const;
 
 	/**
 	 * @brief Checks if id is available
@@ -173,17 +173,17 @@ public:
 	 *
 	 * It is more efficient to iterate over named and anonymous entries separately.
 	 */
-	vector_t<Data>::type getAllEntries() const;
+	vector_t<Data> getAllEntries() const;
 
 	/**
 	 * @brief Returns all non anonymous data entries
 	 */
-	const vector_t<Data>::type& getNamedEntries() const;
+	const vector_t<Data>& getNamedEntries() const;
 
 	/**
 	 * @brief Returns all anonymous data entries
 	 */
-	const vector_t<Data>::type& getAnonymousEntries() const;
+	const vector_t<Data>& getAnonymousEntries() const;
 
 	/**
 	 * @brief Checks if all data is a number

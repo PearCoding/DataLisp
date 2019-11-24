@@ -42,7 +42,7 @@ DataContainer::~DataContainer()
 {
 }
 
-const list_t<DataGroup>::type& DataContainer::getTopGroups() const
+const vector_t<DataGroup>& DataContainer::getTopGroups() const
 {
 	return mTopGroups;
 }

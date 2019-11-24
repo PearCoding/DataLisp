@@ -38,7 +38,7 @@
 
 namespace DL {
 namespace Expressions {
-Data anonymous_func(const list_t<Data>::type& args, VM& vm)
+Data anonymous_func(const vector_t<Data>& args, VM& vm)
 {
 	Data d = union_func(args, vm);
 
@@ -55,7 +55,7 @@ Data anonymous_func(const list_t<Data>::type& args, VM& vm)
 	return d;
 }
 
-Data named_func(const list_t<Data>::type& args, VM& vm)
+Data named_func(const vector_t<Data>& args, VM& vm)
 {
 	Data d = union_func(args, vm);
 
@@ -74,7 +74,7 @@ Data named_func(const list_t<Data>::type& args, VM& vm)
 	return r;
 }
 
-Data union_func(const list_t<Data>::type& args, VM& /*vm*/)
+Data union_func(const vector_t<Data>& args, VM& /*vm*/)
 {
 	if (args.size() == 0) {
 		return Data();

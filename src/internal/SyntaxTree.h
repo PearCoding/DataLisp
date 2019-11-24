@@ -66,15 +66,15 @@ struct DL_INTERNAL_LIB ValueNode {
 
 struct DL_INTERNAL_LIB StatementNode {
 	string_t Name;
-	list_t<DataNode*>::type Nodes;
+	vector_t<DataNode*> Nodes;
 };
 
 struct DL_INTERNAL_LIB ExpressionNode {
 	string_t Name;
-	list_t<DataNode*>::type Nodes;
+	vector_t<DataNode*> Nodes;
 };
 
 struct DL_INTERNAL_LIB SyntaxTree {
-	list_t<StatementNode*>::type Nodes;
+	vector_t<StatementNode*> Nodes;
 };
 } // namespace DL
