@@ -31,8 +31,8 @@
 #include <sstream>
 
 namespace DL {
-Parser::Parser(const string_t& str, SourceLogger* logger)
-	: mLexer(str, logger)
+Parser::Parser(const string_t::const_iterator& source_begin, const string_t::const_iterator& source_end, SourceLogger* logger)
+	: mLexer(source_begin, source_end, logger)
 	, mLogger(logger)
 {
 }

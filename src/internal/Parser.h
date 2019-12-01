@@ -38,7 +38,7 @@ namespace DL
 	class DL_INTERNAL_LIB Parser
 	{
 	public:
-		Parser(const string_t& str, SourceLogger* logger);
+		Parser(const string_t::const_iterator& source_begin, const string_t::const_iterator& source_end, SourceLogger* logger);
 		virtual ~Parser();
 
 		SyntaxTree* parse();

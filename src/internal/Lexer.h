@@ -36,7 +36,7 @@
 namespace DL {
 class DL_INTERNAL_LIB Lexer {
 public:
-	Lexer(const string_t& source, SourceLogger* logger);
+	Lexer(const string_t::const_iterator& source_begin, const string_t::const_iterator& source_end, SourceLogger* logger);
 	virtual ~Lexer();
 
 	Token next();
@@ -53,8 +53,8 @@ private:
 	line_t mLineNumber;
 	column_t mColumnNumber;
 
-	string_t mSource;
 	string_t::const_iterator mIterator;
+	string_t::const_iterator mIteratorEnd;
 	SourceLogger* mLogger;
 };
 } // namespace DL

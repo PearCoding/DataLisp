@@ -386,8 +386,16 @@ DataLisp& DataLisp::operator=(DataLisp&& other) noexcept
 
 void DataLisp::parse(const string_t& source)
 {
+	parse(source.begin(), source.end());
+}
+
+void DataLisp::parse(const string_t::const_iterator& source_begin, const string_t::const_iterator& source_end)
+{
+	if (source_begin == source_end)
+		return;
+
 	DL_ASSERT(mInternal->mTree == nullptr);
-	Parser parser(source, mInternal->mLogger);
+	Parser parser(source_begin, source_end, mInternal->mLogger);
 	mInternal->mTree = parser.parse();
 }
 

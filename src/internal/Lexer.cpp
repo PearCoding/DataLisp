@@ -31,14 +31,13 @@
 #include <sstream>
 
 namespace DL {
-Lexer::Lexer(const string_t& source, SourceLogger* logger)
+Lexer::Lexer(const string_t::const_iterator& source_begin, const string_t::const_iterator& source_end, SourceLogger* logger)
 	: mLineNumber(1)
 	, mColumnNumber(1)
-	, mSource(source)
-	, mIterator()
+	, mIterator(source_begin)
+	, mIteratorEnd(source_end)
 	, mLogger(logger)
 {
-	mIterator = mSource.begin();
 }
 
 Lexer::~Lexer()
@@ -47,7 +46,7 @@ Lexer::~Lexer()
 
 Token Lexer::next()
 {
-	if (mIterator == mSource.end()) {
+	if (mIterator == mIteratorEnd) {
 		Token token;
 		token.Type = T_EOF;
 		return token;
@@ -55,14 +54,14 @@ Token Lexer::next()
 		++mIterator;
 		++mColumnNumber;
 
-		if (mIterator != mSource.end() && *mIterator == '(') {
+		if (mIterator != mIteratorEnd && *mIterator == '(') {
 			++mIterator;
 			++mColumnNumber;
 
 			Token token;
 			token.Type = T_ExpressionParanthese;
 			return token;
-		} else if (mIterator == mSource.end()) {
+		} else if (mIterator == mIteratorEnd) {
 			std::stringstream stream;
 			stream << "No '(' after '$'";
 			mLogger->log(mLineNumber, mColumnNumber, L_Error, stream.str());
@@ -122,7 +121,7 @@ Token Lexer::next()
 		return token;
 	} else if (*mIterator == ';') //Comment
 	{
-		while (mIterator != mSource.end() && *mIterator != '\n') {
+		while (mIterator != mIteratorEnd && *mIterator != '\n') {
 			++mIterator;
 			++mColumnNumber;
 		}
@@ -137,7 +136,7 @@ Token Lexer::next()
 			++mIterator;
 			++mColumnNumber;
 
-			if (mIterator == mSource.end() || *mIterator == '\n') {
+			if (mIterator == mIteratorEnd || *mIterator == '\n') {
 				std::stringstream stream;
 				stream << "The string \"" << str << "\" is not closed";
 				mLogger->log(mLineNumber, mColumnNumber, L_Error, stream.str());
@@ -146,7 +145,7 @@ Token Lexer::next()
 				++mIterator;
 				++mColumnNumber;
 
-				if (mIterator == mSource.end()) {
+				if (mIterator == mIteratorEnd) {
 					mLogger->log(mLineNumber, mColumnNumber, L_Error, "Invalid use of the '\\' operator");
 				} else if (*mIterator == '\n') {
 					++mLineNumber;
@@ -184,7 +183,7 @@ Token Lexer::next()
 						for (size_t i = 0; i < length; ++i) {
 							++mIterator;
 							++mColumnNumber;
-							if (mIterator == mSource.end() || *mIterator == '\n') {
+							if (mIterator == mIteratorEnd || *mIterator == '\n') {
 								mLogger->log(mLineNumber, mColumnNumber, L_Error, "Invalid use of Unicode escape sequence.");
 								break;
 							}
@@ -275,7 +274,7 @@ Token Lexer::next()
 
 		// Consume digits
 		if (!hasDot) {
-			while (mIterator != mSource.end()) {
+			while (mIterator != mIteratorEnd) {
 				if (isdigit(*mIterator)) {
 					hasData = true;
 					identifier += *mIterator;
@@ -287,7 +286,7 @@ Token Lexer::next()
 			}
 
 			// Floating point
-			if (mIterator != mSource.end() && *mIterator == '.') {
+			if (mIterator != mIteratorEnd && *mIterator == '.') {
 				hasDot = true;
 				identifier += *mIterator;
 				++mIterator;
@@ -296,7 +295,7 @@ Token Lexer::next()
 		}
 
 		// Consume digits
-		while (mIterator != mSource.end()) {
+		while (mIterator != mIteratorEnd) {
 			if (isdigit(*mIterator)) {
 				hasData = true;
 				identifier += *mIterator;
@@ -308,7 +307,7 @@ Token Lexer::next()
 		}
 
 		// Exponent
-		if (mIterator != mSource.end() && *mIterator == 'e') {
+		if (mIterator != mIteratorEnd && *mIterator == 'e') {
 			hasExp = true;
 			identifier += *mIterator;
 			++mIterator;
@@ -317,7 +316,7 @@ Token Lexer::next()
 
 		// Exponent signs
 		if (hasExp) {
-			if (mIterator != mSource.end() && (*mIterator == '+' || *mIterator == '-')) {
+			if (mIterator != mIteratorEnd && (*mIterator == '+' || *mIterator == '-')) {
 				hasExpSign = true;
 				identifier += *mIterator;
 				++mIterator;
@@ -325,7 +324,7 @@ Token Lexer::next()
 			}
 
 			// Consume digits
-			while (mIterator != mSource.end()) {
+			while (mIterator != mIteratorEnd) {
 				if (isdigit(*mIterator)) {
 					hasExpData = true;
 					identifier += *mIterator;
@@ -354,7 +353,7 @@ Token Lexer::next()
 
 		++mIterator;
 		++mColumnNumber;
-		while (mIterator != mSource.end()) {
+		while (mIterator != mIteratorEnd) {
 			if (isAscii(*mIterator)) {
 				identifier += *mIterator;
 				++mIterator;

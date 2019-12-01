@@ -124,6 +124,16 @@ public:
 	void parse(const string_t& source);
 
 	/**
+	 * @brief Parse a given string given by iterators
+
+	 * @attention Parsing errors or warnings will be post to the given SourceLogger instance.
+	 * @param source_begin A source string iterator. Has to be valid
+	 * @param source_end A source string iterator representing the end of the string
+	 * @see void parse(const string_t& source)
+	 */
+	void parse(const string_t::const_iterator& source_begin, const string_t::const_iterator& source_end);
+
+	/**
 	 * @brief Fills a DataContainer with the content parsed beforehand
 
 	 * @link parse @endlink should be called beforehand or nothing will be built.
