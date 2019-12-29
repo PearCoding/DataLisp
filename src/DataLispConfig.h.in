@@ -168,6 +168,11 @@
 #define DL_MAP_TYPE std::map
 #endif
 
+#ifndef DL_STREAM_TYPE
+#include <istream>
+#define DL_STREAM_TYPE std::istream
+#endif
+
 /** @file DataLispConfig.h DL/DataLispConfig.h
  */
 
@@ -199,6 +204,8 @@ using vector_t = DL_VECTOR_TYPE<T>;
 /// Wrapper to the used map structure.
 template <typename K, typename V>
 using map_t = DL_MAP_TYPE<K, V>;
+
+using stream_t = DL_STREAM_TYPE;
 
 class Data;
 class VM;
