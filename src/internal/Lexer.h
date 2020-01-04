@@ -36,7 +36,7 @@
 namespace DL {
 class DL_INTERNAL_LIB Lexer {
 public:
-	Lexer(const string_t::const_iterator& source_begin, const string_t::const_iterator& source_end, SourceLogger* logger);
+	Lexer(stream_t* provider, SourceLogger* logger);
 	virtual ~Lexer();
 
 	Token next();
@@ -46,15 +46,20 @@ public:
 	column_t currentColumn() const;
 
 private:
+	Token getNextToken();
 	static bool isWhitespace(char c); /* UNICODE? */
 	static bool isAscii(char c);
 	static bool isAlpha(char c);
 
 	line_t mLineNumber;
 	column_t mColumnNumber;
-
-	string_t::const_iterator mIterator;
-	string_t::const_iterator mIteratorEnd;
+	
+	stream_t* mProvider;
+	char mCurrentChar;
 	SourceLogger* mLogger;
+
+	Token mNextToken;
+	line_t mNextLineNumber;
+	column_t mNextColumnNumber;
 };
 } // namespace DL

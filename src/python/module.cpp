@@ -179,7 +179,7 @@ BOOST_PYTHON_MODULE(pydatalisp)
 	//--// TODO: Add expressions!
 	bpy::class_<DataLisp, boost::noncopyable>("DataLisp",
 											  bpy::init<SourceLogger*>(bpy::args("source_logger")))
-		.def("parse", &DataLisp::parse)
+		.def("parse", (void (DataLisp::*)(const string_t&)) & DataLisp::parse)
 		.def("build", &DataLisp::build)
 		.def("generate", &DataLisp::generate)
 		.staticmethod("generate")

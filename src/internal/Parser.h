@@ -33,32 +33,30 @@
 #include "Lexer.h"
 #include "SyntaxTree.h"
 
-namespace DL
-{
-	class DL_INTERNAL_LIB Parser
-	{
-	public:
-		Parser(const string_t::const_iterator& source_begin, const string_t::const_iterator& source_end, SourceLogger* logger);
-		virtual ~Parser();
+namespace DL {
+class DL_INTERNAL_LIB Parser {
+public:
+	Parser(stream_t* provider, SourceLogger* logger);
+	virtual ~Parser();
 
-		SyntaxTree* parse();
+	SyntaxTree* parse();
 
-	private:
-		Token match(TokenType type);
-		bool lookahead(TokenType type);
-		static const char* tokenToString(TokenType type);
+private:
+	Token match(TokenType type);
+	bool lookahead(TokenType type);
+	static const char* tokenToString(TokenType type);
 
-		SyntaxTree* gr_tr_unit();
-		StatementNode* gr_statement();
-		StatementNode* gr_array();
-		ExpressionNode* gr_expression();
+	SyntaxTree* gr_tr_unit();
+	StatementNode* gr_statement();
+	StatementNode* gr_array();
+	ExpressionNode* gr_expression();
 
-		vector_t<DataNode*> gr_data_list();
-		DataNode* gr_data();
+	vector_t<DataNode*> gr_data_list();
+	DataNode* gr_data();
 
-		ValueNode* gr_value();
+	ValueNode* gr_value();
 
-		Lexer mLexer;
-		SourceLogger* mLogger;
-	};
-}
+	Lexer mLexer;
+	SourceLogger* mLogger;
+};
+} // namespace DL

@@ -31,37 +31,40 @@
 #include <sstream>
 
 namespace DL {
-Lexer::Lexer(const string_t::const_iterator& source_begin, const string_t::const_iterator& source_end, SourceLogger* logger)
+Lexer::Lexer(stream_t* provider, SourceLogger* logger)
 	: mLineNumber(1)
 	, mColumnNumber(1)
-	, mIterator(source_begin)
-	, mIteratorEnd(source_end)
+	, mProvider(provider)
 	, mLogger(logger)
+	, mNextToken{ T_EOF, "" }
+	, mNextLineNumber(0)
+	, mNextColumnNumber(0)
 {
+	mCurrentChar = mProvider->get();
 }
 
 Lexer::~Lexer()
 {
 }
 
-Token Lexer::next()
+Token Lexer::getNextToken()
 {
-	if (mIterator == mIteratorEnd) {
+	if (!mProvider->good()) {
 		Token token;
 		token.Type = T_EOF;
 		return token;
-	} else if (*mIterator == '$') {
-		++mIterator;
+	} else if (mCurrentChar == '$') {
+		mCurrentChar = mProvider->get();
 		++mColumnNumber;
 
-		if (mIterator != mIteratorEnd && *mIterator == '(') {
-			++mIterator;
+		if (mProvider->good() && mCurrentChar == '(') {
+			mCurrentChar = mProvider->get();
 			++mColumnNumber;
 
 			Token token;
 			token.Type = T_ExpressionParanthese;
 			return token;
-		} else if (mIterator == mIteratorEnd) {
+		} else if (!mProvider->good()) {
 			std::stringstream stream;
 			stream << "No '(' after '$'";
 			mLogger->log(mLineNumber, mColumnNumber, L_Error, stream.str());
@@ -71,88 +74,88 @@ Token Lexer::next()
 			return token;
 		} else {
 			std::stringstream stream;
-			stream << "Invalid character '" << *mIterator << "' after '$'";
+			stream << "Invalid character '" << mCurrentChar << "' after '$'";
 			mLogger->log(mLineNumber, mColumnNumber, L_Error, stream.str());
-			++mIterator;
+			mCurrentChar = mProvider->get();
 			++mColumnNumber;
-			return next();
+			return getNextToken();
 		}
-	} else if (*mIterator == '(') {
-		++mIterator;
+	} else if (mCurrentChar == '(') {
+		mCurrentChar = mProvider->get();
 		++mColumnNumber;
 
 		Token token;
 		token.Type = T_OpenParanthese;
 		return token;
-	} else if (*mIterator == ')') {
-		++mIterator;
+	} else if (mCurrentChar == ')') {
+		mCurrentChar = mProvider->get();
 		++mColumnNumber;
 
 		Token token;
 		token.Type = T_CloseParanthese;
 		return token;
-	} else if (*mIterator == '[') {
-		++mIterator;
+	} else if (mCurrentChar == '[') {
+		mCurrentChar = mProvider->get();
 		++mColumnNumber;
 
 		Token token;
 		token.Type = T_OpenSquareBracket;
 		return token;
-	} else if (*mIterator == ']') {
-		++mIterator;
+	} else if (mCurrentChar == ']') {
+		mCurrentChar = mProvider->get();
 		++mColumnNumber;
 
 		Token token;
 		token.Type = T_CloseSquareBracket;
 		return token;
-	} else if (*mIterator == ',') {
-		++mIterator;
+	} else if (mCurrentChar == ',') {
+		mCurrentChar = mProvider->get();
 		++mColumnNumber;
 
 		Token token;
 		token.Type = T_Comma;
 		return token;
-	} else if (*mIterator == ':') {
-		++mIterator;
+	} else if (mCurrentChar == ':') {
+		mCurrentChar = mProvider->get();
 		++mColumnNumber;
 
 		Token token;
 		token.Type = T_Colon;
 		return token;
-	} else if (*mIterator == ';') //Comment
+	} else if (mCurrentChar == ';') //Comment
 	{
-		while (mIterator != mIteratorEnd && *mIterator != '\n') {
-			++mIterator;
+		while (mProvider->good() && mCurrentChar != '\n') {
+			mCurrentChar = mProvider->get();
 			++mColumnNumber;
 		}
 
-		return next();
-	} else if (*mIterator == '"' || *mIterator == '\'') //String
+		return getNextToken();
+	} else if (mCurrentChar == '"' || mCurrentChar == '\'') //String
 	{
-		char start = *mIterator;
+		char start = mCurrentChar;
 
 		string_t str;
 		while (true) {
-			++mIterator;
+			mCurrentChar = mProvider->get();
 			++mColumnNumber;
 
-			if (mIterator == mIteratorEnd || *mIterator == '\n') {
+			if (!mProvider->good() || mCurrentChar == '\n') {
 				std::stringstream stream;
 				stream << "The string \"" << str << "\" is not closed";
 				mLogger->log(mLineNumber, mColumnNumber, L_Error, stream.str());
 				break;
-			} else if (*mIterator == '\\') {
-				++mIterator;
+			} else if (mCurrentChar == '\\') {
+				mCurrentChar = mProvider->get();
 				++mColumnNumber;
 
-				if (mIterator == mIteratorEnd) {
+				if (!mProvider->good()) {
 					mLogger->log(mLineNumber, mColumnNumber, L_Error, "Invalid use of the '\\' operator");
-				} else if (*mIterator == '\n') {
+				} else if (mCurrentChar == '\n') {
 					++mLineNumber;
-					++mIterator;
+					mCurrentChar = mProvider->get();
 					mColumnNumber = 1;
 				} else {
-					switch (*mIterator) {
+					switch (mCurrentChar) {
 					case 'n': // New line
 						str += '\n';
 						break;
@@ -178,17 +181,17 @@ Token Lexer::next()
 					case 'u': //Unicode [4]
 					case 'U': //Unicode [8]
 					{
-						size_t length = *mIterator == 'x' ? 2 : (*mIterator == 'u' ? 4 : 8);
+						size_t length = mCurrentChar == 'x' ? 2 : (mCurrentChar == 'u' ? 4 : 8);
 						string_t uni_val;
 						for (size_t i = 0; i < length; ++i) {
-							++mIterator;
+							mCurrentChar = mProvider->get();
 							++mColumnNumber;
-							if (mIterator == mIteratorEnd || *mIterator == '\n') {
+							if (!mProvider->good() || mCurrentChar == '\n') {
 								mLogger->log(mLineNumber, mColumnNumber, L_Error, "Invalid use of Unicode escape sequence.");
 								break;
 							}
 
-							uni_val += *mIterator;
+							uni_val += mCurrentChar;
 						}
 
 						if (uni_val.length() == length) {
@@ -231,16 +234,16 @@ Token Lexer::next()
 						}
 					} break;
 					default:
-						str += *mIterator;
+						str += mCurrentChar;
 						break;
 					}
 				}
-			} else if (*mIterator == start) {
-				++mIterator;
+			} else if (mCurrentChar == start) {
+				mCurrentChar = mProvider->get();
 				++mColumnNumber;
 				break;
 			} else {
-				str += *mIterator;
+				str += mCurrentChar;
 			}
 		}
 
@@ -248,7 +251,7 @@ Token Lexer::next()
 		token.Type  = T_String;
 		token.Value = str;
 		return token;
-	} else if (isdigit(*mIterator) || *mIterator == '-' || *mIterator == '+' || *mIterator == '.') {
+	} else if (isdigit(mCurrentChar) || mCurrentChar == '-' || mCurrentChar == '+' || mCurrentChar == '.') {
 		string_t identifier;
 
 		//bool hasSign = false;
@@ -259,26 +262,26 @@ Token Lexer::next()
 		bool hasExpSign = false;
 		bool hasExpData = false;
 
-		if (*mIterator == '-' || *mIterator == '+') {
+		if (mCurrentChar == '-' || mCurrentChar == '+') {
 			//hasSign = true;
-		} else if (*mIterator == '.') {
+		} else if (mCurrentChar == '.') {
 			hasDot = true;
 		} else {
 			hasData = true;
 		}
 
 		// Skip first character
-		identifier += *mIterator;
-		++mIterator;
+		identifier += mCurrentChar;
+		mCurrentChar = mProvider->get();
 		++mColumnNumber;
 
 		// Consume digits
 		if (!hasDot) {
-			while (mIterator != mIteratorEnd) {
-				if (isdigit(*mIterator)) {
+			while (mProvider->good()) {
+				if (isdigit(mCurrentChar)) {
 					hasData = true;
-					identifier += *mIterator;
-					++mIterator;
+					identifier += mCurrentChar;
+					mCurrentChar = mProvider->get();
 					++mColumnNumber;
 				} else {
 					break;
@@ -286,20 +289,20 @@ Token Lexer::next()
 			}
 
 			// Floating point
-			if (mIterator != mIteratorEnd && *mIterator == '.') {
+			if (mProvider->good() && mCurrentChar == '.') {
 				hasDot = true;
-				identifier += *mIterator;
-				++mIterator;
+				identifier += mCurrentChar;
+				mCurrentChar = mProvider->get();
 				++mColumnNumber;
 			}
 		}
 
 		// Consume digits
-		while (mIterator != mIteratorEnd) {
-			if (isdigit(*mIterator)) {
+		while (mProvider->good()) {
+			if (isdigit(mCurrentChar)) {
 				hasData = true;
-				identifier += *mIterator;
-				++mIterator;
+				identifier += mCurrentChar;
+				mCurrentChar = mProvider->get();
 				++mColumnNumber;
 			} else {
 				break;
@@ -307,28 +310,28 @@ Token Lexer::next()
 		}
 
 		// Exponent
-		if (mIterator != mIteratorEnd && *mIterator == 'e') {
+		if (mProvider->good() && mCurrentChar == 'e') {
 			hasExp = true;
-			identifier += *mIterator;
-			++mIterator;
+			identifier += mCurrentChar;
+			mCurrentChar = mProvider->get();
 			++mColumnNumber;
 		}
 
 		// Exponent signs
 		if (hasExp) {
-			if (mIterator != mIteratorEnd && (*mIterator == '+' || *mIterator == '-')) {
+			if (mProvider->good() && (mCurrentChar == '+' || mCurrentChar == '-')) {
 				hasExpSign = true;
-				identifier += *mIterator;
-				++mIterator;
+				identifier += mCurrentChar;
+				mCurrentChar = mProvider->get();
 				++mColumnNumber;
 			}
 
 			// Consume digits
-			while (mIterator != mIteratorEnd) {
-				if (isdigit(*mIterator)) {
+			while (mProvider->good()) {
+				if (isdigit(mCurrentChar)) {
 					hasExpData = true;
-					identifier += *mIterator;
-					++mIterator;
+					identifier += mCurrentChar;
+					mCurrentChar = mProvider->get();
 					++mColumnNumber;
 				} else {
 					break;
@@ -346,17 +349,17 @@ Token Lexer::next()
 		}
 
 		return token;
-	} else if (isAlpha(*mIterator)) //Identifier
+	} else if (isAlpha(mCurrentChar)) //Identifier
 	{
 		string_t identifier;
-		identifier += *mIterator;
+		identifier += mCurrentChar;
 
-		++mIterator;
+		mCurrentChar = mProvider->get();
 		++mColumnNumber;
-		while (mIterator != mIteratorEnd) {
-			if (isAscii(*mIterator)) {
-				identifier += *mIterator;
-				++mIterator;
+		while (mProvider->good()) {
+			if (isAscii(mCurrentChar)) {
+				identifier += mCurrentChar;
+				mCurrentChar = mProvider->get();
 				++mColumnNumber;
 			} else {
 				break;
@@ -373,36 +376,52 @@ Token Lexer::next()
 			token.Value = identifier;
 		}
 		return token;
-	} else if (isWhitespace(*mIterator)) {
-		if (*mIterator == '\n') {
+	} else if (isWhitespace(mCurrentChar)) {
+		if (mCurrentChar == '\n') {
 			++mLineNumber;
 			mColumnNumber = 0;
 		}
 
-		++mIterator;
+		mCurrentChar = mProvider->get();
 		++mColumnNumber;
-		return next();
+		return getNextToken();
 	} else {
 		std::stringstream stream;
-		stream << "Invalid character '" << *mIterator << "'";
+		stream << "Invalid character '" << mCurrentChar << "'";
 		mLogger->log(mLineNumber, mColumnNumber, L_Error, stream.str());
-		++mIterator;
+		mCurrentChar = mProvider->get();
 		++mColumnNumber;
-		return next();
+		return getNextToken();
+	}
+}
+
+Token Lexer::next()
+{
+	// Restore from look()
+	if (mNextToken.Type != T_EOF) {
+		Token token		= mNextToken;
+		mColumnNumber   = mNextColumnNumber;
+		mLineNumber		= mNextLineNumber;
+		mNextToken.Type = T_EOF;
+		return token;
+	} else {
+		return getNextToken();
 	}
 }
 
 Token Lexer::look()
 {
-	string_t::const_iterator tmp = mIterator;
-	line_t l					 = mLineNumber;
-	column_t c					 = mColumnNumber;
+	line_t l   = mLineNumber;
+	column_t c = mColumnNumber;
 
 	Token t = next();
+	// Save for next() call
+	mNextToken		  = t;
+	mNextColumnNumber = mColumnNumber;
+	mNextLineNumber   = mLineNumber;
 
 	mColumnNumber = c;
 	mLineNumber   = l;
-	mIterator	 = tmp;
 	return t;
 }
 

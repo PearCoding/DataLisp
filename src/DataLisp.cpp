@@ -384,19 +384,17 @@ DataLisp& DataLisp::operator=(DataLisp&& other) noexcept
 	return *this;
 }
 
-void DataLisp::parse(const string_t& source)
+void DataLisp::parse(stream_t* source)
 {
-	parse(source.begin(), source.end());
+	DL_ASSERT(mInternal->mTree == nullptr);
+	Parser parser(source, mInternal->mLogger);
+	mInternal->mTree = parser.parse();
 }
 
-void DataLisp::parse(const string_t::const_iterator& source_begin, const string_t::const_iterator& source_end)
+void DataLisp::parse(const string_t& source)
 {
-	if (source_begin == source_end)
-		return;
-
-	DL_ASSERT(mInternal->mTree == nullptr);
-	Parser parser(source_begin, source_end, mInternal->mLogger);
-	mInternal->mTree = parser.parse();
+	std::stringstream stream(source);
+	parse(&stream);
 }
 
 void DataLisp::build(DataContainer& container)

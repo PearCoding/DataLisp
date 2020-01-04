@@ -51,6 +51,7 @@
  * @brief Main namespace containing all classes, structures, functions and types
  */
 namespace DL {
+class SourceProvider;
 /** @class DataLisp DataLisp.h DL/DataLisp.h
  * @brief General class to parse or generate %DataLisp source code
  *
@@ -115,6 +116,15 @@ public:
 	DataLisp& operator=(DataLisp&& other) noexcept;
 
 	/**
+	 * @brief Parse a string given by a source provider
+
+	 * @attention Parsing errors or warnings will be post to the given SourceLogger instance.
+	 * @param source A SourceProvider
+	 * @see build
+	 */
+	void parse(stream_t* source);
+
+	/**
 	 * @brief Parse a given string
 
 	 * @attention Parsing errors or warnings will be post to the given SourceLogger instance.
@@ -122,16 +132,6 @@ public:
 	 * @see build
 	 */
 	void parse(const string_t& source);
-
-	/**
-	 * @brief Parse a given string given by iterators
-
-	 * @attention Parsing errors or warnings will be post to the given SourceLogger instance.
-	 * @param source_begin A source string iterator. Has to be valid
-	 * @param source_end A source string iterator representing the end of the string
-	 * @see void parse(const string_t& source)
-	 */
-	void parse(const string_t::const_iterator& source_begin, const string_t::const_iterator& source_end);
 
 	/**
 	 * @brief Fills a DataContainer with the content parsed beforehand
