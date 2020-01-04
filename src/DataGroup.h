@@ -123,6 +123,11 @@ public:
 	void add(const Data& data);
 
 	/**
+	 * @brief Clears all data inside the group
+	 */
+	void clear();
+
+	/**
 	 * @brief Returns anonymous data from position i
 	 * @param i Index of the anonymous data
 	 * @return Data at position i if available, invalid Data otherwise

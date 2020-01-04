@@ -140,6 +140,14 @@ public:
 	inline const DataGroup& getGroup() const;
 
 	/**
+	 * @brief Returns encapsulated DataGroup value
+	 *
+	 * Only valid if type is @link DT_Group @endlink.
+	 * @see setGroup
+	 */
+	inline DataGroup& getGroup();
+
+	/**
 	 * @brief Set data to a DataGroup value. Type will be set to @link DT_Group @endlink
 	 * @see getGroup
 	 */

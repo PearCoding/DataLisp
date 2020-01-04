@@ -60,6 +60,13 @@ const DataGroup& Data::getGroup() const
 	return mGroup;
 }
 
+DataGroup& Data::getGroup()
+{
+	DL_ASSERT(mType == DT_Group);
+	return mGroup;
+}
+
+
 void Data::setGroup(const DataGroup& g)
 {
 	mType  = DT_Group;

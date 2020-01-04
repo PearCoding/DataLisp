@@ -102,6 +102,13 @@ void DataGroup::add(const Data& data)
 		mShared->NamedData.push_back(data);
 }
 
+void DataGroup::clear()
+{
+	DL_ASSERT(mShared);
+	vector_t<Data>().swap(mShared->AnonymousData);
+	vector_t<Data>().swap(mShared->NamedData);
+}
+
 Data DataGroup::at(size_t i) const
 {
 	DL_ASSERT(mShared);
