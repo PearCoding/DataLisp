@@ -98,6 +98,7 @@ add_library(datalisp ${DL_Src} ${DL_Hdr})
 target_compile_definitions(datalisp PRIVATE "DL_LIB_BUILD" "$<$<CONFIG:Build>:DL_DEBUG>")
 if(NOT BUILD_SHARED_LIBS)
   target_compile_definitions(datalisp PUBLIC "DL_LIB_STATIC")
+  set_target_properties(datalisp PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 endif()
 
 IF(DL_HAS_PYTHON)
