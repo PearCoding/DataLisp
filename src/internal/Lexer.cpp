@@ -310,7 +310,7 @@ Token Lexer::getNextToken()
 		}
 
 		// Exponent
-		if (mProvider->good() && mCurrentChar == 'e') {
+		if (mProvider->good() && (mCurrentChar == 'e' || mCurrentChar == 'E')) {
 			hasExp = true;
 			identifier += mCurrentChar;
 			mCurrentChar = mProvider->get();
